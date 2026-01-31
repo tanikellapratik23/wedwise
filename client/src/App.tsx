@@ -18,7 +18,7 @@ function App() {
   }, []);
 
   return (
-    <Router>
+    <Router basename="/wedwise">
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
         <Routes>
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
