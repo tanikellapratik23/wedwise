@@ -155,7 +155,7 @@ wedwise/
    - Backend API: http://localhost:3000
    - API Health Check: http://localhost:3000/api/health
 
-## 📝 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
