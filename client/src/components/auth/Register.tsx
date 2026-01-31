@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Heart, Mail, Lock, User } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface RegisterProps {
   setIsAuthenticated: (value: boolean) => void;
 }
@@ -30,7 +32,7 @@ export default function Register({ setIsAuthenticated }: RegisterProps) {
     setLoading(true);
     try {
       console.log('Attempting registration with:', { name: formData.name, email: formData.email });
-      const response = await axios.post('http://localhost:3000/api/auth/register', {
+      const response = await axios.post(`${API_URL}/api/auth/register`, {
         name: formData.name,
         email: formData.email,
         password: formData.password,

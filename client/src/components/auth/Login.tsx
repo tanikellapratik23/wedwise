@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Heart, Mail, Lock } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface LoginProps {
   setIsAuthenticated: (value: boolean) => void;
 }
@@ -23,7 +25,7 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
 
     try {
       console.log('Attempting login with:', formData.email);
-      const response = await axios.post('http://localhost:3000/api/auth/login', formData);
+      const response = await axios.post(`${API_URL}/api/auth/login`, formData);
       console.log('Login successful:', response.data);
       localStorage.setItem('token', response.data.token);
       setIsAuthenticated(true);
