@@ -1,0 +1,130 @@
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import Overview from './Overview';
+import GuestList from './GuestList';
+import BudgetTracker from './BudgetTracker';
+import TodoList from './TodoList';
+import VendorManagement from './VendorManagement';
+import VendorSearch from './VendorSearch';
+import SeatingPlanner from './SeatingPlanner';
+import Settings from './Settings';
+import CeremonyPlanning from './CeremonyPlanning';
+import MusicPlanner from './MusicPlanner';
+
+export default function Dashboard() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isReligious, setIsReligious] = useState(false);
+
+  useEffect(() => {
+    fetchUserSettings();
+  }, []);
+
+  const fetchUserSettings = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/onboarding', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.data) {
+        setIsReligious(response.data.isReligious || false);
+      }
+    } catch (error) {
+      console.error('Failed to fetch settings:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('onboardingCompleted');
+    navigate('/login');
+  };
+
+  const navigation = [
+    { name: 'Overview', path: '/dashboard', icon: LayoutGrid },
+    { name: 'Guest List', path: '/dashboard/guests', icon: Users },
+    { name: 'Budget', path: '/dashboard/budget', icon: DollarSign },
+    { name: 'To-Dos', path: '/dashboard/todos', icon: CheckSquare },
+    { name: 'Ceremony', path: '/dashboard/ceremony', icon: Church },
+    { name: 'Sound & Music', path: '/dashboard/music', icon: Music },
+    { name: 'Vendor Search', path: '/dashboard/vendor-search', icon: Search },
+    { name: 'My Vendors', path: '/dashboard/vendors', icon: Briefcase },
+    { name: 'Seating', path: '/dashboard/seating', icon: LayoutGrid },
+    { name: 'Settings', path: '/dashboard/settings', icon: SettingsIcon },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="bg-primary-500 text-white p-2 rounded-lg">
+                <Heart className="w-6 h-6" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">WedWise</h1>
+                <p className="text-sm text-gray-500">Your Wedding Planner</p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+            >
+              <LogOut className="w-5 h-5" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Sidebar Navigation */}
+          <aside className="lg:w-64 flex-shrink-0">
+            <nav className="bg-white rounded-xl shadow-sm p-4 space-y-1">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition ${
+                      isActive
+                        ? 'bg-primary-50 text-primary-700 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </aside>
+
+          {/* Main Content */}
+          <main className="flex-1 min-w-0">
+            <Routes>
+              <Route path="/" element={<Overview />} />
+              <Route path="/guests" element={<GuestList />} />
+              <Route path="/budget" element={<BudgetTracker />} />
+              <Route path="/todos" element={<TodoList />} />
+              <Route path="/ceremony" element={<CeremonyPlanning />} />
+              <Route path="/music" element={<MusicPlanner />} />
+              <Route path="/vendor-search" element={<VendorSearch />} />
+              <Route path="/vendors" element={<VendorManagement />} />
+              <Route path="/seating" element={<SeatingPlanner />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    </div>
+  );
+}
