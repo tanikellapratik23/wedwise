@@ -94,10 +94,10 @@ export default function Landing() {
     };
   }, [showHero]);
   const lines = [
-    'Welcome to Vivaha — plan your perfect wedding with ease.',
-    'Smart onboarding that presets your dashboard.',
-    'Autosave & offline backups keep your plans safe.',
-    'Search trusted vendors or get curated local suggestions.',
+    'Vivaha Planning for Modern & Interfaith Weddings',
+    'Manage Hindu rituals, interfaith ceremonies & celebrations',
+    'Organize guest lists, budgets & vendors in one place',
+    'Plan bachelor/bachelorette parties with ease',
   ];
 
   useEffect(() => {
@@ -132,6 +132,7 @@ export default function Landing() {
             </div>
           </div>
           <nav className="flex items-center gap-3">
+            <Link to="/what-is-vivaha" className="px-4 py-2 text-white hover:bg-white/20 rounded-md font-medium transition">About</Link>
             <Link to="/login" className="px-4 py-2 bg-white text-primary-700 rounded-md font-medium">Log in</Link>
             <Link to="/register" className="px-4 py-2 bg-primary-600 text-white rounded-md font-medium">Sign up</Link>
           </nav>
