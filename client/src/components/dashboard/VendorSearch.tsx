@@ -40,11 +40,14 @@ export default function VendorSearch() {
   const [minRating, setMinRating] = useState(0);
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
   const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [displayedVendors, setDisplayedVendors] = useState<Vendor[]>([]);
   const [loadingVendors, setLoadingVendors] = useState(false);
   const [religiousFilter, setReligiousFilter] = useState<string>('all');
   const [culturalFilter, setCulturalFilter] = useState<string>('all');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [favoriteVendors, setFavoriteVendors] = useState<Vendor[]>([]);
+  const [vendorsPerPage] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
   const fetchCounterRef = useRef(0);
   const debounceTimerRef = useRef<NodeJS.Timeout>();
 
@@ -56,6 +59,13 @@ export default function VendorSearch() {
 
     return () => clearTimeout(debounceTimerRef.current);
   }, [searchTerm]);
+
+  // Handle pagination
+  useEffect(() => {
+    const startIdx = (currentPage - 1) * vendorsPerPage;
+    const endIdx = startIdx + vendorsPerPage;
+    setDisplayedVendors((Array.isArray(vendors) ? vendors : []).slice(startIdx, endIdx));
+  }, [vendors, currentPage, vendorsPerPage]);
 
   useEffect(() => {
     fetchUserLocation();
@@ -722,7 +732,7 @@ export default function VendorSearch() {
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-gray-600">
-          Found <span className="font-semibold text-gray-900">{filteredVendors.length}</span> vendor{filteredVendors.length !== 1 ? 's' : ''}
+          Found <span className="font-semibold text-gray-900">{filteredVendors.length}</span> vendor{filteredVendors.length !== 1 ? 's' : ''} {filteredVendors.length > vendorsPerPage && `(showing ${displayedVendors.length} per page)`}
         </p>
         {filteredVendors.length > 0 && (
           <button
@@ -737,7 +747,7 @@ export default function VendorSearch() {
 
       {/* Vendor Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredVendors.map((vendor) => {
+        {displayedVendors.map((vendor) => {
           const isFavorite = favorites.includes(vendor.id);
           
           return (
@@ -862,6 +872,29 @@ export default function VendorSearch() {
           <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 text-lg">No vendors found matching your criteria</p>
           <p className="text-gray-400 text-sm mt-2">Try adjusting your filters or search terms</p>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {filteredVendors.length > vendorsPerPage && (
+        <div className="flex items-center justify-center gap-4 mt-8">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
+          >
+            ← Previous
+          </button>
+          <span className="text-gray-600">
+            Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{Math.ceil(filteredVendors.length / vendorsPerPage)}</span>
+          </span>
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredVendors.length / vendorsPerPage), prev + 1))}
+            disabled={currentPage === Math.ceil(filteredVendors.length / vendorsPerPage)}
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
+          >
+            Next →
+          </button>
         </div>
       )}
 

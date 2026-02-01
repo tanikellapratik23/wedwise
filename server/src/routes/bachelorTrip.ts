@@ -10,7 +10,17 @@ router.post('/create', authMiddleware, async (req: AuthRequest, res: Response) =
     const { eventName, eventType, tripDate, location, estimatedBudget } = req.body;
     const userId = req.userId;
 
+    console.log('🔍 Bachelor Trip Create Request:');
+    console.log('  User ID:', userId);
+    console.log('  Event Name:', eventName);
+    console.log('  Event Type:', eventType);
+    console.log('  Trip Date:', tripDate, 'type:', typeof tripDate);
+    console.log('  Location:', location);
+    console.log('  Budget:', estimatedBudget, 'type:', typeof estimatedBudget);
+    console.log('  Full request body:', req.body);
+
     if (!eventName || !eventType || !tripDate || !location || estimatedBudget === undefined) {
+      console.log('❌ Missing required fields');
       return res.status(400).json({ 
         success: false, 
         error: 'Missing required fields: eventName, eventType, tripDate, location, estimatedBudget' 
@@ -20,15 +30,18 @@ router.post('/create', authMiddleware, async (req: AuthRequest, res: Response) =
     let trip = await BachelorTrip.findOne({ userId });
 
     if (trip) {
+      console.log('📝 Updating existing trip');
       trip.eventName = eventName;
       trip.eventType = eventType;
       trip.tripDate = new Date(tripDate);
       trip.location = location;
       trip.estimatedBudget = parseFloat(estimatedBudget);
       await trip.save();
+      console.log('✅ Trip updated successfully:', trip._id);
       return res.json({ success: true, data: trip });
     }
 
+    console.log('✨ Creating new trip');
     trip = new BachelorTrip({
       userId,
       eventName,
@@ -45,9 +58,10 @@ router.post('/create', authMiddleware, async (req: AuthRequest, res: Response) =
     });
 
     await trip.save();
+    console.log('✅ Trip created successfully:', trip._id);
     res.json({ success: true, data: trip });
   } catch (error) {
-    console.error('Error creating bachelor trip:', error);
+    console.error('❌ Error creating bachelor trip:', error);
     res.status(500).json({ success: false, error: (error as Error).message });
   }
 });

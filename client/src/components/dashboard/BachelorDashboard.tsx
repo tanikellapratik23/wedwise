@@ -84,23 +84,29 @@ export default function BachelorDashboard() {
         estimatedBudget: parseFloat(totalBudget),
       };
 
+      console.log('Creating trip with data:', newTrip);
+      
       const response = await axios.post(`${API_URL}/api/bachelor-trip/create`, newTrip, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (response.data.success) {
+      console.log('Trip creation response:', response.data);
+
+      if (response.data.success || response.data.data) {
         setTrip(response.data.data);
         setEventName('');
         setDestination('');
         setTripDate('');
         setTotalBudget('');
         setError('');
+        alert('Trip created successfully!');
       } else {
         setError(response.data.error || 'Failed to create trip');
       }
     } catch (error: any) {
-      console.error('Failed to create trip:', error);
-      setError(error.response?.data?.error || 'Failed to create trip');
+      console.error('Trip creation error:', error);
+      const errorMsg = error.response?.data?.error || error.message || 'Failed to create trip';
+      setError(errorMsg);
     } finally {
       setSubmitting(false);
     }
