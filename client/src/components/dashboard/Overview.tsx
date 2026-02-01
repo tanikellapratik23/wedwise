@@ -226,7 +226,7 @@ export default function Overview() {
                   📅 {new Date(userSettings.weddingDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
               )}
-              {stats.daysUntilWedding > 0 ? (
+              {stats.daysUntilWedding > 0 && (
                 <div>
                   <p className="text-primary-100 text-lg">
                     {stats.daysUntilWedding} days until your special day 💕
@@ -237,8 +237,6 @@ export default function Overview() {
                     </p>
                   )}
                 </div>
-              ) : (
-                <p className="text-primary-100 text-lg">Set your wedding date to see countdown 📅</p>
               )}
               {userSettings?.weddingCity && (
                 <div className="flex items-center gap-2 mt-2 text-primary-100">

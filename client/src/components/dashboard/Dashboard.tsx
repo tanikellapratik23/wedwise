@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music, PartyPopper } from 'lucide-react';
+import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music, PartyPopper, Sparkles, BookOpen } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { downloadBackupFile, importBackupFile, downloadBackupAsDoc } from '../../utils/offlineBackup';
 import axios from 'axios';
@@ -14,6 +14,8 @@ import Settings from './Settings';
 import CeremonyPlanning from './CeremonyPlanning';
 import MusicPlanner from './MusicPlanner';
 import BachelorDashboard from './BachelorDashboard';
+import OutfitPlanner from './OutfitPlanner';
+import PostWeddingStory from './PostWeddingStory';
 import { setAutoSaveEnabled, isAutoSaveEnabled } from '../../utils/autosave';
 import { ErrorBoundary } from '../ErrorBoundary';
 
@@ -111,6 +113,8 @@ export default function Dashboard() {
     { name: 'Vendor Search', path: '/dashboard/vendor-search', icon: Search },
     { name: 'My Vendors', path: '/dashboard/vendors', icon: Briefcase },
     { name: 'Seating', path: '/dashboard/seating', icon: LayoutGrid },
+    { name: 'Outfit Planner', path: '/dashboard/outfits', icon: Sparkles },
+    { name: 'Story Builder', path: '/dashboard/story', icon: BookOpen },
     { name: 'Settings', path: '/dashboard/settings', icon: SettingsIcon },
     ...(wantsBachelorParty ? [{ name: 'Bachelor / Bachelorette', path: '/dashboard/bachelor', icon: PartyPopper }] : []),
   ];
@@ -206,6 +210,8 @@ export default function Dashboard() {
                 <Route path="/vendor-search" element={<VendorSearch />} />
                 <Route path="/vendors" element={<VendorManagement />} />
                 <Route path="/seating" element={<SeatingPlanner />} />
+                <Route path="/outfits" element={<OutfitPlanner />} />
+                <Route path="/story" element={<PostWeddingStory />} />
                 <Route path="/settings" element={<Settings />} />
                 {wantsBachelorParty && <Route path="/bachelor" element={<BachelorDashboard />} />}
               </Routes>
