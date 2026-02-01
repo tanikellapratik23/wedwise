@@ -175,18 +175,18 @@ export default function TodoList() {
     try {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
-        const next = todos.filter(t => t._id !== id && t.id !== id);
+        const next = (Array.isArray(todos) ? todos : []).filter(t => t._id !== id && t.id !== id);
         setTodos(next);
         const serial = next.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
         localStorage.setItem('todos', JSON.stringify(serial));
         return;
       }
 
-      const todo = todos.find(t => t._id === id || t.id === id);
+      const todo = (Array.isArray(todos) ? todos : []).find(t => t._id === id || t.id === id);
       const todoId = todo?._id || id;
       const token = localStorage.getItem('token');
       await axios.delete(`${API_URL}/api/todos/${todoId}`, { headers: { Authorization: `Bearer ${token}` } });
-      setTodos(todos.filter(t => t._id !== id && t.id !== id));
+      setTodos((Array.isArray(todos) ? todos : []).filter(t => t._id !== id && t.id !== id));
     } catch (error) {
       console.error('Failed to delete todo:', error);
       alert('Unable to delete task');

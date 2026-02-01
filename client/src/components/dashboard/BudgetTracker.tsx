@@ -124,21 +124,21 @@ export default function BudgetTracker() {
     try {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
-        const next = categories.filter(c => c.id !== id && c._id !== id);
+        const next = (Array.isArray(categories) ? categories : []).filter(c => c.id !== id && c._id !== id);
         setCategories(next);
         localStorage.setItem('budget', JSON.stringify(next));
         return;
       }
 
       const token = localStorage.getItem('token');
-      const category = categories.find(c => c.id === id || c._id === id);
+      const category = (Array.isArray(categories) ? categories : []).find(c => c.id === id || c._id === id);
       const categoryId = category?._id || id;
 
       await axios.delete(`${API_URL}/api/budget/${categoryId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setCategories(categories.filter(c => c.id !== id && c._id !== id));
+      setCategories((Array.isArray(categories) ? categories : []).filter(c => c.id !== id && c._id !== id));
     } catch (error) {
       console.error('Failed to delete category:', error);
       alert('Failed to delete category');

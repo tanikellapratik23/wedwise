@@ -246,18 +246,18 @@ export default function CeremonyPlanning() {
   };
 
   const toggleRitual = (ritual: string) => {
-    if (selectedRituals.includes(ritual)) {
-      setSelectedRituals(selectedRituals.filter(r => r !== ritual));
+    if ((Array.isArray(selectedRituals) ? selectedRituals : []).includes(ritual)) {
+      setSelectedRituals((Array.isArray(selectedRituals) ? selectedRituals : []).filter(r => r !== ritual));
     } else {
-      setSelectedRituals([...selectedRituals, ritual]);
+      setSelectedRituals([...(Array.isArray(selectedRituals) ? selectedRituals : []), ritual]);
     }
   };
 
   const toggleTradition = (tradition: string) => {
-    if (selectedTraditions.includes(tradition)) {
-      setSelectedTraditions(selectedTraditions.filter(t => t !== tradition));
+    if ((Array.isArray(selectedTraditions) ? selectedTraditions : []).includes(tradition)) {
+      setSelectedTraditions((Array.isArray(selectedTraditions) ? selectedTraditions : []).filter(t => t !== tradition));
     } else {
-      setSelectedTraditions([...selectedTraditions, tradition]);
+      setSelectedTraditions([...(Array.isArray(selectedTraditions) ? selectedTraditions : []), tradition]);
     }
   };
 
