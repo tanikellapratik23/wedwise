@@ -33,6 +33,7 @@ export default function MusicPlanner() {
   const [searching, setSearching] = useState(false);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [pageReady, setPageReady] = useState(false);
   
   const [newPlaylist, setNewPlaylist] = useState({
     name: '',
@@ -54,7 +55,14 @@ export default function MusicPlanner() {
   ];
 
   useEffect(() => {
-    loadPlaylists();
+    try {
+      loadPlaylists();
+      setPageReady(true);
+    } catch (e) {
+      console.error('Error loading playlists:', e);
+      setPageReady(true);
+    }
+    
     return () => {
       if (audio) {
         audio.pause();
@@ -287,6 +295,17 @@ export default function MusicPlanner() {
       alert('Failed to export playlist. Please try again.');
     }
   };
+
+  if (!pageReady) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading playlists...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

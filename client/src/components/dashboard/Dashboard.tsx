@@ -1,6 +1,6 @@
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { downloadBackupFile, importBackupFile, downloadBackupAsDoc } from '../../utils/offlineBackup';
 import axios from 'axios';
 import Overview from './Overview';
@@ -15,6 +15,15 @@ import CeremonyPlanning from './CeremonyPlanning';
 import MusicPlanner from './MusicPlanner';
 import { setAutoSaveEnabled, isAutoSaveEnabled } from '../../utils/autosave';
 import { ErrorBoundary } from '../ErrorBoundary';
+
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-96">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+      <p className="text-gray-600">Loading page...</p>
+    </div>
+  </div>
+);
 
 function AutoSaveToggle() {
   const [enabled, setEnabled] = useState<boolean>(isAutoSaveEnabled());
@@ -161,18 +170,20 @@ export default function Dashboard() {
           {/* Main Content */}
           <main className="flex-1 min-w-0">
             <ErrorBoundary>
-              <Routes>
-                <Route path="/" element={<Overview />} />
-                <Route path="/guests" element={<GuestList />} />
-                <Route path="/budget" element={<BudgetTracker />} />
-                <Route path="/todos" element={<TodoList />} />
-                <Route path="/ceremony" element={<CeremonyPlanning />} />
-                <Route path="/music" element={<MusicPlanner />} />
-                <Route path="/vendor-search" element={<VendorSearch />} />
-                <Route path="/vendors" element={<VendorManagement />} />
-                <Route path="/seating" element={<SeatingPlanner />} />
-                <Route path="/settings" element={<Settings />} />
-              </Routes>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Overview />} />
+                  <Route path="/guests" element={<GuestList />} />
+                  <Route path="/budget" element={<BudgetTracker />} />
+                  <Route path="/todos" element={<TodoList />} />
+                  <Route path="/ceremony" element={<CeremonyPlanning />} />
+                  <Route path="/music" element={<MusicPlanner />} />
+                  <Route path="/vendor-search" element={<VendorSearch />} />
+                  <Route path="/vendors" element={<VendorManagement />} />
+                  <Route path="/seating" element={<SeatingPlanner />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Routes>
+              </Suspense>
             </ErrorBoundary>
           </main>
         </div>
