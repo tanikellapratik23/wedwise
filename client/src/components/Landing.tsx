@@ -55,9 +55,7 @@ export default function Landing() {
   const heroImages = [
     `${base}hero-images/back-view-islamic-couple-spending-time-together.jpg`,
     `${base}hero-images/beautiful-wedding-ceremony-nature.jpg`,
-    `${base}hero-images/ritual-with-coconut-leaves-traditional-hindu-wedding-ceremony.jpg`,
     `${base}hero-images/side-view-happy-man-proposing.jpg`,
-    `${base}hero-images/wedding-ritual-putting-ring-finger-india.jpg`,
     `${base}hero-images/young-wedding-couple-enjoying-romantic-moments.jpg`,
   ];
   const [showHero, setShowHero] = useState(true);
@@ -334,7 +332,7 @@ function DemoPlayer({ onClose, inline }: { onClose: () => void; inline?: boolean
     push(800, () => setDemoStep(3));
     push(1000, () => { setData(d => ({ ...d, weddingCity: 'San Francisco', weddingState: 'CA' })); });
     push(800, () => setDemoStep(4));
-    push(1000, () => { setData(d => ({ ...d, religions: ['Hindu'], isReligious: true })); });
+    push(1000, () => { setData(d => ({ ...d, religions: ['Christian', 'Muslim'], isReligious: true })); });
     push(800, () => setDemoStep(5));
     push(900, () => { setData(d => ({ ...d, estimatedBudget: 15000, guestCount: 120 })); });
     push(800, () => setDemoStep(6));
