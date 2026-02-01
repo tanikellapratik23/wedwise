@@ -139,7 +139,7 @@ export default function Landing() {
 
       <main className="flex-1 flex items-center justify-center px-6 py-12">
         <section className="w-full flex justify-center">
-          <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-center gap-8 px-4">
+          <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8 px-4">
             <section className={`space-y-6 flex flex-col items-center w-full max-w-[520px] mx-auto ${demoPlaying ? 'justify-start' : 'justify-center'}`}>
             <div className="text-4xl md:text-5xl font-extrabold leading-tight">
               <span className="block text-primary-700">{lines[step]}</span>
