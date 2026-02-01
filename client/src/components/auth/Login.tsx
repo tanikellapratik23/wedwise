@@ -46,11 +46,16 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
       localStorage.setItem('token', response.data.token);
       setIsAuthenticated(true);
 
-      // Check if onboarding is completed
-      if (response.data.user.onboardingCompleted) {
+      // Check if admin - go directly to dashboard
+      if (response.data.user.isAdmin) {
+        localStorage.setItem('onboardingCompleted', 'true');
+        navigate('/dashboard');
+      } else if (response.data.user.onboardingCompleted) {
+        // Regular user with completed onboarding
         localStorage.setItem('onboardingCompleted', 'true');
         navigate('/dashboard');
       } else {
+        // First-time user - go to onboarding
         navigate('/onboarding');
       }
     } catch (err: any) {

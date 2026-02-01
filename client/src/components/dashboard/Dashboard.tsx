@@ -16,6 +16,7 @@ import MusicPlanner from './MusicPlanner';
 import BachelorDashboard from './BachelorDashboard';
 import OutfitPlanner from './OutfitPlanner';
 import PostWeddingStory from './PostWeddingStory';
+import AdminDashboard from './AdminDashboard';
 import { setAutoSaveEnabled, isAutoSaveEnabled } from '../../utils/autosave';
 import { ErrorBoundary } from '../ErrorBoundary';
 
@@ -37,15 +38,29 @@ export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isReligious, setIsReligious] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [wantsBachelorParty, setWantsBachelorParty] = useState(() => {
-    // Initialize from localStorage immediately to show nav button faster
     return localStorage.getItem('wantsBachelorParty') === 'true';
   });
   const [emailSent, setEmailSent] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
-    fetchUserSettings();
-    sendWelcomeEmail();
+    // Check if user is admin from token
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        setIsAdmin(decoded.isAdmin || false);
+      } catch (e) {
+        setIsAdmin(false);
+      }
+    }
+    
+    if (!isAdmin) {
+      fetchUserSettings();
+      sendWelcomeEmail();
+    }
   }, []);
 
   const sendWelcomeEmail = async () => {
@@ -54,7 +69,6 @@ export default function Dashboard() {
       const hasEmailBeenSent = sessionStorage.getItem('welcomeEmailSent');
       if (hasEmailBeenSent || emailSent) return;
 
-      // Trigger welcome email
       await axios.post('/api/send-welcome-email', {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -76,12 +90,10 @@ export default function Dashboard() {
       if (response.data) {
         setIsReligious(response.data.isReligious || false);
         setWantsBachelorParty(response.data.wantsBachelorParty || false);
-        // Also save to localStorage as backup
         localStorage.setItem('wantsBachelorParty', response.data.wantsBachelorParty ? 'true' : 'false');
       }
     } catch (error) {
       console.error('Failed to fetch settings:', error);
-      // Fallback to localStorage
       const localWantsBachelor = localStorage.getItem('wantsBachelorParty') === 'true';
       if (localWantsBachelor) {
         setWantsBachelorParty(true);
@@ -89,7 +101,11 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
     // Clear all stored data
     localStorage.removeItem('token');
     localStorage.removeItem('onboardingCompleted');
@@ -100,7 +116,11 @@ export default function Dashboard() {
     localStorage.removeItem('ceremonies');
     localStorage.removeItem('playlists');
     localStorage.removeItem('seatingCharts');
-    navigate('/login');
+    navigate('/');
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
   };
 
   const navigation = [
@@ -159,7 +179,7 @@ export default function Dashboard() {
                 className="text-sm"
               />
               <button
-                onClick={handleLogout}
+                onClick={handleLogoutClick}
                 className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
               >
                 <LogOut className="w-5 h-5" />
@@ -170,14 +190,45 @@ export default function Dashboard() {
         </div>
       </header>
 
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Confirm Logout</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to logout? You will be redirected to the home page.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={confirmLogout}
+                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition"
+              >
+                Logout
+              </button>
+              <button
+                onClick={cancelLogout}
+                className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar Navigation */}
-          <aside className="lg:w-64 flex-shrink-0">
-            <nav className="bg-white rounded-xl shadow-sm p-4 space-y-1">
-              {navigation.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
+        {/* Admin Dashboard - Show only for admins */}
+        {isAdmin && (
+          <AdminDashboard onLogout={handleLogoutClick} />
+        )}
+
+        {/* Regular Dashboard - Show only for regular users */}
+        {!isAdmin && (
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Sidebar Navigation */}
+            <aside className="lg:w-64 flex-shrink-0">
+              <nav className="bg-white rounded-xl shadow-sm p-4 space-y-1">
+                {navigation.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname === item.path;
                 
                 return (
                   <Link
@@ -218,6 +269,7 @@ export default function Dashboard() {
             </ErrorBoundary>
           </main>
         </div>
+        )}
       </div>
     </div>
   );

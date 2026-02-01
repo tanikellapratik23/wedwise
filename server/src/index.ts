@@ -14,6 +14,7 @@ import seatingRoutes from './routes/seating';
 import sharingRoutes from './routes/sharing';
 import bachelorTripRoutes from './routes/bachelorTrip';
 import emailRoutes from './routes/email';
+import adminRoutes from './routes/admin';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/api/vendors', vendorRoutes);
 app.use('/api/seating', seatingRoutes);
 app.use('/api/sharing', sharingRoutes);
 app.use('/api/bachelor-trip', bachelorTripRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api', emailRoutes);
 
 // Health check
