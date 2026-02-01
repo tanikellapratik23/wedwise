@@ -131,7 +131,10 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
     localStorage.removeItem('ceremonies');
     localStorage.removeItem('playlists');
     localStorage.removeItem('seatingCharts');
-    navigate('/');
+    localStorage.removeItem('wantsBachelorParty');
+    // Navigate and reload to ensure App component re-evaluates auth state
+    navigate('/', { replace: true });
+    window.location.reload();
   };
 
   const cancelLogout = () => {
