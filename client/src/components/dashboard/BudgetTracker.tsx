@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Plus, DollarSign, TrendingDown, TrendingUp, MapPin, Sparkles, Info, Trash2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, DollarSign, TrendingDown, TrendingUp, MapPin, Sparkles, Info, Trash2, Download, Upload, Save } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { getCityData, getBudgetOptimizationSuggestions } from '../../utils/cityData';
@@ -23,6 +23,7 @@ export default function BudgetTracker() {
     name: '',
     estimatedAmount: 0,
   });
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
   const [userSettings, setUserSettings] = useState<any>(null);
   const [cityData, setCityData] = useState<any>(null);
@@ -35,6 +36,13 @@ export default function BudgetTracker() {
 
   const fetchBudgetCategories = async () => {
     try {
+      const offlineMode = localStorage.getItem('offlineMode') === 'true';
+      if (offlineMode) {
+        const cached = localStorage.getItem('budget');
+        if (cached) setCategories(JSON.parse(cached));
+        return;
+      }
+
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API_URL}/api/budget`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -44,6 +52,8 @@ export default function BudgetTracker() {
       }
     } catch (error) {
       console.error('Failed to fetch budget categories:', error);
+      const cached = localStorage.getItem('budget');
+      if (cached) setCategories(JSON.parse(cached));
     }
   };
 
@@ -55,6 +65,23 @@ export default function BudgetTracker() {
     
     try {
       setLoading(true);
+      const offlineMode = localStorage.getItem('offlineMode') === 'true';
+      if (offlineMode) {
+        const cat = {
+          id: `local-${Date.now()}`,
+          name: newCategory.name,
+          estimatedAmount: newCategory.estimatedAmount,
+          actualAmount: 0,
+          paid: 0,
+        } as BudgetCategory;
+        const next = [...categories, cat];
+        setCategories(next);
+        localStorage.setItem('budget', JSON.stringify(next));
+        setShowAddModal(false);
+        setNewCategory({ name: '', estimatedAmount: 0 });
+        return;
+      }
+
       const token = localStorage.getItem('token');
       const response = await axios.post(`${API_URL}/api/budget`, {
         name: newCategory.name,
@@ -82,14 +109,22 @@ export default function BudgetTracker() {
     if (!confirm('Delete this category?')) return;
     
     try {
+      const offlineMode = localStorage.getItem('offlineMode') === 'true';
+      if (offlineMode) {
+        const next = categories.filter(c => c.id !== id && c._id !== id);
+        setCategories(next);
+        localStorage.setItem('budget', JSON.stringify(next));
+        return;
+      }
+
       const token = localStorage.getItem('token');
       const category = categories.find(c => c.id === id || c._id === id);
       const categoryId = category?._id || id;
-      
+
       await axios.delete(`${API_URL}/api/budget/${categoryId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       setCategories(categories.filter(c => c.id !== id && c._id !== id));
     } catch (error) {
       console.error('Failed to delete category:', error);
@@ -110,6 +145,14 @@ export default function BudgetTracker() {
     ));
     
     try {
+      const offlineMode = localStorage.getItem('offlineMode') === 'true';
+      if (offlineMode) {
+        localStorage.setItem('budget', JSON.stringify(categories.map(cat => 
+          (cat.id === id || cat._id === id) ? { ...cat, [field]: value } : cat
+        )));
+        return;
+      }
+
       const token = localStorage.getItem('token');
       await axios.put(`${API_URL}/api/budget/${categoryId}`, updatedCategory, {
         headers: { Authorization: `Bearer ${token}` },
@@ -118,6 +161,38 @@ export default function BudgetTracker() {
       console.error('Failed to update category:', error);
       // Revert on error
       fetchBudgetCategories();
+    }
+  };
+
+  const saveBudget = () => {
+    localStorage.setItem('budget', JSON.stringify(categories));
+    alert('Budget saved locally');
+  };
+
+  const exportBudget = () => {
+    const blob = new Blob([JSON.stringify(categories, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'wedwise-budget.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text) as BudgetCategory[];
+      setCategories(data);
+      localStorage.setItem('budget', JSON.stringify(data));
+      alert('Budget imported successfully');
+    } catch (err) {
+      console.error('Import failed', err);
+      alert('Failed to import budget file');
     }
   };
 
@@ -176,13 +251,19 @@ export default function BudgetTracker() {
           <h1 className="text-3xl font-bold text-gray-900">Budget Tracker</h1>
           <p className="text-gray-500 mt-1">Monitor your wedding expenses</p>
         </div>
-        <button 
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center space-x-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition shadow-lg"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Add Category</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <input ref={fileRef} type="file" accept="application/json" onChange={handleUpload} className="hidden" />
+          <button onClick={() => fileRef.current?.click()} className="px-4 py-2 bg-green-500 text-white rounded-md"> <Upload className="w-4 h-4 inline"/> Import</button>
+          <button onClick={exportBudget} className="px-4 py-2 bg-blue-500 text-white rounded-md"> <Download className="w-4 h-4 inline"/> Export</button>
+          <button onClick={saveBudget} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"> <Save className="w-4 h-4 inline"/> Save</button>
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center space-x-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition shadow-lg"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Add Category</span>
+          </button>
+        </div>
       </div>
 
       {/* Summary Cards */}
