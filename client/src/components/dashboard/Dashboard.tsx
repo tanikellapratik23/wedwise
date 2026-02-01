@@ -1,6 +1,6 @@
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music } from 'lucide-react';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music, PartyPopper } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { downloadBackupFile, importBackupFile, downloadBackupAsDoc } from '../../utils/offlineBackup';
 import axios from 'axios';
 import Overview from './Overview';
@@ -13,17 +13,9 @@ import SeatingPlanner from './SeatingPlanner';
 import Settings from './Settings';
 import CeremonyPlanning from './CeremonyPlanning';
 import MusicPlanner from './MusicPlanner';
+import BachelorDashboard from './BachelorDashboard';
 import { setAutoSaveEnabled, isAutoSaveEnabled } from '../../utils/autosave';
 import { ErrorBoundary } from '../ErrorBoundary';
-
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-96">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-      <p className="text-gray-600">Loading page...</p>
-    </div>
-  </div>
-);
 
 function AutoSaveToggle() {
   const [enabled, setEnabled] = useState<boolean>(isAutoSaveEnabled());
@@ -43,6 +35,7 @@ export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isReligious, setIsReligious] = useState(false);
+  const [wantsBachelorParty, setWantsBachelorParty] = useState(false);
 
   useEffect(() => {
     fetchUserSettings();
@@ -56,6 +49,7 @@ export default function Dashboard() {
       });
       if (response.data) {
         setIsReligious(response.data.isReligious || false);
+        setWantsBachelorParty(response.data.wantsBachelorParty || false);
       }
     } catch (error) {
       console.error('Failed to fetch settings:', error);
@@ -87,6 +81,7 @@ export default function Dashboard() {
     { name: 'My Vendors', path: '/dashboard/vendors', icon: Briefcase },
     { name: 'Seating', path: '/dashboard/seating', icon: LayoutGrid },
     { name: 'Settings', path: '/dashboard/settings', icon: SettingsIcon },
+    ...(wantsBachelorParty ? [{ name: 'Bachelor / Bachelorette', path: '/dashboard/bachelor', icon: PartyPopper }] : []),
   ];
 
   return (
@@ -170,20 +165,19 @@ export default function Dashboard() {
           {/* Main Content */}
           <main className="flex-1 min-w-0">
             <ErrorBoundary>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<Overview />} />
-                  <Route path="/guests" element={<GuestList />} />
-                  <Route path="/budget" element={<BudgetTracker />} />
-                  <Route path="/todos" element={<TodoList />} />
-                  <Route path="/ceremony" element={<CeremonyPlanning />} />
-                  <Route path="/music" element={<MusicPlanner />} />
-                  <Route path="/vendor-search" element={<VendorSearch />} />
-                  <Route path="/vendors" element={<VendorManagement />} />
-                  <Route path="/seating" element={<SeatingPlanner />} />
-                  <Route path="/settings" element={<Settings />} />
-                </Routes>
-              </Suspense>
+              <Routes>
+                <Route path="/" element={<Overview />} />
+                <Route path="/guests" element={<GuestList />} />
+                <Route path="/budget" element={<BudgetTracker />} />
+                <Route path="/todos" element={<TodoList />} />
+                <Route path="/ceremony" element={<CeremonyPlanning />} />
+                <Route path="/music" element={<MusicPlanner />} />
+                <Route path="/vendor-search" element={<VendorSearch />} />
+                <Route path="/vendors" element={<VendorManagement />} />
+                <Route path="/seating" element={<SeatingPlanner />} />
+                <Route path="/settings" element={<Settings />} />
+                {wantsBachelorParty && <Route path="/bachelor" element={<BachelorDashboard />} />}
+              </Routes>
             </ErrorBoundary>
           </main>
         </div>

@@ -167,7 +167,7 @@ export default function MusicPlanner() {
   };
 
   const deletePlaylist = (id: string) => {
-    const updated = playlists.filter(p => p.id !== id);
+    const updated = (Array.isArray(playlists) ? playlists : []).filter(p => p.id !== id);
     savePlaylists(updated);
     if (selectedPlaylist?.id === id) {
       setSelectedPlaylist(updated[0] || null);
@@ -229,7 +229,7 @@ export default function MusicPlanner() {
       songs: [...selectedPlaylist.songs, song],
     };
     
-    const updatedPlaylists = playlists.map(p =>
+    const updatedPlaylists = (Array.isArray(playlists) ? playlists : []).map(p =>
       p.id === selectedPlaylist.id ? updatedPlaylist : p
     );
     
@@ -242,10 +242,10 @@ export default function MusicPlanner() {
     
     const updatedPlaylist = {
       ...selectedPlaylist,
-      songs: selectedPlaylist.songs.filter(s => s.id !== songId),
+      songs: (Array.isArray(selectedPlaylist.songs) ? selectedPlaylist.songs : []).filter(s => s.id !== songId),
     };
     
-    const updatedPlaylists = playlists.map(p =>
+    const updatedPlaylists = (Array.isArray(playlists) ? playlists : []).map(p =>
       p.id === selectedPlaylist.id ? updatedPlaylist : p
     );
     

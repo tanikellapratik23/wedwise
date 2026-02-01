@@ -87,7 +87,7 @@ export default function Settings() {
   };
 
   const togglePriority = (priority: string) => {
-    const current = settings.topPriority || [];
+    const current = Array.isArray(settings.topPriority) ? settings.topPriority : [];
     if (current.includes(priority)) {
       updateSetting('topPriority', current.filter(p => p !== priority));
     } else {
@@ -96,7 +96,7 @@ export default function Settings() {
   };
 
   const toggleReligion = (religion: string) => {
-    const current = settings.religions || [];
+    const current = Array.isArray(settings.religions) ? settings.religions : [];
     if (current.includes(religion)) {
       updateSetting('religions', current.filter(r => r !== religion));
     } else {

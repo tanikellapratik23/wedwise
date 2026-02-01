@@ -184,21 +184,26 @@ export default function CeremonyPlanning() {
 
   const deleteEvent = (dayIndex: number, eventId: string) => {
     const updatedDays = [...weddingDays];
-    updatedDays[dayIndex].events = updatedDays[dayIndex].events.filter(e => e.id !== eventId);
-    setWeddingDays(updatedDays);
+    if (updatedDays[dayIndex] && Array.isArray(updatedDays[dayIndex].events)) {
+      updatedDays[dayIndex].events = updatedDays[dayIndex].events.filter(e => e.id !== eventId);
+      setWeddingDays(updatedDays);
+    }
   };
 
   const assignRitualToEvent = (dayIndex: number, eventId: string, ritual: string) => {
     const updatedDays = [...weddingDays];
-    const event = updatedDays[dayIndex].events.find(e => e.id === eventId);
-    if (event) {
-      if (event.rituals.includes(ritual)) {
-        event.rituals = event.rituals.filter(r => r !== ritual);
-      } else {
-        event.rituals.push(ritual);
+    if (updatedDays[dayIndex] && Array.isArray(updatedDays[dayIndex].events)) {
+      const event = updatedDays[dayIndex].events.find(e => e.id === eventId);
+      if (event) {
+        const rituals = Array.isArray(event.rituals) ? event.rituals : [];
+        if (rituals.includes(ritual)) {
+          event.rituals = rituals.filter(r => r !== ritual);
+        } else {
+          event.rituals = [...rituals, ritual];
+        }
       }
+      setWeddingDays(updatedDays);
     }
-    setWeddingDays(updatedDays);
   };
 
   const handleSave = async () => {

@@ -41,19 +41,20 @@ export default function VendorManagement() {
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  const categories = [...new Set(vendors.map((v) => v.category))];
+  const vendorsArray = Array.isArray(vendors) ? vendors : [];
+  const categories = [...new Set(vendorsArray.map((v) => v.category))];
 
-  const filteredVendors = vendors.filter((vendor) => {
+  const filteredVendors = vendorsArray.filter((vendor) => {
     const matchesCategory = filterCategory === 'all' || vendor.category === filterCategory;
     const matchesStatus = filterStatus === 'all' || vendor.status === filterStatus;
     return matchesCategory && matchesStatus;
   });
 
   const stats = {
-    total: vendors.length,
-    booked: vendors.filter((v) => v.status === 'booked').length,
-    researching: vendors.filter((v) => v.status === 'researching').length,
-    contacted: vendors.filter((v) => v.status === 'contacted').length,
+    total: vendorsArray.length,
+    booked: vendorsArray.filter((v) => v.status === 'booked').length,
+    researching: vendorsArray.filter((v) => v.status === 'researching').length,
+    contacted: vendorsArray.filter((v) => v.status === 'contacted').length,
   };
 
   const getStatusColor = (status: string) => {

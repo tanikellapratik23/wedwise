@@ -15,7 +15,14 @@ export interface IUser extends Document {
     guestCount?: number;
     goals: string;
     preferredColorTheme?: string;
+    wantsBachelorParty?: boolean;
   };
+  sharedLinks?: Array<{
+    token: string;
+    accessLevel: 'view' | 'edit';
+    createdAt: Date;
+    expiresAt?: Date;
+  }>;
   createdAt: Date;
 }
 
@@ -39,6 +46,7 @@ const UserSchema = new Schema<IUser>(
       guestCount: Number,
       goals: String,
       preferredColorTheme: String,
+      wantsBachelorParty: Boolean,
     },
     sharedLinks: [
       {

@@ -8,6 +8,7 @@ import Location from './steps/Location';
 import Preferences from './steps/Preferences';
 import CeremonyDetails from './steps/CeremonyDetails';
 import Goals from './steps/Goals';
+import BachelorParty from './steps/BachelorParty';
 import Summary from './steps/Summary';
 
 interface OnboardingProps {
@@ -45,6 +46,7 @@ export interface OnboardingData {
   };
   goals: string;
   preferredColorTheme?: string;
+  wantsBachelorParty?: boolean;
 }
 
 export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProps) {
@@ -55,9 +57,10 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
     weddingStyle: '',
     topPriority: [],
     goals: '',
+    wantsBachelorParty: false,
   });
 
-  const totalSteps = 8;
+  const totalSteps = 9;
 
   const updateData = (newData: Partial<OnboardingData>) => {
     setData({ ...data, ...newData });
@@ -192,7 +195,16 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
           {step === 5 && <Preferences data={data} updateData={updateData} onNext={nextStep} onBack={prevStep} />}
           {step === 6 && <CeremonyDetails data={data} updateData={updateData} onNext={nextStep} onBack={prevStep} />}
           {step === 7 && <Goals data={data} updateData={updateData} onNext={nextStep} onBack={prevStep} />}
-          {step === 8 && <Summary data={data} onBack={prevStep} onComplete={handleComplete} />}
+          {step === 8 && (
+            <BachelorParty 
+              wantsBachelorParty={data.wantsBachelorParty || false} 
+              onChange={(value) => {
+                updateData({ wantsBachelorParty: value });
+                nextStep();
+              }} 
+            />
+          )}
+          {step === 9 && <Summary data={data} onBack={prevStep} onComplete={handleComplete} />}
         </div>
       </div>
       {offlineMode && !hideBanner && (

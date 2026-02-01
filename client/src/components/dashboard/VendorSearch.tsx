@@ -449,7 +449,7 @@ export default function VendorSearch() {
     { id: 'Planning', name: 'Wedding Planners' },
   ];
 
-  const filteredVendors = vendors.filter((vendor) => {
+  const filteredVendors = (Array.isArray(vendors) ? vendors : []).filter((vendor) => {
     const matchesSearch = vendor.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
                          vendor.specialties?.some(s => s.toLowerCase().includes(debouncedSearchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || vendor.category === selectedCategory;

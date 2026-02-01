@@ -238,19 +238,20 @@ export default function BudgetTracker() {
     }
   };
 
-  const totalBudget = categories.reduce((sum, cat) => sum + cat.estimatedAmount, 0);
-  const totalActual = categories.reduce((sum, cat) => sum + cat.actualAmount, 0);
-  const totalPaid = categories.reduce((sum, cat) => sum + cat.paid, 0);
+  const categoriesArray = Array.isArray(categories) ? categories : [];
+  const totalBudget = categoriesArray.reduce((sum, cat) => sum + cat.estimatedAmount, 0);
+  const totalActual = categoriesArray.reduce((sum, cat) => sum + cat.actualAmount, 0);
+  const totalPaid = categoriesArray.reduce((sum, cat) => sum + cat.paid, 0);
   const remaining = totalBudget - totalActual;
 
-  const pieData = categories.map((cat) => ({
+  const pieData = categoriesArray.map((cat) => ({
     name: cat.name,
     value: cat.actualAmount,
   }));
 
   const COLORS = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1', '#14b8a6'];
 
-  const barData = categories.map((cat) => ({
+  const barData = categoriesArray.map((cat) => ({
     name: cat.name,
     estimated: cat.estimatedAmount,
     actual: cat.actualAmount,

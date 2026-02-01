@@ -254,17 +254,17 @@ export default function GuestList() {
     XLSX.writeFile(workbook, 'wedding-guest-list.xlsx');
   };
 
-  const filteredGuests = guests.filter((guest) => {
+  const filteredGuests = (Array.isArray(guests) ? guests : []).filter((guest) => {
     const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || guest.rsvpStatus === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
   const stats = {
-    total: guests.length,
-    accepted: guests.filter((g) => g.rsvpStatus === 'accepted').length,
-    pending: guests.filter((g) => g.rsvpStatus === 'pending').length,
-    declined: guests.filter((g) => g.rsvpStatus === 'declined').length,
+    total: (Array.isArray(guests) ? guests : []).length,
+    accepted: (Array.isArray(guests) ? guests : []).filter((g) => g.rsvpStatus === 'accepted').length,
+    pending: (Array.isArray(guests) ? guests : []).filter((g) => g.rsvpStatus === 'pending').length,
+    declined: (Array.isArray(guests) ? guests : []).filter((g) => g.rsvpStatus === 'declined').length,
   };
 
   const getRsvpStatusColor = (status: string) => {

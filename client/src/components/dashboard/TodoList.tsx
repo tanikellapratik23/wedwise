@@ -197,7 +197,7 @@ export default function TodoList() {
     alert('To-dos saved locally');
   };
 
-  const filteredTodos = todos.filter((todo) => {
+  const filteredTodos = (Array.isArray(todos) ? todos : []).filter((todo) => {
     if (filter === 'active') return !todo.completed;
     if (filter === 'completed') return todo.completed;
     return true;
@@ -215,10 +215,10 @@ export default function TodoList() {
   });
 
   const stats = {
-    total: todos.length,
-    completed: todos.filter((t) => t.completed).length,
-    active: todos.filter((t) => !t.completed).length,
-    overdue: todos.filter((t) => !t.completed && t.dueDate && t.dueDate < new Date()).length,
+    total: (Array.isArray(todos) ? todos : []).length,
+    completed: (Array.isArray(todos) ? todos : []).filter((t) => t.completed).length,
+    active: (Array.isArray(todos) ? todos : []).filter((t) => !t.completed).length,
+    overdue: (Array.isArray(todos) ? todos : []).filter((t) => !t.completed && t.dueDate && t.dueDate < new Date()).length,
   };
 
   const getPriorityColor = (priority: string) => {
