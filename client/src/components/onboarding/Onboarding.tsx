@@ -108,12 +108,20 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
       const token = localStorage.getItem('token');
       // Save to server with proper timeout
       try {
-        await axios.post(`${API_URL}/api/onboarding`, data, {
+        console.log('Saving onboarding to backend:', `${API_URL}/api/onboarding`);
+        console.log('Token:', token ? `${token.slice(0, 20)}...` : 'NO TOKEN');
+        const result = await axios.post(`${API_URL}/api/onboarding`, data, {
           headers: { Authorization: `Bearer ${token}` },
           timeout: 10000,
         });
+        console.log('✅ Onboarding saved to backend:', result.data);
       } catch (err: any) {
-        console.warn('Server onboarding save failed but continuing:', err?.message || err);
+        console.error('❌ Server onboarding save failed:', {
+          message: err?.message,
+          status: err?.response?.status,
+          data: err?.response?.data,
+          url: `${API_URL}/api/onboarding`
+        });
       }
 
       // mark completed locally and navigate
