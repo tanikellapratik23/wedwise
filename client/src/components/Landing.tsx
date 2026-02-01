@@ -61,8 +61,19 @@ export default function Landing() {
   ];
   const [showHero, setShowHero] = useState(true);
   const [currentHero, setCurrentHero] = useState(0);
+  const [demoPlaying, setDemoPlaying] = useState(false);
 
+  // preload images and start carousel (start with preferred image first)
   useEffect(() => {
+    // prefer the side-view image first
+    const preferred = heroImages.findIndex((p) => p.includes('side-view-happy-man-proposing'));
+    if (preferred >= 0) setCurrentHero(preferred);
+
+    heroImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+
     if (!showHero) return;
     const r = setInterval(() => setCurrentHero((c) => (c + 1) % heroImages.length), 3000);
     // auto-stop hero carousel after 12s so page returns to pink background
@@ -105,8 +116,8 @@ export default function Landing() {
       </header>
 
       <main className="flex-1 flex items-center justify-center px-6">
-        <div className="max-w-6xl w-full grid md:grid-cols-2 gap-8 items-center">
-          <section className="space-y-6">
+        <div className={`max-w-6xl w-full grid gap-8 items-center ${demoPlaying ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
+          <section className={`${demoPlaying ? 'transform -translate-x-4 md:-translate-x-8 transition-transform duration-700 ease-in-out' : ''} space-y-6`}>
             <div className="text-4xl md:text-5xl font-extrabold leading-tight">
               <span className="block text-primary-700">{lines[step]}</span>
             </div>
@@ -114,9 +125,7 @@ export default function Landing() {
 
             <div className="flex gap-3">
               <Link to="/register" onClick={() => setShowHero(false)} className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold">Get started — it's free</Link>
-              <span onClick={() => setShowHero(false)}>
-                <DemoLauncher stopHero={() => setShowHero(false)} />
-              </span>
+              <DemoLauncher stopHero={() => setShowHero(false)} onStart={() => setDemoPlaying(true)} />
             </div>
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -125,7 +134,7 @@ export default function Landing() {
             </div>
           </section>
 
-          <aside className="bg-white/90 rounded-2xl shadow-xl p-6">
+          <aside className={`${demoPlaying ? 'transform -translate-x-4 md:-translate-x-8 transition-transform duration-700 ease-in-out' : ''} bg-white/90 rounded-2xl shadow-xl p-6`}>
             <h3 className="text-lg font-semibold mb-3">Onboarding Preview</h3>
             <div className="overflow-hidden rounded-md border p-2 bg-white">
               <OnboardingPreview />
@@ -140,6 +149,10 @@ export default function Landing() {
               </ul>
             </div>
           </aside>
+          {/* demo column - slides in when demoPlaying */}
+          <div className={`bg-white/95 rounded-2xl shadow-xl p-6 transition-all duration-700 ease-in-out ${demoPlaying ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6 pointer-events-none'}`}>
+            <DemoPlayer inline onClose={() => setDemoPlaying(false)} />
+          </div>
         </div>
       </main>
 
@@ -160,25 +173,23 @@ export default function Landing() {
   );
 }
 
-function DemoLauncher({ stopHero }: { stopHero?: () => void }) {
-  const [playing, setPlaying] = useState(false);
+function DemoLauncher({ stopHero, onStart }: { stopHero?: () => void; onStart?: () => void }) {
   return (
     <>
       <button
         onClick={() => {
           stopHero?.();
-          setPlaying(true);
+          onStart?.();
         }}
         className="px-6 py-3 bg-white text-primary-700 rounded-lg font-semibold border"
       >
         View demo
       </button>
-      {playing && <DemoPlayer onClose={() => setPlaying(false)} />}
     </>
   );
 }
 
-function DemoPlayer({ onClose }: { onClose: () => void }) {
+function DemoPlayer({ onClose, inline }: { onClose: () => void; inline?: boolean }) {
   // Demo shows a modal with the real onboarding components on the left
   // and a dashboard mock on the right. It auto-fills fields and advances.
   const [demoStep, setDemoStep] = useState(1);
@@ -216,8 +227,8 @@ function DemoPlayer({ onClose }: { onClose: () => void }) {
       timers.push(id);
     });
 
-    // auto-close after 30s
-    const finish = window.setTimeout(() => onClose(), 30_000) as unknown as number;
+    // auto-close after ~22s (user requested 20-25s)
+    const finish = window.setTimeout(() => onClose(), 22_000) as unknown as number;
     timers.push(finish);
 
     return () => timers.forEach((id) => clearTimeout(id));
@@ -227,15 +238,36 @@ function DemoPlayer({ onClose }: { onClose: () => void }) {
   const next = () => setDemoStep(s => Math.min(s + 1, 8));
   const back = () => setDemoStep(s => Math.max(s - 1, 1));
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60" />
-      <div className="relative max-w-5xl w-full mx-4 bg-white rounded-2xl p-6 shadow-xl grid md:grid-cols-2 gap-6">
-        <div>
-          <div className="flex items-start justify-between">
+  const container = (
+    <div className={`relative w-full bg-white rounded-2xl p-4 shadow-xl ${inline ? '' : 'max-w-5xl mx-4'}`}>
+      <div className={`grid md:grid-cols-2 gap-6`}>
+        </div>
+      </div>
+    );
+
+    if (inline) {
+      return (
+        <div className="h-full">
+          <div className="flex items-start justify-between mb-3">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Vivaha Demo — Onboarding</h2>
-              <p className="text-sm text-gray-600">Watch the onboarding run automatically</p>
+              <h2 className="text-lg font-bold text-gray-900">Vivaha Demo</h2>
+              <p className="text-sm text-gray-600">Auto-run onboarding to show how your dashboard gets populated.</p>
+            </div>
+            <button onClick={onClose} className="text-sm text-gray-500">Close</button>
+          </div>
+          {container}
+        </div>
+      );
+    }
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="relative max-w-5xl w-full mx-4">{container}</div>
+      </div>
+    );
+
+  }
             </div>
             <button onClick={onClose} className="text-sm text-gray-500">Close</button>
           </div>
