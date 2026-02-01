@@ -16,11 +16,9 @@ function App() {
   const BASENAME = ((import.meta.env.BASE_URL as string) || '/').replace(/\/$/, '') || '/';
 
   useEffect(() => {
-    // Check authentication status
+    // Check authentication status - simple: if token exists, user is authenticated
     const token = localStorage.getItem('token');
-    const onboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
     setIsAuthenticated(!!token);
-    setHasCompletedOnboarding(onboardingCompleted);
     
     // Check if admin from token
     if (token) {
@@ -28,31 +26,33 @@ function App() {
         const decoded = JSON.parse(atob(token.split('.')[1]));
         const isAdminUser = decoded.isAdmin || false;
         setIsAdmin(isAdminUser);
-        // Admins don't need onboarding
-        if (isAdminUser) {
-          setHasCompletedOnboarding(true);
-        }
+        // Admins always skip onboarding
+        setHasCompletedOnboarding(true);
       } catch (e) {
         setIsAdmin(false);
+        setHasCompletedOnboarding(true); // If authenticated, onboarding is done
       }
     }
   }, []);
 
-  // Listen for storage changes (e.g., when login updates localStorage in another part of the app)
+  // Listen for storage changes (e.g., when login updates localStorage)
   useEffect(() => {
     const handleStorageChange = () => {
       const token = localStorage.getItem('token');
-      const onboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
       setIsAuthenticated(!!token);
-      setHasCompletedOnboarding(onboardingCompleted);
       
       if (token) {
         try {
           const decoded = JSON.parse(atob(token.split('.')[1]));
           setIsAdmin(decoded.isAdmin || false);
+          setHasCompletedOnboarding(true);
         } catch (e) {
           setIsAdmin(false);
+          setHasCompletedOnboarding(true);
         }
+      } else {
+        setHasCompletedOnboarding(false);
+        setIsAdmin(false);
       }
     };
     

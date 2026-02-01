@@ -85,11 +85,23 @@ export default function BachelorDashboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.data) {
-        setTrip(response.data.data);
-        setAttendees(response.data.data.attendees || []);
-        setSelectedFlight(response.data.data.selectedFlight || null);
-        setSelectedStay(response.data.data.selectedStay || null);
+        const tripData = response.data.data;
+        setTrip(tripData);
+        setAttendees(tripData.attendees || []);
+        setSelectedFlight(tripData.selectedFlight || null);
+        setSelectedStay(tripData.selectedStay || null);
+        
+        // Update state variables from trip data so generateMockFlights/Stays uses correct location/date
+        if (tripData.tripDate) setTripDate(tripData.tripDate);
+        if (tripData.location?.state) setSelectedState(tripData.location.state);
+        if (tripData.location?.country) setSelectedCountry(tripData.location.country);
+        
         // Generate flights and stays for the trip
+        console.log('🎉 Fetched trip, generating flights/stays with:', {
+          tripDate: tripData.tripDate,
+          state: tripData.location?.state,
+          country: tripData.location?.country
+        });
         setFlights(generateMockFlights());
         setStays(generateMockStays());
       }
@@ -110,22 +122,40 @@ export default function BachelorDashboard() {
       { name: 'American', logo: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=300&fit=crop', code: 'AA' },
       { name: 'Southwest', logo: 'https://images.unsplash.com/photo-1513521399740-d52e2ff8e000?w=400&h=300&fit=crop', code: 'SW' },
     ];
-    return Array.from({ length: 4 }).map((_, i) => {
-      const airline = airlines[i];
-      const departureTime = new Date(new Date(tripDate).getTime() + i * 2 * 60 * 60 * 1000);
-      const arrivalTime = new Date(new Date(tripDate).getTime() + (i * 2 + 3) * 60 * 60 * 1000);
+    
+    try {
+      const baseDate = tripDate ? new Date(tripDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // Default to 1 week from now
       
-      return {
+      return Array.from({ length: 4 }).map((_, i) => {
+        const airline = airlines[i];
+        const departureTime = new Date(baseDate.getTime() + i * 2 * 60 * 60 * 1000);
+        const arrivalTime = new Date(baseDate.getTime() + (i * 2 + 3) * 60 * 60 * 1000);
+        
+        return {
+          id: `flight-${i}`,
+          airline: airline.name,
+          departure: departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          arrival: arrivalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          price: 250 + Math.random() * 300,
+          duration: '5h 30m',
+          image: airline.logo,
+          bookingUrl: `https://www.google.com/flights/search?tfs=CBwQAxoL${departureTime.toISOString().split('T')[0]}rAGgAQE&q=${selectedState || 'CA'}%20to%20${selectedCountry || 'US'}`
+        };
+      });
+    } catch (err) {
+      console.error('Error generating flights:', err);
+      // Fallback flights
+      return Array.from({ length: 4 }).map((_, i) => ({
         id: `flight-${i}`,
-        airline: airline.name,
-        departure: departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-        arrival: arrivalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        airline: ['United', 'Delta', 'American', 'Southwest'][i],
+        departure: '08:00 AM',
+        arrival: '11:00 AM',
         price: 250 + Math.random() * 300,
         duration: '5h 30m',
-        image: airline.logo,
-        bookingUrl: `https://www.google.com/flights/search?tfs=CBwQAxoL${departureTime.toISOString().split('T')[0]}rAGgAQE&q=${selectedState || 'CA'}%20to%20${selectedCountry || 'US'}`
-      };
-    });
+        image: 'https://images.unsplash.com/photo-1552881173-d3d42e0be9c3?w=400&h=300&fit=crop',
+        bookingUrl: `https://www.google.com/flights/search?q=${selectedState || 'CA'}%20to%20${selectedCountry || 'US'}`
+      }));
+    }
   };
 
   const generateMockStays = (): Stay[] => {
