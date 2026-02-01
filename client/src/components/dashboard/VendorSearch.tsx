@@ -95,18 +95,18 @@ export default function VendorSearch() {
   const toggleFavorite = async (vendorId: string, vendor: Vendor) => {
     try {
       const token = localStorage.getItem('token');
-      const isFavorite = favorites.includes(vendorId);
+      const isFavorite = (Array.isArray(favorites) ? favorites : []).includes(vendorId);
       
       if (isFavorite) {
         // Remove from favorites
-        const existingVendor = favoriteVendors.find(v => v.id === vendorId);
+        const existingVendor = (Array.isArray(favoriteVendors) ? favoriteVendors : []).find(v => v.id === vendorId);
         if (existingVendor?._id) {
           await axios.delete(`${API_URL}/api/vendors/${existingVendor._id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
         }
-        setFavorites(favorites.filter(id => id !== vendorId));
-        setFavoriteVendors(favoriteVendors.filter(v => v.id !== vendorId));
+        setFavorites((Array.isArray(favorites) ? favorites : []).filter(id => id !== vendorId));
+        setFavoriteVendors((Array.isArray(favoriteVendors) ? favoriteVendors : []).filter(v => v.id !== vendorId));
       } else {
         // Add to favorites
         const response = await axios.post(`${API_URL}/api/vendors`, {

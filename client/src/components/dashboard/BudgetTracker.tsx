@@ -146,7 +146,7 @@ export default function BudgetTracker() {
   };
 
   const updateCategoryAmount = async (id: string, field: 'actualAmount' | 'paid', value: number) => {
-    const category = categories.find(c => c.id === id || c._id === id);
+    const category = (Array.isArray(categories) ? categories : []).find(c => c.id === id || c._id === id);
     if (!category) return;
     
     const categoryId = category._id || id;

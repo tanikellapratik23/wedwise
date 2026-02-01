@@ -146,21 +146,21 @@ export default function GuestList() {
     try {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
-        const next = guests.filter(g => g.id !== id && g._id !== id);
+        const next = (Array.isArray(guests) ? guests : []).filter(g => g.id !== id && g._id !== id);
         setGuests(next);
         localStorage.setItem('guests', JSON.stringify(next));
         return;
       }
 
       const token = localStorage.getItem('token');
-      const guest = guests.find(g => g.id === id || g._id === id);
+      const guest = (Array.isArray(guests) ? guests : []).find(g => g.id === id || g._id === id);
       const guestId = guest?._id || id;
 
       await axios.delete(`${API_URL}/api/guests/${guestId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setGuests(guests.filter(g => g.id !== id && g._id !== id));
+      setGuests((Array.isArray(guests) ? guests : []).filter(g => g.id !== id && g._id !== id));
     } catch (error) {
       console.error('Failed to delete guest:', error);
       alert('Failed to delete guest');
@@ -179,7 +179,7 @@ export default function GuestList() {
       }
 
       const token = localStorage.getItem('token');
-      const guest = guests.find(g => g.id === id || g._id === id);
+      const guest = (Array.isArray(guests) ? guests : []).find(g => g.id === id || g._id === id);
       const guestId = guest?._id || id;
 
       const response = await axios.put(`${API_URL}/api/guests/${guestId}`, {

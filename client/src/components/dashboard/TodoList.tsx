@@ -34,7 +34,7 @@ export default function TodoList() {
   const [sortBy, setSortBy] = useState<'date' | 'priority'>('date');
 
   const toggleTodo = async (id: string) => {
-    const todo = todos.find(t => t.id === id || t._id === id);
+    const todo = (Array.isArray(todos) ? todos : []).find(t => t.id === id || t._id === id);
     if (!todo) return;
     const todoId = todo._id || id;
     const updated = { ...todo, completed: !todo.completed } as any;
