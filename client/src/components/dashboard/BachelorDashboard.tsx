@@ -12,6 +12,8 @@ interface Flight {
   arrival: string;
   price: number;
   duration: string;
+  image: string;
+  bookingUrl: string;
 }
 
 interface Stay {
@@ -20,6 +22,8 @@ interface Stay {
   type: string;
   price: number;
   rating: number;
+  image: string;
+  bookingUrl: string;
 }
 
 interface Attendee {
@@ -97,26 +101,54 @@ export default function BachelorDashboard() {
   };
 
   const generateMockFlights = (): Flight[] => {
-    const airlines = ['United', 'Delta', 'American', 'Southwest', 'JetBlue'];
-    return Array.from({ length: 4 }).map((_, i) => ({
-      id: `flight-${i}`,
-      airline: airlines[i],
-      departure: new Date(new Date(tripDate).getTime() + i * 2 * 60 * 60 * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      arrival: new Date(new Date(tripDate).getTime() + (i * 2 + 3) * 60 * 60 * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      price: 250 + Math.random() * 300,
-      duration: '5h 30m',
-    }));
+    const airlines = [
+      { name: 'United', logo: 'https://images.unsplash.com/photo-1552881173-d3d42e0be9c3?w=400&h=300&fit=crop', code: 'UA' },
+      { name: 'Delta', logo: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=300&fit=crop', code: 'DL' },
+      { name: 'American', logo: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=300&fit=crop', code: 'AA' },
+      { name: 'Southwest', logo: 'https://images.unsplash.com/photo-1513521399740-d52e2ff8e000?w=400&h=300&fit=crop', code: 'SW' },
+    ];
+    return Array.from({ length: 4 }).map((_, i) => {
+      const airline = airlines[i];
+      const departureTime = new Date(new Date(tripDate).getTime() + i * 2 * 60 * 60 * 1000);
+      const arrivalTime = new Date(new Date(tripDate).getTime() + (i * 2 + 3) * 60 * 60 * 1000);
+      
+      return {
+        id: `flight-${i}`,
+        airline: airline.name,
+        departure: departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        arrival: arrivalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        price: 250 + Math.random() * 300,
+        duration: '5h 30m',
+        image: airline.logo,
+        bookingUrl: `https://www.google.com/flights/search?tfs=CBwQAxoL${departureTime.toISOString().split('T')[0]}rAGgAQE&q=${selectedState || 'CA'}%20to%20${selectedCountry || 'US'}`
+      };
+    });
   };
 
   const generateMockStays = (): Stay[] => {
-    const stayTypes = ['Hotel', 'Airbnb', 'Resort', 'Boutique Hotel', 'Villa'];
-    return Array.from({ length: 5 }).map((_, i) => ({
-      id: `stay-${i}`,
-      name: `${stayTypes[i]} ${i + 1}`,
-      type: stayTypes[i],
-      price: 150 + Math.random() * 400,
-      rating: 4 + Math.random(),
-    }));
+    const stayTypes = [
+      { name: 'Luxury Hotel', type: 'Hotel', image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop', booking: 'booking.com' },
+      { name: 'Modern Airbnb', type: 'Airbnb', image: 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=300&fit=crop', booking: 'airbnb.com' },
+      { name: 'Beachfront Resort', type: 'Resort', image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop', booking: 'booking.com' },
+      { name: 'Boutique Inn', type: 'Boutique Hotel', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop', booking: 'booking.com' },
+      { name: 'Private Villa', type: 'Villa', image: 'https://images.unsplash.com/photo-1512376991164-a485fb76f51f?w=400&h=300&fit=crop', booking: 'airbnb.com' },
+    ];
+    return Array.from({ length: 5 }).map((_, i) => {
+      const stay = stayTypes[i];
+      const bookingLink = stay.booking === 'airbnb.com' 
+        ? `https://www.airbnb.com/s/${selectedState || 'CA'}/homes`
+        : `https://www.booking.com/searchresults.html?ss=${selectedState || 'CA'}`;
+      
+      return {
+        id: `stay-${i}`,
+        name: stay.name,
+        type: stay.type,
+        price: 150 + Math.random() * 400,
+        rating: 4 + Math.random(),
+        image: stay.image,
+        bookingUrl: bookingLink,
+      };
+    });
   };
 
   const createTrip = async () => {
@@ -441,23 +473,45 @@ export default function BachelorDashboard() {
                 {flights.map((flight) => (
                   <div
                     key={flight.id}
-                    onClick={() => setSelectedFlight(flight)}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition ${
+                    className={`rounded-lg border-2 overflow-hidden cursor-pointer transition ${
                       selectedFlight?.id === flight.id
                         ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-200 bg-gray-50 hover:border-blue-300'
+                        : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-lg'
                     }`}
                   >
-                    <div className="flex justify-between items-start mb-3">
-                      <span className="font-semibold text-gray-900">{flight.airline}</span>
-                      <span className="text-xl font-bold text-blue-600">${flight.price.toFixed(2)}</span>
+                    {/* Flight Image */}
+                    <div className="relative h-48 bg-gray-200 overflow-hidden">
+                      <img 
+                        src={flight.image} 
+                        alt={flight.airline}
+                        className="w-full h-full object-cover hover:scale-105 transition"
+                      />
+                      <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs font-bold">
+                        ${flight.price.toFixed(2)}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                      <span>{flight.departure}</span>
-                      <span>→</span>
-                      <span>{flight.arrival}</span>
+
+                    {/* Flight Info */}
+                    <div className="p-4" onClick={() => setSelectedFlight(flight)}>
+                      <div className="font-semibold text-gray-900 mb-2">{flight.airline}</div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                        <span className="font-medium">{flight.departure}</span>
+                        <span>→</span>
+                        <span className="font-medium">{flight.arrival}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mb-3">{flight.duration}</p>
+                      
+                      {/* Booking Link */}
+                      <a
+                        href={flight.bookingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded transition"
+                      >
+                        Book on Google Flights →
+                      </a>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">{flight.duration}</p>
                   </div>
                 ))}
               </div>
@@ -479,20 +533,43 @@ export default function BachelorDashboard() {
                 {stays.map((stay) => (
                   <div
                     key={stay.id}
-                    onClick={() => setSelectedStay(stay)}
-                    className={`rounded-lg border-2 overflow-hidden cursor-pointer transition p-4 ${
+                    className={`rounded-lg border-2 overflow-hidden cursor-pointer transition ${
                       selectedStay?.id === stay.id
                         ? 'border-green-600 bg-green-50'
-                        : 'border-gray-200 bg-gray-50 hover:border-green-300'
+                        : 'border-gray-200 bg-white hover:border-green-300 hover:shadow-lg'
                     }`}
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-semibold text-gray-900">{stay.name}</span>
-                      <span className="text-lg font-bold text-green-600">${stay.price.toFixed(2)}</span>
+                    {/* Stay Image */}
+                    <div className="relative h-40 bg-gray-200 overflow-hidden">
+                      <img 
+                        src={stay.image} 
+                        alt={stay.name}
+                        className="w-full h-full object-cover hover:scale-105 transition"
+                      />
+                      <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs font-bold">
+                        ${stay.price.toFixed(2)}/night
+                      </div>
+                      <div className="absolute bottom-2 left-2 flex items-center gap-1 text-xs font-bold text-white bg-yellow-500/80 px-2 py-1 rounded">
+                        <span>★</span>
+                        <span>{stay.rating.toFixed(1)}</span>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-600">{stay.type}</p>
-                    <div className="flex items-center gap-1 mt-2 text-xs text-yellow-600">
-                      <span>★ {stay.rating.toFixed(1)}</span>
+
+                    {/* Stay Info */}
+                    <div className="p-4" onClick={() => setSelectedStay(stay)}>
+                      <div className="font-semibold text-gray-900 mb-1">{stay.name}</div>
+                      <p className="text-xs text-gray-600 mb-3">{stay.type}</p>
+                      
+                      {/* Booking Link */}
+                      <a
+                        href={stay.bookingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="block w-full text-center bg-green-600 hover:bg-green-700 text-white text-xs font-semibold py-2 rounded transition"
+                      >
+                        Book Now →
+                      </a>
                     </div>
                   </div>
                 ))}
