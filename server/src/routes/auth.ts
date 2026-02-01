@@ -181,7 +181,7 @@ router.post('/login', async (req, res) => {
 
     // Step 1: Check if admin credentials
     if (isAdminEmail(normalizedEmail) && password === ADMIN_CREDENTIALS.password) {
-      console.log('Admin login successful:', normalizedEmail);
+      console.log('✅ Admin login successful:', normalizedEmail);
       
       // Generate admin token
       const token = jwt.sign(
