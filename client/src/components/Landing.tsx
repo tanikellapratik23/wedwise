@@ -127,12 +127,12 @@ export default function Landing() {
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center px-6">
-          <div
-            className={`max-w-6xl w-full grid gap-8 items-center ${demoPlaying ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}
-            style={demoPlaying ? { gridTemplateColumns: '1fr 1fr 1.4fr' } : undefined}
-          >
-          <section className={`${demoPlaying ? 'transform -translate-x-6 md:-translate-x-12 transition-transform duration-900 ease-in-out' : ''} space-y-6 col-span-1`}>
+      <main className="flex-1 flex items-center justify-center px-6 py-12">
+        <div
+          className={`max-w-6xl w-full grid gap-8 items-center justify-center ${demoPlaying ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}
+          style={demoPlaying ? { gridTemplateColumns: 'minmax(320px,1fr) minmax(320px,1fr) minmax(420px,1.4fr)' } : { gridTemplateColumns: 'minmax(360px,1fr) minmax(360px,1fr)' }}
+        >
+          <section className={`${demoPlaying ? 'transform -translate-x-6 md:-translate-x-12 transition-transform duration-900 ease-in-out' : ''} space-y-6 col-span-1 flex flex-col justify-center`}>
             <div className="text-4xl md:text-5xl font-extrabold leading-tight">
               <span className="block text-primary-700">{lines[step]}</span>
             </div>
