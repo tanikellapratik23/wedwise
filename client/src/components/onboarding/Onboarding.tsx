@@ -85,6 +85,14 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
       localStorage.setItem('onboardingCompleted', 'true');
       setHasCompletedOnboarding(true);
       navigate('/dashboard');
+      // fallback: if SPA navigation doesn't land on the dashboard (basename mismatch), force full reload
+      setTimeout(() => {
+        const base = import.meta.env.BASE_URL || '/';
+        const expected = base.replace(/\/$/, '') + '/dashboard';
+        if (!window.location.pathname.includes('/dashboard')) {
+          window.location.href = expected;
+        }
+      }, 250);
     } catch (error) {
       console.error('Onboarding save failed:', error);
       // Fallback for offline/demo mode: persist onboarding locally and continue
@@ -104,6 +112,14 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
       localStorage.setItem('onboardingCompleted', 'true');
       setHasCompletedOnboarding(true);
       navigate('/dashboard');
+      // fallback for offline/demo mode as well
+      setTimeout(() => {
+        const base = import.meta.env.BASE_URL || '/';
+        const expected = base.replace(/\/$/, '') + '/dashboard';
+        if (!window.location.pathname.includes('/dashboard')) {
+          window.location.href = expected;
+        }
+      }, 250);
     }
   };
 
@@ -129,6 +145,14 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
     localStorage.setItem('onboardingCompleted', 'true');
     setHasCompletedOnboarding(true);
     navigate('/dashboard');
+    // fallback for local flow
+    setTimeout(() => {
+      const base = import.meta.env.BASE_URL || '/';
+      const expected = base.replace(/\/$/, '') + '/dashboard';
+      if (!window.location.pathname.includes('/dashboard')) {
+        window.location.href = expected;
+      }
+    }, 250);
   };
 
   return (
