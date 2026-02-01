@@ -123,6 +123,17 @@ export default function MusicPlanner() {
     setNewPlaylist({ name: '', description: '', eventType: 'ceremony' });
   };
 
+  const savePlaylistsNow = () => {
+    // persist current playlists to localStorage
+    try {
+      localStorage.setItem('weddingPlaylists', JSON.stringify(playlists));
+      alert('Playlists saved locally');
+    } catch (e) {
+      console.error('Failed to save playlists', e);
+      alert('Failed to save playlists locally');
+    }
+  };
+
   const deletePlaylist = (id: string) => {
     const updated = playlists.filter(p => p.id !== id);
     savePlaylists(updated);
@@ -256,13 +267,22 @@ export default function MusicPlanner() {
           <h1 className="text-3xl font-bold text-gray-900">Sound & Music</h1>
           <p className="text-gray-500 mt-1">Create playlists for every moment of your wedding</p>
         </div>
-        <button
-          onClick={() => setShowNewPlaylist(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition font-medium"
-        >
-          <Plus className="w-5 h-5" />
-          New Playlist
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={savePlaylistsNow}
+            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition font-medium"
+            title="Save playlists locally"
+          >
+            Save
+          </button>
+          <button
+            onClick={() => setShowNewPlaylist(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition font-medium"
+          >
+            <Plus className="w-5 h-5" />
+            New Playlist
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
