@@ -79,7 +79,11 @@ function App() {
             path="/onboarding" 
             element={
               isAuthenticated ? (
-                <Onboarding setHasCompletedOnboarding={setHasCompletedOnboarding} />
+                isAdmin ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <Onboarding setHasCompletedOnboarding={setHasCompletedOnboarding} />
+                )
               ) : (
                 <Navigate to="/login" />
               )
@@ -89,8 +93,10 @@ function App() {
           <Route 
             path="/dashboard/*" 
             element={
-              isAuthenticated ? (
+              isAuthenticated && (isAdmin || hasCompletedOnboarding) ? (
                 <Dashboard isAdmin={isAdmin} />
+              ) : isAuthenticated ? (
+                <Navigate to="/onboarding" replace />
               ) : (
                 <Navigate to="/login" />
               )
@@ -101,7 +107,7 @@ function App() {
             path="/"
             element={
               isAuthenticated ? (
-                hasCompletedOnboarding ? (
+                isAdmin || hasCompletedOnboarding ? (
                   <Navigate to="/dashboard" />
                 ) : (
                   <Navigate to="/onboarding" />

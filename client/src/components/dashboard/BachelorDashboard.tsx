@@ -72,6 +72,11 @@ export default function BachelorDashboard() {
   const fetchTrip = async () => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        setError('No authentication token found. Please log in again.');
+        setLoading(false);
+        return;
+      }
       const response = await axios.get(`${API_URL}/api/bachelor-trip`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -81,8 +86,11 @@ export default function BachelorDashboard() {
         setSelectedFlight(response.data.data.selectedFlight || null);
         setSelectedStay(response.data.data.selectedStay || null);
       }
-    } catch (error) {
+      setError('');
+    } catch (error: any) {
       console.error('Failed to fetch trip:', error);
+      const errorMsg = error.response?.data?.error || error.message || 'Failed to load trip data';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
