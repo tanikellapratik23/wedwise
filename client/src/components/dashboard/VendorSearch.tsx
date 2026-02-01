@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, MapPin, Star, Phone, Mail, Globe, DollarSign, Filter, Loader, Heart } from 'lucide-react';
 import axios from 'axios';
 import LocationPermission from '../onboarding/steps/LocationPermission';
@@ -117,24 +117,78 @@ export default function VendorSearch() {
 
   const fetchVendors = async () => {
     setLoadingVendors(true);
+
+    const CACHE_TTL = 1000 * 60 * 60 * 12; // 12 hours
+    const getCacheKey = (city: string, state: string, category: string) => `vendorCache:${city}:${state}:${category}`;
+    const loadFromCache = (key: string) => {
+      try {
+        const raw = sessionStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (Date.now() - (parsed.ts || 0) > CACHE_TTL) {
+          sessionStorage.removeItem(key);
+          return null;
+        }
+        return parsed.vendors as Vendor[];
+      } catch (e) {
+        return null;
+      }
+    };
+    const saveToCache = (key: string, vendorsToSave: Vendor[]) => {
+      try {
+        sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), vendors: vendorsToSave }));
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    // protect against stale responses if fetchVendors is called again
+    const fetchId = (fetchVendors as any)._fetchId = ((fetchVendors as any)._fetchId || 0) + 1;
+
     try {
       const token = localStorage.getItem('token');
-      
-      // Try to get real Yelp vendors from backend
-      const categories = selectedCategory === 'all' 
+      const categories = selectedCategory === 'all'
         ? ['Photography', 'Venue', 'DJ', 'Catering', 'Flowers', 'Officiant', 'Planning']
         : [selectedCategory];
-      // Parallelize vendor fetch across categories to speed up load
-      const vendorsByCategory = await Promise.all(categories.map(async (category) => {
-        try {
-          const response = await axios.get(`${API_URL}/api/vendors/search`, {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { city: userCity, state: userState, category },
-            timeout: 10000,
-          });
 
+      // quick check: load cached combined results for all categories
+      if (selectedCategory === 'all') {
+        const combinedKey = getCacheKey(userCity, userState, 'all');
+        const cached = loadFromCache(combinedKey);
+        if (cached) {
+          setVendors(cached);
+          setLoadingVendors(false);
+          return;
+        }
+      }
+
+      // incremental parallel fetch: start all requests and apply results as they arrive
+      let collected: Vendor[] = [];
+
+      const requests = categories.map((category) => {
+        const cacheKey = getCacheKey(userCity, userState, category);
+        const cached = loadFromCache(cacheKey);
+        if (cached) {
+          // apply cached results immediately
+          collected = collected.concat(cached);
+          setVendors(prev => {
+            const merged = [...prev, ...cached];
+            // dedupe by id
+            const map = new Map<string, Vendor>();
+            merged.forEach(v => map.set(v.id, v));
+            return Array.from(map.values());
+          });
+          return Promise.resolve(cached);
+        }
+
+        return axios.get(`${API_URL}/api/vendors/search`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { city: userCity, state: userState, category },
+          timeout: 9000,
+        }).then((response) => {
+          if ((fetchVendors as any)._fetchId !== fetchId) return [] as Vendor[]; // stale
           if (response.data?.businesses && response.data.businesses.length > 0) {
-            return response.data.businesses.map((business: any) => ({
+            const mapped = response.data.businesses.map((business: any) => ({
               id: business.id,
               name: business.name,
               category,
@@ -150,21 +204,52 @@ export default function VendorSearch() {
               religiousAccommodations: [],
               image: business.image_url,
             } as Vendor));
+
+            // save per-category cache and apply immediately
+            saveToCache(cacheKey, mapped);
+            setVendors(prev => {
+              if ((fetchVendors as any)._fetchId !== fetchId) return prev;
+              const merged = [...prev, ...mapped];
+              const map = new Map<string, Vendor>();
+              merged.forEach(v => map.set(v.id, v));
+              return Array.from(map.values());
+            });
+            return mapped;
           }
-        } catch (err) {
-          // ignore and fallback below
-        }
+          return [] as Vendor[];
+        }).catch(() => {
+          // On error for this category, fallback to generated vendors for that category
+          const fallback = generateVendorsForCity(userCity, userState).filter(v => v.category === category);
+          saveToCache(cacheKey, fallback);
+          setVendors(prev => {
+            if ((fetchVendors as any)._fetchId !== fetchId) return prev;
+            const merged = [...prev, ...fallback];
+            const map = new Map<string, Vendor>();
+            merged.forEach(v => map.set(v.id, v));
+            return Array.from(map.values());
+          });
+          return fallback;
+        });
+      });
 
-        // fallback generated vendors for this category
-        return generateVendorsForCity(userCity, userState).filter(v => v.category === category);
-      }));
+      // Wait for all category requests to finish so we can optionally save combined cache
+      const results = await Promise.allSettled(requests);
+      if ((fetchVendors as any)._fetchId !== fetchId) return;
 
-      // flatten results
-      const flattened = vendorsByCategory.flat();
-      setVendors(flattened);
+      // flatten settled results
+      const final = ([] as Vendor[]).concat(...results.filter(r => r.status === 'fulfilled' && Array.isArray((r as any).value)).map(r => (r as any).value));
+
+      if (final.length === 0) {
+        // last-resort fallback
+        const gen = generateVendorsForCity(userCity, userState);
+        setVendors(gen);
+        if (selectedCategory === 'all') saveToCache(getCacheKey(userCity, userState, 'all'), gen);
+      } else {
+        // persist combined cache for 'all' for faster future loads
+        if (selectedCategory === 'all') saveToCache(getCacheKey(userCity, userState, 'all'), final);
+      }
     } catch (error) {
       console.error('Failed to fetch vendors:', error);
-      // final fallback: local generated vendors
       setVendors(generateVendorsForCity(userCity, userState));
     } finally {
       setLoadingVendors(false);
