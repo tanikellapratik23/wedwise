@@ -85,6 +85,7 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
   };
 
   const [offlineMode, setOfflineMode] = useState(false);
+  const [hideBanner, setHideBanner] = useState(false);
 
   useEffect(() => {
     setOfflineMode(localStorage.getItem('offlineMode') === 'true');
@@ -139,13 +140,13 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
           {step === 8 && <Summary data={data} onBack={prevStep} onComplete={handleComplete} />}
         </div>
       </div>
-      {offlineMode && (
+      {offlineMode && !hideBanner && (
         <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 z-50">
-          <div className="max-w-3xl mx-auto bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-3 flex items-center justify-between">
+          <div className="relative max-w-3xl mx-auto bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-3 flex items-center justify-between">
             <div className="text-sm">
               You're using the app without the server. Some features may be limited.
             </div>
-            <div>
+            <div className="flex items-center">
               <button
                 onClick={leaveOfflineMode}
                 className="ml-4 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-1 rounded-md text-sm"
@@ -159,6 +160,13 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
                 Auto-complete onboarding
               </button>
             </div>
+            <button
+              aria-label="Dismiss banner"
+              onClick={() => setHideBanner(true)}
+              className="absolute top-2 right-3 text-yellow-800 hover:text-yellow-900"
+            >
+              ✕
+            </button>
           </div>
         </div>
       )}
