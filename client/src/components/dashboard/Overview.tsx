@@ -91,6 +91,44 @@ export default function Overview() {
       }
     } catch (error) {
       console.error('Failed to fetch user settings:', error);
+      // Fallback to local onboarding data if available
+      try {
+        const localOnboarding = JSON.parse(localStorage.getItem('onboarding') || 'null');
+        const data = localOnboarding || JSON.parse(localStorage.getItem('user') || 'null');
+        if (data) {
+          setUserSettings(data);
+          setStats(prev => ({
+            ...prev,
+            totalGuests: data.guestCount || 0,
+            confirmedGuests: 0,
+            totalBudget: data.estimatedBudget || 0,
+            spent: 0,
+            completedTasks: 0,
+            totalTasks: 0,
+          }));
+
+          if (data.weddingDate) {
+            const weddingDateTime = new Date(data.weddingDate);
+            if (data.weddingTime) {
+              const [hours, minutes] = data.weddingTime.split(':');
+              weddingDateTime.setHours(parseInt(hours), parseInt(minutes));
+            }
+            const now = new Date();
+            const diffMs = weddingDateTime.getTime() - now.getTime();
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            setStats(prev => ({
+              ...prev,
+              daysUntilWedding: diffDays > 0 ? diffDays : 0,
+              hoursUntilWedding: diffHours > 0 ? diffHours : 0,
+              minutesUntilWedding: diffMinutes > 0 ? diffMinutes : 0,
+            }));
+          }
+        }
+      } catch (e) {
+        // ignore fallback errors
+      }
     }
   };
 
@@ -219,7 +257,7 @@ export default function Overview() {
         <StatCard
           icon={DollarSign}
           label="Budget Used"
-          value={`${Math.round((stats.spent / stats.totalBudget) * 100)}%`}
+          value={stats.totalBudget > 0 ? `${Math.round((stats.spent / stats.totalBudget) * 100)}%` : '—'}
           color="bg-green-100 text-green-600"
         />
         <StatCard

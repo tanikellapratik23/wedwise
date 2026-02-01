@@ -68,6 +68,14 @@ export default function VendorSearch() {
       }
     } catch (error) {
       console.error('Failed to fetch favorites:', error);
+      // Fallback to local favorites if available
+      try {
+        const localFavs = JSON.parse(localStorage.getItem('favoriteVendors') || '[]');
+        setFavoriteVendors(localFavs);
+        setFavorites(localFavs.map((v: Vendor) => v.id));
+      } catch (e) {
+        // ignore
+      }
     }
   };
 
@@ -158,6 +166,7 @@ export default function VendorSearch() {
       setVendors(allVendors);
     } catch (error) {
       console.error('Failed to fetch vendors:', error);
+      // final fallback: local generated vendors
       setVendors(generateVendorsForCity(userCity, userState));
     } finally {
       setLoadingVendors(false);
@@ -186,6 +195,26 @@ export default function VendorSearch() {
       }
     } catch (error) {
       console.error('Failed to fetch user location:', error);
+      // Fallback: try to read onboarding from localStorage
+      try {
+        const localOnboarding = JSON.parse(localStorage.getItem('onboarding') || 'null');
+        if (localOnboarding) {
+          setUserCity(localOnboarding.weddingCity || '');
+          setUserState(localOnboarding.weddingState || '');
+          setUserReligions(localOnboarding.religions || []);
+          if (!localOnboarding.weddingCity) setShowLocationPrompt(true);
+        } else {
+          const user = JSON.parse(localStorage.getItem('user') || 'null');
+          if (user && user.city) {
+            setUserCity(user.city);
+            setUserState(user.state || '');
+          } else {
+            setShowLocationPrompt(true);
+          }
+        }
+      } catch (e) {
+        setShowLocationPrompt(true);
+      }
     } finally {
       setLoading(false);
     }
