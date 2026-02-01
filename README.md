@@ -21,34 +21,7 @@
 - **MongoDB** - Database
 
 
-- **Mongoose** - ODM
 
-- 
-├── client/                 # Frontend React application
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── auth/      # Login & Register
-│   │   │   ├── onboarding/  # Onboarding flow
-│   │   │   └── dashboard/   # Main features
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   ├── index.html
-│   └── package.json
-│
-├── server/                # Backend Node.js API
-│   ├── src/
-│   │   ├── models/       # MongoDB models
-│   │   ├── routes/       # API routes
-│   │   ├── middleware/   # Auth middleware
-│   │   └── index.ts
-│   └── package.json
-│
-├── shared/               # Shared TypeScript types
-│   └── src/
-│       └── types.ts
-│
-└── README.md
-```
 
 ## Getting Started
 
