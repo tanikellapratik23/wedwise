@@ -23,15 +23,27 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // apply OS-level dark mode preference to document root
+    // Respect explicit user preference stored in localStorage, otherwise follow OS setting
     const applyPref = () => {
+      const stored = localStorage.getItem('theme'); // 'light' | 'dark' | null
+      if (stored === 'dark') {
+        document.documentElement.classList.add('dark');
+        return;
+      }
+      if (stored === 'light') {
+        document.documentElement.classList.remove('dark');
+        return;
+      }
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (prefersDark) document.documentElement.classList.add('dark');
       else document.documentElement.classList.remove('dark');
     };
     applyPref();
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = () => applyPref();
+    const handler = () => {
+      // only follow system changes when user hasn't set explicit preference
+      if (!localStorage.getItem('theme')) applyPref();
+    };
     if (mq.addEventListener) mq.addEventListener('change', handler);
     else mq.addListener(handler as any);
     return () => {

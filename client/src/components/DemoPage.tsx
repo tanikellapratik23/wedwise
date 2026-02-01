@@ -61,8 +61,18 @@ export default function DemoPage() {
               <p className="text-xs text-white/80">Your Wedding Planner</p>
             </div>
           </div>
-          <nav className="space-x-3">
+          <nav className="flex items-center gap-3">
             <button onClick={() => navigate('/')} className="px-4 py-2 bg-white/90 text-primary-700 rounded-md font-medium">Back to Home</button>
+            <button
+              aria-label="Toggle theme"
+              onClick={() => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+              }}
+              className="px-3 py-2 rounded-md bg-white/90 text-primary-700 border ml-2"
+            >
+              Theme
+            </button>
           </nav>
         </div>
       </header>

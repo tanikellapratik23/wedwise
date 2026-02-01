@@ -130,53 +130,62 @@ export default function Landing() {
               <p className="text-xs text-white/80">Your Wedding Planner</p>
             </div>
           </div>
-          <nav className="space-x-3">
+          <nav className="flex items-center gap-3">
             <Link to="/login" className="px-4 py-2 bg-white/90 text-primary-700 rounded-md font-medium">Log in</Link>
             <Link to="/register" className="px-4 py-2 bg-primary-600 text-white rounded-md font-medium">Sign up</Link>
+            <button
+              aria-label="Toggle theme"
+              onClick={() => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+              }}
+              className="px-3 py-2 rounded-md bg-white/90 text-primary-700 border ml-2"
+            >
+              Theme
+            </button>
           </nav>
         </div>
       </header>
-
       <main className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full flex justify-center">
-          <div className="w-full max-w-4xl mx-auto px-4">
-            <div className="bg-white/95 dark:bg-gray-900/95 dark:text-gray-100 rounded-2xl shadow-xl p-8">
-              <div className="flex flex-col md:flex-row gap-8 items-center justify-center">
-                <section className={`space-y-6 flex flex-col items-center w-full max-w-[520px] mx-auto ${demoPlaying ? 'justify-start' : 'justify-center'}`}>
-            <div className="text-4xl md:text-5xl font-extrabold leading-tight">
-              <span className="block text-primary-700">{lines[step]}</span>
-            </div>
-            <p className="text-gray-700 text-lg">Vivaha helps you manage guests, budget, vendors and ceremony details — all in one beautiful dashboard.</p>
+        <div className="w-full max-w-5xl mx-auto flex items-center justify-center">
+          <div className="w-full flex flex-col md:flex-row gap-8 items-stretch justify-center">
+            <div className="bg-white/95 dark:bg-gray-800 rounded-2xl shadow-xl p-6 w-full md:w-1/2 max-w-[520px] flex flex-col justify-center items-start min-w-0">
+              <div className="w-full">
+                <div className="text-4xl md:text-5xl font-extrabold leading-tight mb-3">
+                  <span className="block text-primary-700">{lines[step]}</span>
+                </div>
+                <p className="text-gray-700 dark:text-gray-200 text-lg mb-4">Vivaha helps you manage guests, budget, vendors and ceremony details — all in one beautiful dashboard.</p>
 
-            <div className="flex gap-3">
-              <Link to="/register" onClick={() => setShowHero(false)} className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold">Get started — it's free</Link>
-              <DemoLauncher stopHero={() => setShowHero(false)} />
-            </div>
+                <div className="flex gap-3 mb-4">
+                  <Link to="/register" onClick={() => setShowHero(false)} className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold">Get started — it's free</Link>
+                  <DemoLauncher stopHero={() => setShowHero(false)} />
+                </div>
 
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Feature title="Fast Onboarding" desc="Answer a few quick questions and we customize your dashboard instantly." />
-              <Feature title="Autosave & Backup" desc="Automatic local saves and exportable backups (JSON + Word)." />
-            </div>
-            </section>
-
-            <aside className={`bg-white/90 rounded-2xl shadow-xl p-6 max-h-[86vh] overflow-hidden flex flex-col justify-center w-full max-w-[520px] mx-auto min-w-0`}>
-            <h3 className="text-lg font-semibold mb-3">Onboarding Preview</h3>
-            <div className="overflow-hidden rounded-md border p-2 bg-white">
-              <OnboardingPreview />
+                <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                  <Feature title="Fast Onboarding" desc="Answer a few quick questions and we customize your dashboard instantly." />
+                  <Feature title="Autosave & Backup" desc="Automatic local saves and exportable backups (JSON + Word)." />
+                </div>
+              </div>
             </div>
 
-            <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-700">How it helps</h4>
-              <ul className="mt-3 space-y-2 text-sm text-gray-600">
-                <li>We ask a few quick questions (role, religion, location, date).</li>
-                <li>We use your location to suggest nearby vendors (photographers, DJs, venues).</li>
-                <li>Favorites and saved vendors show up instantly on your dashboard.</li>
-              </ul>
+            <div className="bg-white/95 dark:bg-gray-800 rounded-2xl shadow-xl p-6 w-full md:w-1/2 max-w-[520px] flex flex-col justify-center items-start min-w-0">
+              <h3 className="text-lg font-semibold mb-3">Onboarding Preview</h3>
+              <div className="overflow-hidden rounded-md border p-2 bg-white dark:bg-gray-700 w-full mb-4">
+                <OnboardingPreview />
+              </div>
+
+              <div className="mt-2 w-full">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200">How it helps</h4>
+                <ul className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                  <li>We ask a few quick questions (role, religion, location, date).</li>
+                  <li>We use your location to suggest nearby vendors (photographers, DJs, venues).</li>
+                  <li>Favorites and saved vendors show up instantly on your dashboard.</li>
+                </ul>
+              </div>
             </div>
-            </aside>
           </div>
         </div>
-      </div>
+      </main>
     </div>
         {/* demo is rendered below the two boxes when playing */}
 
