@@ -4,12 +4,20 @@ on:
   push:
     branches: [ main ]
 
+# Grant write permission so the workflow can push the built site to gh-pages
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # ensure the checkout step leaves the GITHUB_TOKEN credentials available
+          persist-credentials: true
+          fetch-depth: 0
 
       - name: Use Node.js 18
         uses: actions/setup-node@v4
