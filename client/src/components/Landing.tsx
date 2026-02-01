@@ -389,30 +389,52 @@ function DemoPlayer({ onClose, inline }: { onClose: () => void; inline?: boolean
 
         <div className="min-w-0 md:w-3/5 pl-3">
           <h3 className="text-lg font-semibold mb-3">Dashboard Preview</h3>
-          <div className="bg-gray-50 rounded-xl p-4 space-y-4">
+          <div className="bg-gray-50 rounded-xl p-4 space-y-4 max-h-[44vh] overflow-auto">
             <div className="p-3 bg-white rounded-md border">
-              <div className="text-xs text-gray-500">Location</div>
+              <div className="text-xs text-gray-500">Wedding Location</div>
               <div className="text-lg font-bold">{data.weddingCity || 'San Francisco'}, {data.weddingState || 'CA'}</div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 bg-primary-50 rounded-md">
-                <div className="text-xs text-gray-500">Guests</div>
+                <div className="text-xs text-gray-500">Total Guests</div>
                 <div className="text-2xl font-bold">{data.guestCount || 120}</div>
               </div>
-              <div className="p-3 bg-white rounded-md border">
+              <div className="p-3 bg-green-50 rounded-md">
                 <div className="text-xs text-gray-500">Budget</div>
                 <div className="text-2xl font-bold">${(data.estimatedBudget || 15000).toLocaleString()}</div>
               </div>
             </div>
 
             <div className="p-3 bg-white rounded-md border">
-              <div className="text-xs text-gray-500">Favorites</div>
-              <div className="mt-2">SF Elite Photography · Grand SF Ballroom</div>
+              <div className="text-xs text-gray-500 font-semibold">Quick Stats</div>
+              <div className="mt-2 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Role:</span>
+                  <span className="font-medium">{data.role === 'self' ? 'Getting Married' : data.role || 'Parent'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Goal:</span>
+                  <span className="font-medium text-primary-600 truncate">{data.goals || 'Beautiful celebration'}</span>
+                </div>
+              </div>
             </div>
 
-            {showDashboard && (
-              <div className="p-3 bg-green-50 rounded-md border border-green-100 text-green-700">
-                Demo complete — this is how your dashboard will look.
+            {showDashboard ? (
+              <div className="p-4 bg-gradient-to-r from-primary-50 to-green-50 rounded-md border-2 border-primary-200 space-y-3">
+                <div className="font-semibold text-primary-900">✓ Dashboard Ready!</div>
+                <div className="text-sm text-gray-700 space-y-2">
+                  <div>• Guest list management enabled</div>
+                  <div>• Budget tracking configured</div>
+                  <div>• Vendor search for {data.weddingCity || 'your location'}</div>
+                  <div>• Task management active</div>
+                </div>
+                <div className="pt-2 text-xs text-gray-600 font-medium">
+                  Sign up now to access your personalized wedding planning dashboard!
+                </div>
+              </div>
+            ) : (
+              <div className="p-3 bg-blue-50 rounded-md border border-blue-200 text-blue-800 text-sm">
+                Completing onboarding... Your dashboard will appear here
               </div>
             )}
           </div>

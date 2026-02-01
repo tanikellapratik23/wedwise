@@ -161,7 +161,70 @@ export const exportPlaylistToCSV = (playlist: any[]) => {
 };
 
 /**
- * Export seating chart to CSV
+ * Export seating chart to Excel (.xlsx) format
+ * Creates a workbook with one sheet per table
+ */
+export const exportSeatingToExcel = (tables: any[]) => {
+  const XLSX = require('xlsx');
+  
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+  
+  // Create summary sheet
+  const summaryData = tables.map((table, index) => ({
+    'Table #': index + 1,
+    'Table Name': table.name,
+    'Capacity': table.capacity,
+    'Guests Assigned': table.guests?.length || 0,
+    'Empty Seats': (table.capacity - (table.guests?.length || 0)),
+    'Guest Names': table.guests?.map((g: any) => g.name).join('; ') || ''
+  }));
+  
+  const summarySheet = XLSX.utils.json_to_sheet(summaryData);
+  summarySheet['!cols'] = [
+    { wch: 8 },  // Table #
+    { wch: 15 }, // Table Name
+    { wch: 10 }, // Capacity
+    { wch: 15 }, // Guests Assigned
+    { wch: 12 }, // Empty Seats
+    { wch: 40 }  // Guest Names
+  ];
+  XLSX.utils.book_append_sheet(workbook, summarySheet, 'Seating Summary');
+  
+  // Create individual sheet for each table
+  tables.forEach((table, index) => {
+    const tableData = (table.guests || []).map((guest: any, guestIndex: number) => ({
+      'Seat #': guestIndex + 1,
+      'Guest Name': guest.name,
+      'Notes': ''
+    }));
+    
+    // Add empty rows for empty seats
+    const emptySeats = (table.capacity - (table.guests?.length || 0));
+    for (let i = 0; i < emptySeats; i++) {
+      tableData.push({
+        'Seat #': (table.guests?.length || 0) + i + 1,
+        'Guest Name': '',
+        'Notes': ''
+      });
+    }
+    
+    const sheet = XLSX.utils.json_to_sheet(tableData);
+    sheet['!cols'] = [
+      { wch: 10 }, // Seat #
+      { wch: 25 }, // Guest Name
+      { wch: 30 }  // Notes
+    ];
+    
+    XLSX.utils.book_append_sheet(workbook, sheet, `${table.name || `Table ${index + 1}`}`);
+  });
+  
+  // Save the workbook
+  XLSX.writeFile(workbook, `seating-chart-${Date.now()}.xlsx`);
+};
+
+/**
+ * Export seating chart to CSV (legacy)
  */
 export const exportSeatingToCSV = (seatingData: any) => {
   const columns = ['Table Number', 'Guests', 'Total Seats', 'Notes'];
