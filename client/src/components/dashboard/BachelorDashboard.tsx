@@ -335,7 +335,7 @@ export default function BachelorDashboard() {
               </button>
             </div>
             <div className="space-y-2">
-              {trip.attendees.map((attendee, index) => (
+              {(Array.isArray(trip.attendees) ? trip.attendees : []).map((attendee, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                   <div>
                     <p className="font-medium text-gray-900">{attendee.name}</p>

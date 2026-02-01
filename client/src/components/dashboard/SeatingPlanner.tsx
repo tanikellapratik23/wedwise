@@ -112,7 +112,7 @@ export default function SeatingPlanner() {
           </div>
 
           <div className="border-2 border-gray-200 rounded-xl bg-gray-50 relative" style={{ height: '500px' }}>
-            {tables.map((table) => (
+            {(Array.isArray(tables) ? tables : []).map((table) => (
               <div
                 key={table.id}
                 className="absolute bg-white border-2 border-primary-300 rounded-lg shadow-lg cursor-move hover:shadow-xl transition"
@@ -161,7 +161,7 @@ export default function SeatingPlanner() {
               Unassigned Guests ({unassignedGuests.length})
             </h2>
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {unassignedGuests.map((guest) => (
+              {(Array.isArray(unassignedGuests) ? unassignedGuests : []).map((guest) => (
                 <div
                   key={guest.id}
                   className="p-3 bg-gray-50 hover:bg-primary-50 rounded-lg cursor-move border border-transparent hover:border-primary-300 transition"
@@ -176,7 +176,7 @@ export default function SeatingPlanner() {
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Tables</h2>
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {tables.map((table) => (
+              {(Array.isArray(tables) ? tables : []).map((table) => (
                 <div key={table.id} className="border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-gray-900">{table.name}</h3>
@@ -187,7 +187,7 @@ export default function SeatingPlanner() {
                   
                   {table.guests.length > 0 ? (
                     <div className="space-y-1">
-                      {table.guests.map((guest) => (
+                      {(Array.isArray(table.guests) ? table.guests : []).map((guest) => (
                         <div
                           key={guest.id}
                           className="text-sm text-gray-600 flex items-center justify-between py-1"

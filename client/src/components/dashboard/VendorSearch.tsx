@@ -789,7 +789,7 @@ export default function VendorSearch() {
                 <div className="mb-4">
                   <p className="text-sm font-medium text-gray-700 mb-2">Specialties:</p>
                   <div className="flex flex-wrap gap-2">
-                    {vendor.specialties.map((specialty, index) => (
+                    {(Array.isArray(vendor.specialties) ? vendor.specialties : []).map((specialty, index) => (
                       <span
                         key={index}
                         className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full"
