@@ -173,9 +173,11 @@ export default function Landing() {
                 <li>Favorites and saved vendors show up instantly on your dashboard.</li>
               </ul>
             </div>
-            </div>
+            </aside>
           </div>
         </div>
+      </div>
+    </div>
         {/* demo is rendered below the two boxes when playing */}
 
         {/* Demo container: appears below the two centered boxes when playing */}
