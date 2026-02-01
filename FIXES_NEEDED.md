@@ -1,7 +1,7 @@
 # URGENT FIXES NEEDED
 
 ## Critical Issues Summary
-Your WedWise app is deployed but has several functionality issues that need fixing:
+Your Vivaha app is deployed but has several functionality issues that need fixing:
 
 ### 1. Login/Register Freeze ✅ PARTIAL FIX
 **Issue**: Page freezes when submitting
@@ -50,7 +50,7 @@ Your WedWise app is deployed but has several functionality issues that need fixi
 
 ## Recommendation
 The app needs significant backend work. Current deployment:
-- ✅ Frontend: https://tanikellapratik23.github.io/wedwise/
+ - ✅ Frontend: https://tanikellapratik23.github.io/vivaha/
 - ✅ Backend: https://wedwise-kllf.onrender.com
 - ✅ Database: MongoDB Atlas connected
 

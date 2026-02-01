@@ -771,7 +771,7 @@ export default function VendorSearch() {
         <div className="bg-gradient-to-r from-primary-500 to-purple-600 rounded-xl p-6 text-white">
           <h3 className="text-xl font-bold mb-2">Special Offers in {userCity}!</h3>
           <p className="text-primary-100 mb-4">
-            Local vendors are offering exclusive discounts for WedWise users. Contact them today and mention this offer!
+            Local vendors are offering exclusive discounts for Vivaha users. Contact them today and mention this offer!
           </p>
           <button className="px-6 py-2 bg-white text-primary-600 font-semibold rounded-lg hover:bg-primary-50 transition">
             View All Local Offers

@@ -1,4 +1,4 @@
-# WedWise - Complete Wedding Planning Platform
+# Vivaha - Complete Wedding Planning Platform
 
 ## 🎉 New Features Added
 

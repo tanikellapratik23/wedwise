@@ -1,7 +1,7 @@
 # Vendor API Integration Guide
 
 ## Current Status
-WedWise currently uses Google Maps search links for vendor discovery. Each vendor card links directly to a Google Maps search for that specific vendor type in the user's city.
+Vivaha currently uses Google Maps search links for vendor discovery. Each vendor card links directly to a Google Maps search for that specific vendor type in the user's city.
 
 ## Real API Integration (Optional Enhancement)
 

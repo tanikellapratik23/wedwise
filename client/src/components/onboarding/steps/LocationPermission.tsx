@@ -35,7 +35,7 @@ export default function LocationPermission({ onLocationDetected, onSkip }: Locat
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
             {
               headers: {
-                'User-Agent': 'WedWise Wedding Planner'
+                'User-Agent': 'Vivaha Wedding Planner'
               }
             }
           );

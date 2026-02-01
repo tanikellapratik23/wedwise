@@ -110,8 +110,8 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
               <Heart className="w-12 h-12" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">WedWise</h1>
-          <p className="text-gray-600">Welcome back! Sign in to continue planning</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Vivaha</h1>
+          <p className="text-gray-600">Plan your wedding like a pro</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">

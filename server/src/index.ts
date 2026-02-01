@@ -35,7 +35,7 @@ app.use('/api/sharing', sharingRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'WedWise API is running' });
+  res.json({ status: 'ok', message: 'Vivaha API is running' });
 });
 
 // MongoDB connection

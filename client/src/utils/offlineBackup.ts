@@ -34,7 +34,7 @@ export function collectBackup(): BackupShape {
   };
 }
 
-export function downloadBackupFile(filename = 'wedwise-backup.json') {
+export function downloadBackupFile(filename = 'vivaha-backup.json') {
   const data = collectBackup();
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -47,11 +47,11 @@ export function downloadBackupFile(filename = 'wedwise-backup.json') {
   URL.revokeObjectURL(url);
 }
 
-export function downloadBackupAsDoc(filename = 'wedwise-backup.doc') {
+export function downloadBackupAsDoc(filename = 'vivaha-backup.doc') {
   const data = collectBackup();
   // Create a simple HTML representation which Word can open as a document
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>WedWise Backup</title></head><body>` +
-    `<h1>WedWise Backup</h1><p>Created: ${data.meta.createdAt}</p>` +
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Vivaha Backup</title></head><body>` +
+    `<h1>Vivaha Backup</h1><p>Created: ${data.meta.createdAt}</p>` +
     `<h2>User</h2><pre>${escapeHtml(JSON.stringify(data.user, null, 2) || 'No user data')}</pre>` +
     `<h2>Onboarding Completed</h2><p>${String(data.onboardingCompleted)}</p>` +
     `<h2>Guests</h2><pre>${escapeHtml(JSON.stringify(data.guests, null, 2) || 'No guests')}</pre>` +

@@ -1,4 +1,4 @@
-# WedWise - Wedding Planning Website
+# Vivaha - Wedding Planning Website
 
 ## Project Overview
 Full-stack wedding planning web application with personalized onboarding and comprehensive planning features.

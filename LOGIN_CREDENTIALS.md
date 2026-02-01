@@ -1,8 +1,8 @@
-# 🔐 WedWise Login Credentials
+# 🔐 Vivaha Login Credentials
 
 ## Working Test Account
 
-Use these credentials to log in to your WedWise application:
+Use these credentials to log in to your Vivaha application:
 
 **📧 Email:** `test@wedwise.com`  
 **🔒 Password:** `password123`

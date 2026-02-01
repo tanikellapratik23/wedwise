@@ -40,4 +40,4 @@ The admin account has:
 ## Login URL
 
 - **Local:** http://localhost:5175/login
-- **Production:** https://tanikellapratik23.github.io/wedwise/login
+- **Production:** https://tanikellapratik23.github.io/vivaha/login

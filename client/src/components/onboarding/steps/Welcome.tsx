@@ -14,8 +14,8 @@ export default function Welcome({ onNext }: WelcomeProps) {
       </div>
 
       <div className="space-y-3">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-          Hi! Welcome to WedWise 😊
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+            Hi! Welcome to Vivaha 😊
         </h1>
         <p className="text-xl text-gray-600">
           Your personalized wedding planning companion

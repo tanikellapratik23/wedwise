@@ -1,4 +1,4 @@
-# WedWise Deployment Guide
+# Vivaha Deployment Guide
 
 ## 🚀 Quick Deploy
 
@@ -7,7 +7,7 @@
 2. Under "Build and deployment":
    - Source: GitHub Actions
 3. Push to main branch - auto deploys!
-4. Your site will be at: `https://YOUR_USERNAME.github.io/wedwise/`
+4. Your site will be at: `https://YOUR_USERNAME.github.io/vivaha/`
 
 ### Backend (Render) - FREE
 1. Go to https://render.com and sign up (free)
@@ -26,7 +26,7 @@
      - `YELP_API_KEY`: Your Yelp API key
 
 5. Click "Create Web Service"
-6. Copy your backend URL (e.g., `https://wedwise-api.onrender.com`)
+6. Copy your backend URL (e.g., `https://your-backend.onrender.com`)
 
 ### Update Frontend to Use Deployed Backend
 After deploying backend to Render, update:

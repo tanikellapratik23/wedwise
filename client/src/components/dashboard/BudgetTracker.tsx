@@ -174,7 +174,7 @@ export default function BudgetTracker() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'wedwise-budget.json';
+    a.download = 'vivaha-budget.json';
     document.body.appendChild(a);
     a.click();
     a.remove();

@@ -305,7 +305,7 @@ export default function CeremonyDetails({ data, updateData, onNext, onBack }: Ce
       <div className="bg-green-50 rounded-xl p-4 text-sm text-green-900">
         <p>
           🌈 <strong>We celebrate all love:</strong> Whether you're having a religious, secular, interfaith,
-          cultural, LGBTQ+, or any other type of ceremony, WedWise is here to support your unique celebration.
+          cultural, LGBTQ+, or any other type of ceremony, Vivaha is here to support your unique celebration.
         </p>
       </div>
 

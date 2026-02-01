@@ -75,7 +75,7 @@ export default function Dashboard() {
                 <Heart className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">WedWise</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Vivaha</h1>
                 <p className="text-sm text-gray-500">Your Wedding Planner</p>
               </div>
             </div>

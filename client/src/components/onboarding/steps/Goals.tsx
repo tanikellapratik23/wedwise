@@ -51,7 +51,7 @@ export default function Goals({ data, updateData, onNext, onBack }: GoalsProps) 
             <Target className="w-10 h-10" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900">What do you want most from WedWise?</h2>
+        <h2 className="text-3xl font-bold text-gray-900">What do you want most from Vivaha?</h2>
         <p className="text-gray-600">Help us understand your needs so we can help you better</p>
       </div>
 
