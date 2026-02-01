@@ -251,6 +251,13 @@ router.post('/login', async (req, res) => {
       { expiresIn: '30d' }
     );
 
+    console.log('📋 Returning user data on login:', {
+      id: user._id,
+      email: user.email,
+      onboardingCompleted: user.onboardingCompleted,
+      isAdmin: user.isAdmin || false,
+    });
+
     res.json({
       success: true,
       token,

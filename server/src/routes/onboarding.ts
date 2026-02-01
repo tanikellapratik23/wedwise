@@ -10,6 +10,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
     const userId = req.userId;
     const onboardingData = req.body;
 
+    console.log('📝 Saving onboarding for user:', userId);
+
     // Ensure all fields are preserved
     const updateData = {
       onboardingCompleted: true,
@@ -28,6 +30,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
+    console.log('✅ Onboarding saved! User now has onboardingCompleted:', user.onboardingCompleted);
 
     res.json({
       success: true,
