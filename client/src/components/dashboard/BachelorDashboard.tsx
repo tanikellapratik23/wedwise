@@ -89,6 +89,9 @@ export default function BachelorDashboard() {
         setAttendees(response.data.data.attendees || []);
         setSelectedFlight(response.data.data.selectedFlight || null);
         setSelectedStay(response.data.data.selectedStay || null);
+        // Generate flights and stays for the trip
+        setFlights(generateMockFlights());
+        setStays(generateMockStays());
       }
       setError('');
     } catch (error: any) {
@@ -175,8 +178,12 @@ export default function BachelorDashboard() {
 
       if (response.data.success || response.data.data) {
         setTrip(response.data.data);
-        setFlights(generateMockFlights());
-        setStays(generateMockStays());
+        const generatedFlights = generateMockFlights();
+        const generatedStays = generateMockStays();
+        console.log('✈️ Generated flights:', generatedFlights.length);
+        console.log('🏨 Generated stays:', generatedStays.length);
+        setFlights(generatedFlights);
+        setStays(generatedStays);
         setError('');
         alert('🎉 Trip created! Flights and stays loaded.');
       } else {

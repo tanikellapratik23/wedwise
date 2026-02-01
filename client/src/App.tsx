@@ -38,6 +38,28 @@ function App() {
     }
   }, []);
 
+  // Listen for storage changes (e.g., when login updates localStorage in another part of the app)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const token = localStorage.getItem('token');
+      const onboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
+      setIsAuthenticated(!!token);
+      setHasCompletedOnboarding(onboardingCompleted);
+      
+      if (token) {
+        try {
+          const decoded = JSON.parse(atob(token.split('.')[1]));
+          setIsAdmin(decoded.isAdmin || false);
+        } catch (e) {
+          setIsAdmin(false);
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   useEffect(() => {
     // Respect explicit user preference stored in localStorage, otherwise follow OS setting
     const applyPref = () => {
