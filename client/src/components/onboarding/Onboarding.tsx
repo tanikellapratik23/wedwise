@@ -49,6 +49,7 @@ export interface OnboardingData {
 
 export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProps) {
   const navigate = useNavigate();
+  const BASE = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
   const [step, setStep] = useState(1);
   const [data, setData] = useState<OnboardingData>({
     role: '',
@@ -84,7 +85,7 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
       
       localStorage.setItem('onboardingCompleted', 'true');
       setHasCompletedOnboarding(true);
-      navigate('/dashboard');
+      navigate(`${BASE}/dashboard`);
     } catch (error) {
       console.error('Onboarding save failed:', error);
       // Fallback for offline/demo mode: persist onboarding locally and continue
@@ -128,7 +129,7 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
     // mark complete locally (avoid API call when offline)
     localStorage.setItem('onboardingCompleted', 'true');
     setHasCompletedOnboarding(true);
-    navigate('/dashboard');
+    navigate(`${BASE}/dashboard`);
   };
 
   return (
