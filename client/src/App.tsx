@@ -4,6 +4,7 @@ import Onboarding from './components/onboarding/Onboarding';
 import Dashboard from './components/dashboard/Dashboard';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
+import Landing from './components/Landing';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -51,8 +52,8 @@ function App() {
             } 
           />
           
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               isAuthenticated ? (
                 hasCompletedOnboarding ? (
@@ -61,9 +62,9 @@ function App() {
                   <Navigate to="/onboarding" />
                 )
               ) : (
-                <Navigate to="/login" />
+                <Landing />
               )
-            } 
+            }
           />
         </Routes>
       </div>
