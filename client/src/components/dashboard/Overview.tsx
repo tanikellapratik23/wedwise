@@ -32,6 +32,23 @@ export default function Overview() {
     setLoadError(null);
     setLocalRestoreAvailable(false);
     setRestored(false);
+    // Apply any locally persisted onboarding immediately for fast UX
+    try {
+      const localOnboarding = JSON.parse(localStorage.getItem('onboarding') || 'null');
+      const localUser = JSON.parse(localStorage.getItem('user') || 'null');
+      const data = localOnboarding || localUser;
+      if (data) {
+        setUserSettings(data);
+        setStats(prev => ({
+          ...prev,
+          totalGuests: data.guestCount || 0,
+          confirmedGuests: 0,
+          totalBudget: data.estimatedBudget || 0,
+        }));
+      }
+    } catch (e) {
+      // ignore local parse errors
+    }
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/api/onboarding', {

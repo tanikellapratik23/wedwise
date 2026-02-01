@@ -260,6 +260,21 @@ export default function VendorSearch() {
   // removed duplicate fetchUserLocation effect (initial fetch happens above)
 
   const fetchUserLocation = async () => {
+    // First apply any local onboarding/user so we can start fetching vendors immediately
+    try {
+      const localOnboarding = JSON.parse(localStorage.getItem('onboarding') || 'null');
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const source = localOnboarding || user;
+      if (source) {
+        setUserCity(source.weddingCity || '');
+        setUserState(source.weddingState || '');
+        setUserReligions(source.religions || []);
+        if (!source.weddingCity) setShowLocationPrompt(true);
+      }
+    } catch (e) {
+      // ignore
+    }
+
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API_URL}/api/onboarding`, {
@@ -269,34 +284,11 @@ export default function VendorSearch() {
         setUserCity(response.data.weddingCity || '');
         setUserState(response.data.weddingState || '');
         setUserReligions(response.data.religions || []);
-        
-        // If no city is set, show location prompt
-        if (!response.data.weddingCity) {
-          setShowLocationPrompt(true);
-        }
+        if (!response.data.weddingCity) setShowLocationPrompt(true);
       }
     } catch (error) {
       console.error('Failed to fetch user location:', error);
-      // Fallback: try to read onboarding from localStorage
-      try {
-        const localOnboarding = JSON.parse(localStorage.getItem('onboarding') || 'null');
-        if (localOnboarding) {
-          setUserCity(localOnboarding.weddingCity || '');
-          setUserState(localOnboarding.weddingState || '');
-          setUserReligions(localOnboarding.religions || []);
-          if (!localOnboarding.weddingCity) setShowLocationPrompt(true);
-        } else {
-          const user = JSON.parse(localStorage.getItem('user') || 'null');
-          if (user && user.city) {
-            setUserCity(user.city);
-            setUserState(user.state || '');
-          } else {
-            setShowLocationPrompt(true);
-          }
-        }
-      } catch (e) {
-        setShowLocationPrompt(true);
-      }
+      // keep local values already applied above
     } finally {
       setLoading(false);
     }
