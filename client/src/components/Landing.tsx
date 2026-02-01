@@ -138,8 +138,9 @@ export default function Landing() {
       </header>
 
       <main className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center px-4">
-          <section className={`${demoPlaying ? 'transform -translate-x-6 md:-translate-x-12 transition-transform duration-900 ease-in-out' : ''} space-y-6 col-span-1 flex flex-col ${demoPlaying ? 'justify-start' : 'justify-center'}`}>
+        <section className="w-full flex justify-center">
+          <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center px-4">
+            <section className={`space-y-6 flex flex-col ${demoPlaying ? 'justify-start' : 'justify-center'}`}>
             <div className="text-4xl md:text-5xl font-extrabold leading-tight">
               <span className="block text-primary-700">{lines[step]}</span>
             </div>
@@ -154,9 +155,9 @@ export default function Landing() {
               <Feature title="Fast Onboarding" desc="Answer a few quick questions and we customize your dashboard instantly." />
               <Feature title="Autosave & Backup" desc="Automatic local saves and exportable backups (JSON + Word)." />
             </div>
-          </section>
+            </section>
 
-          <aside className={`${demoPlaying ? 'transform -translate-x-6 md:-translate-x-12 transition-transform duration-900 ease-in-out' : ''} bg-white/90 rounded-2xl shadow-xl p-6 col-span-1 max-h-[86vh] overflow-hidden self-start`}>
+            <aside className={`bg-white/90 rounded-2xl shadow-xl p-6 max-h-[86vh] overflow-hidden self-start`}>
             <h3 className="text-lg font-semibold mb-3">Onboarding Preview</h3>
             <div className="overflow-hidden rounded-md border p-2 bg-white">
               <OnboardingPreview />
@@ -170,9 +171,10 @@ export default function Landing() {
                 <li>Favorites and saved vendors show up instantly on your dashboard.</li>
               </ul>
             </div>
-          </aside>
-          {/* demo is rendered below the two boxes when playing */}
-        </div>
+            </aside>
+          </div>
+        </section>
+        {/* demo is rendered below the two boxes when playing */}
 
         {/* Demo container: appears below the two centered boxes when playing */}
         <div className="w-full flex justify-center">
