@@ -174,7 +174,6 @@ export default function Landing() {
                 </ul>
               </div>
             </div>
-            </div>
           </div>
         </div>
         {/* demo is rendered below the two boxes when playing */}
