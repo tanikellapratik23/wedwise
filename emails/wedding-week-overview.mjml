@@ -1,0 +1,148 @@
+<mjml>
+  <mj-head>
+    <mj-title>Your Wedding Week Overview</mj-title>
+    <mj-preview>7 days until your celebrations begin</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" />
+      <mj-text font-size="14px" line-height="1.6" color="#4a4a4a" />
+    </mj-attributes>
+    <mj-style>
+      h1, h2, h3 { font-family: 'Garamond', 'Georgia', serif; }
+      .day-card { background: #ffffff; border-radius: 8px; padding: 16px; margin: 12px 0; border-top: 4px solid #8b3a3a; }
+      .day-title { color: #8b3a3a; font-size: 14px; font-weight: 600; }
+      .event-item { padding: 8px 0; border-bottom: 1px solid #f0ede7; }
+      .event-item:last-child { border-bottom: none; }
+      .event-name { color: #2d2d2d; font-weight: 500; font-size: 13px; }
+      .event-time { color: #999; font-size: 12px; }
+      .status-ok { background: #e8f5e9; color: #2e7d32; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 500; }
+      .status-pending { background: #fef3e2; color: #8b6914; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 500; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#faf7f2">
+    <!-- Header -->
+    <mj-section background-color="#ffffff" padding="0">
+      <mj-column>
+        <mj-text align="center" font-size="24px" font-weight="bold" color="#8b3a3a" padding="24px 0 8px 0">
+          <span style="font-family: 'Garamond', serif;">The Big Week</span>
+        </mj-text>
+        <mj-text align="center" font-size="13px" color="#999" padding="0 0 24px 0">
+          {{first_name}}, your celebrations begin in 7 days
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Excitement Message -->
+    <mj-section padding="40px 20px">
+      <mj-column>
+        <mj-text font-size="14px" color="#666">
+          You've planned thoughtfully and made meaningful decisions about your ceremonies. This week, focus on final confirmations with vendors and family, then breathe.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Daily Timeline -->
+    {{#each wedding_days}}
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text font-size="13px" font-weight="bold" color="#2d2d2d" padding="0 0 12px 0">
+          {{this.date}} — {{this.day_name}}
+        </mj-text>
+
+        <mj-table cellpadding="0" cellspacing="0" style="width: 100%; background: #ffffff; border-radius: 8px; overflow: hidden; border-top: 4px solid #8b3a3a;">
+          {{#each this.events}}
+          <tr style="border-bottom: 1px solid #f0ede7;">
+            <td style="padding: 12px 16px;">
+              <div class="event-name">{{this.name}}</div>
+              <div class="event-time">{{this.time}} • {{this.duration}}</div>
+              {{#if this.location}}<div class="event-time" style="color: #666; margin-top: 4px;">📍 {{this.location}}</div>{{/if}}
+            </td>
+            <td style="padding: 12px 16px; text-align: right; white-space: nowrap;">
+              {{#if this.confirmed}}<span class="status-ok">Confirmed</span>{{else}}<span class="status-pending">Needs Confirm</span>{{/if}}
+            </td>
+          </tr>
+          {{/each}}
+        </mj-table>
+      </mj-column>
+    </mj-section>
+    {{/each}}
+
+    <!-- Family Coordination -->
+    <mj-section padding="40px 20px">
+      <mj-column>
+        <mj-text font-size="13px" font-weight="bold" color="#2d2d2d" padding="0 0 8px 0">
+          Share with Family
+        </mj-text>
+        <mj-text font-size="12px" color="#666" padding="12px; background: #f5f2ed; border-radius: 6px;">
+          Some family members may not be in your planning dashboard yet. Share the link below so everyone knows the schedule and can mark their attendance.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Final Checklist -->
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text font-size="13px" font-weight="bold" color="#2d2d2d" padding="0 0 12px 0">
+          Before the Week Begins
+        </mj-text>
+
+        <mj-table cellpadding="0" cellspacing="0" style="width: 100%;">
+          <tr>
+            <td style="padding: 10px 0; font-size: 12px; color: #666;">
+              ☐ Confirm all vendor arrival times and locations
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; font-size: 12px; color: #666;">
+              ☐ Share final headcount with caterers
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; font-size: 12px; color: #666;">
+              ☐ Confirm music/entertainment requests with DJ
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; font-size: 12px; color: #666;">
+              ☐ Brief family on ceremony order and roles
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; font-size: 12px; color: #666;">
+              ☐ Pack backup for any last-minute changes
+            </td>
+          </tr>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+
+    <!-- CTA Button -->
+    <mj-section padding="40px 20px">
+      <mj-column>
+        <mj-button background-color="#8b3a3a" href="{{dashboard_url}}/overview" padding="16px 32px" font-size="14px" border-radius="4px">
+          View Full Schedule
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Closing Message -->
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text font-size="12px" color="#666" padding="16px; background: #f5f2ed; border-left: 3px solid #8b3a3a; border-radius: 4px;">
+          <strong style="color: #2d2d2d;">Remember:</strong> The people you love are coming to celebrate with you. The details will be perfect because they matter to you. Enjoy this week.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="40px 20px" background-color="#f5f2ed">
+      <mj-column>
+        <mj-text align="center" font-size="11px" color="#999">
+          Need help? Our support team is ready.
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#999" padding="8px 0 0 0">
+          © {{current_year}} Vivaha. Planning with purpose.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

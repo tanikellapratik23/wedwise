@@ -1,0 +1,145 @@
+<mjml>
+  <mj-head>
+    <mj-title>Recommended Vendors in {{city}}</mj-title>
+    <mj-preview>Curated vendors for your {{city}} wedding</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" />
+      <mj-text font-size="14px" line-height="1.6" color="#4a4a4a" />
+    </mj-attributes>
+    <mj-style>
+      h1, h2, h3 { font-family: 'Garamond', 'Georgia', serif; }
+      .vendor-card { background: #ffffff; border-radius: 8px; padding: 16px; margin: 12px 0; border: 1px solid #ede9e0; }
+      .vendor-category { color: #8b3a3a; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+      .vendor-name { color: #2d2d2d; font-size: 14px; font-weight: 600; margin: 4px 0; }
+      .vendor-highlight { background: #f0ede7; color: #8b6914; padding: 4px 6px; border-radius: 3px; font-size: 11px; margin-right: 6px; display: inline-block; }
+      .booking-alert { background: #fff3cd; border-left: 3px solid #ffc107; padding: 12px; border-radius: 4px; font-size: 12px; color: #333; margin-top: 8px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#faf7f2">
+    <!-- Header -->
+    <mj-section background-color="#ffffff" padding="0">
+      <mj-column>
+        <mj-text align="center" font-size="24px" font-weight="bold" color="#8b3a3a" padding="24px 0 8px 0">
+          <span style="font-family: 'Garamond', serif;">Vendors in {{city}}</span>
+        </mj-text>
+        <mj-text align="center" font-size="13px" color="#999" padding="0 0 24px 0">
+          Handpicked for your ceremonies
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Introduction -->
+    <mj-section padding="40px 20px">
+      <mj-column>
+        <mj-text font-size="14px" color="#666">
+          Based on your {{city}} location and selected ceremonies, we've found vendors who specialize in multicultural weddings and understand {{primary_culture}} traditions.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Venue -->
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text font-size="12px" class="vendor-category" padding="0 0 12px 0">
+          Venues
+        </mj-text>
+
+        {{#each venues}}
+        <mj-table cellpadding="0" cellspacing="0" style="width: 100%; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #ede9e0; margin-bottom: 12px;">
+          <tr>
+            <td style="padding: 16px;">
+              <div class="vendor-name">{{this.name}}</div>
+              <span class="vendor-highlight">Multi-day events</span>
+              {{#if this.culturally_trained}}<span class="vendor-highlight">Cultural expertise</span>{{/if}}
+              <div style="font-size: 12px; color: #999; margin-top: 8px;">
+                {{this.city}} • {{this.capacity}} guests
+              </div>
+              {{#if this.booking_status}}
+              <div class="booking-alert">
+                Booking fast for your dates
+              </div>
+              {{/if}}
+            </td>
+          </tr>
+        </mj-table>
+        {{/each}}
+      </mj-column>
+    </mj-section>
+
+    <!-- Catering -->
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text font-size="12px" class="vendor-category" padding="0 0 12px 0">
+          Catering
+        </mj-text>
+
+        {{#each catering}}
+        <mj-table cellpadding="0" cellspacing="0" style="width: 100%; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #ede9e0; margin-bottom: 12px;">
+          <tr>
+            <td style="padding: 16px;">
+              <div class="vendor-name">{{this.name}}</div>
+              {{#each this.cuisines}}<span class="vendor-highlight">{{this}}</span>{{/each}}
+              <div style="font-size: 12px; color: #999; margin-top: 8px;">
+                {{this.specialty}} • {{this.dietary_accommodations}}
+              </div>
+            </td>
+          </tr>
+        </mj-table>
+        {{/each}}
+      </mj-column>
+    </mj-section>
+
+    <!-- Music & Entertainment -->
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text font-size="12px" class="vendor-category" padding="0 0 12px 0">
+          Music & Entertainment
+        </mj-text>
+
+        {{#each entertainment}}
+        <mj-table cellpadding="0" cellspacing="0" style="width: 100%; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #ede9e0; margin-bottom: 12px;">
+          <tr>
+            <td style="padding: 16px;">
+              <div class="vendor-name">{{this.name}}</div>
+              {{#each this.specialties}}<span class="vendor-highlight">{{this}}</span>{{/each}}
+              <div style="font-size: 12px; color: #999; margin-top: 8px;">
+                {{this.experience}} weddings • Available for ceremonies
+              </div>
+            </td>
+          </tr>
+        </mj-table>
+        {{/each}}
+      </mj-column>
+    </mj-section>
+
+    <!-- Tip -->
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text font-size="12px" color="#666" padding="12px 16px; background: #f5f2ed; border-radius: 6px; border-left: 3px solid #8b3a3a;">
+          <strong style="color: #2d2d2d;">Pro Tip:</strong> Contact 3-4 vendors in each category. Ask specifically about their experience with your ceremonies and any cultural considerations.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- CTA Button -->
+    <mj-section padding="40px 20px">
+      <mj-column>
+        <mj-button background-color="#8b3a3a" href="{{dashboard_url}}/vendor-search?city={{city}}" padding="16px 32px" font-size="14px" border-radius="4px">
+          View All Vendors
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="40px 20px" background-color="#f5f2ed">
+      <mj-column>
+        <mj-text align="center" font-size="11px" color="#999">
+          These recommendations are based on your location and ceremony choices.
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#999" padding="8px 0 0 0">
+          © {{current_year}} Vivaha. Planning with purpose.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

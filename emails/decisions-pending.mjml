@@ -1,0 +1,128 @@
+<mjml>
+  <mj-head>
+    <mj-title>Planning Progress Update</mj-title>
+    <mj-preview>{{pending_items_count}} decisions need your attention</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" />
+      <mj-text font-size="14px" line-height="1.6" color="#4a4a4a" />
+    </mj-attributes>
+    <mj-style>
+      h1, h2, h3 { font-family: 'Garamond', 'Georgia', serif; }
+      .item-card { background: #ffffff; border-radius: 8px; padding: 16px; margin: 12px 0; border-left: 3px solid #d4a574; }
+      .item-pending { border-left-color: #c9302c; background: #fef5f5; }
+      .item-incomplete { border-left-color: #f0ad4e; background: #fef9f5; }
+      .status-badge { display: inline-block; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 500; }
+      .status-pending-btn { background: #c9302c; color: white; }
+      .status-incomplete-btn { background: #f0ad4e; color: #333; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#faf7f2">
+    <!-- Header -->
+    <mj-section background-color="#ffffff" padding="0">
+      <mj-column>
+        <mj-text align="center" font-size="24px" font-weight="bold" color="#8b3a3a" padding="24px 0 8px 0">
+          <span style="font-family: 'Garamond', serif;">Planning Update</span>
+        </mj-text>
+        <mj-text align="center" font-size="13px" color="#999" padding="0 0 24px 0">
+          {{pending_items_count}} items need your attention
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Introduction -->
+    <mj-section padding="40px 20px">
+      <mj-column>
+        <mj-text font-size="14px" color="#666">
+          Hi {{first_name}},<br/><br/>
+          We've noticed some items in your planning that need decisions. Addressing these now will keep your timeline on track and help us better serve you.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Open Items -->
+    {{#each pending_items}}
+    <mj-section padding="20px">
+      <mj-column>
+        <mj-text font-size="12px" color="#666" padding="0 0 4px 0">
+          <strong style="color: #2d2d2d;">{{this.title}}</strong>
+        </mj-text>
+        
+        <mj-table cellpadding="0" cellspacing="0" style="width: 100%; {{#eq this.status 'pending'}}background: #fef5f5; border-left: 3px solid #c9302c;{{/eq}} {{#eq this.status 'incomplete'}}background: #fef9f5; border-left: 3px solid #f0ad4e;{{/eq}} border-radius: 6px; overflow: hidden;">
+          <tr>
+            <td style="padding: 14px; font-size: 13px; color: #333;">
+              {{this.description}}<br/>
+              <span style="font-size: 11px; color: #999; margin-top: 4px; display: block;">
+                {{#if this.due_date}}Due: {{this.due_date}}{{/if}}
+              </span>
+            </td>
+            <td style="padding: 14px; text-align: right; white-space: nowrap;">
+              <span class="status-badge {{#eq this.status 'pending'}}status-pending-btn{{/eq}} {{#eq this.status 'incomplete'}}status-incomplete-btn{{/eq}}">
+                {{#eq this.status 'pending'}}Pending{{/eq}}{{#eq this.status 'incomplete'}}Incomplete{{/eq}}
+              </span>
+            </td>
+          </tr>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+    {{/each}}
+
+    <!-- Quick Stats -->
+    <mj-section padding="40px 20px">
+      <mj-column>
+        <mj-text font-size="12px" color="#666" padding="0 0 12px 0">
+          <strong style="color: #2d2d2d;">Summary</strong>
+        </mj-text>
+        
+        <mj-table cellpadding="0" cellspacing="0" style="width: 100%;">
+          <tr>
+            <td style="padding: 12px; background: #f5f2ed; border-radius: 6px; text-align: center; margin-right: 12px; flex: 1;">
+              <mj-text font-size="18px" color="#8b3a3a" font-weight="bold" padding="0">
+                {{pending_approvals_count}}
+              </mj-text>
+              <mj-text font-size="11px" color="#666" padding="0">
+                Pending Approvals
+              </mj-text>
+            </td>
+            <td style="padding: 12px; background: #f5f2ed; border-radius: 6px; text-align: center; margin-right: 12px; flex: 1;">
+              <mj-text font-size="18px" color="#8b3a3a" font-weight="bold" padding="0">
+                {{missing_vendors_count}}
+              </mj-text>
+              <mj-text font-size="11px" color="#666" padding="0">
+                Missing Vendors
+              </mj-text>
+            </td>
+            <td style="padding: 12px; background: #f5f2ed; border-radius: 6px; text-align: center; flex: 1;">
+              <mj-text font-size="18px" color="#8b3a3a" font-weight="bold" padding="0">
+                {{budget_conflicts_count}}
+              </mj-text>
+              <mj-text font-size="11px" color="#666" padding="0">
+                Budget Issues
+              </mj-text>
+            </td>
+          </tr>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+
+    <!-- CTA Button -->
+    <mj-section padding="40px 20px">
+      <mj-column>
+        <mj-button background-color="#8b3a3a" href="{{dashboard_url}}/overview" padding="16px 32px" font-size="14px" border-radius="4px">
+          Review Open Decisions
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="40px 20px" background-color="#f5f2ed">
+      <mj-column>
+        <mj-text align="center" font-size="11px" color="#999">
+          You're receiving this weekly update because you have pending items. Manage your email preferences in account settings.
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#999" padding="8px 0 0 0">
+          © {{current_year}} Vivaha. Planning with purpose.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
