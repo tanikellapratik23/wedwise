@@ -153,14 +153,16 @@ export default function BudgetTracker() {
     const updatedCategory = { ...category, [field]: value };
     
     // Optimistic update
-    setCategories(categories.map(cat => 
+    const categoriesArray = Array.isArray(categories) ? categories : [];
+    setCategories(categoriesArray.map(cat => 
       (cat.id === id || cat._id === id) ? { ...cat, [field]: value } : cat
     ));
     
     try {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
-        localStorage.setItem('budget', JSON.stringify(categories.map(cat => 
+        const catsArray = Array.isArray(categories) ? categories : [];
+        localStorage.setItem('budget', JSON.stringify(catsArray.map(cat => 
           (cat.id === id || cat._id === id) ? { ...cat, [field]: value } : cat
         )));
         return;

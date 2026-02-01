@@ -40,12 +40,14 @@ export default function TodoList() {
     const updated = { ...todo, completed: !todo.completed } as any;
 
     // optimistic update
-    setTodos(todos.map((t) => (t.id === id || t._id === id ? { ...t, completed: !t.completed } : t)));
+    const todosArray = Array.isArray(todos) ? todos : [];
+    setTodos(todosArray.map((t) => (t.id === id || t._id === id ? { ...t, completed: !t.completed } : t)));
 
     try {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
-        const next = todos.map((t) => (t.id === id || t._id === id ? { ...t, completed: !t.completed } : t));
+        const todosArr = Array.isArray(todos) ? todos : [];
+        const next = todosArr.map((t) => (t.id === id || t._id === id ? { ...t, completed: !t.completed } : t));
         setTodos(next);
         // persist locally
         const serial = next.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));

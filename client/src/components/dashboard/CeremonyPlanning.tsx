@@ -391,7 +391,7 @@ export default function CeremonyPlanning() {
 
       {/* Day Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2">
-        {weddingDays.map((day, index) => (
+        {(Array.isArray(weddingDays) ? weddingDays : []).map((day, index) => (
           <button
             key={index}
             onClick={() => setSelectedDay(index)}
@@ -510,7 +510,7 @@ export default function CeremonyPlanning() {
                     <div className="mt-4 pt-4 border-t border-purple-200">
                       <p className="text-xs font-semibold text-gray-700 mb-2">Assign rituals to this event:</p>
                       <div className="flex flex-wrap gap-2">
-                        {selectedRituals.map((ritual) => {
+                        {(Array.isArray(selectedRituals) ? selectedRituals : []).map((ritual) => {
                           const isAssigned = event.rituals.includes(ritual);
                           return (
                             <button
@@ -757,7 +757,7 @@ export default function CeremonyPlanning() {
               Selected Rituals ({selectedRituals.length})
             </h3>
             <div className="flex flex-wrap gap-2">
-              {selectedRituals.map((ritual) => (
+              {(Array.isArray(selectedRituals) ? selectedRituals : []).map((ritual) => (
                 <span
                   key={ritual}
                   className="inline-flex items-center gap-2 px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm font-medium"
@@ -839,7 +839,7 @@ export default function CeremonyPlanning() {
               Selected Traditions ({selectedTraditions.length})
             </h3>
             <div className="flex flex-wrap gap-2">
-              {selectedTraditions.map((tradition) => (
+              {(Array.isArray(selectedTraditions) ? selectedTraditions : []).map((tradition) => (
                 <span
                   key={tradition}
                   className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium"

@@ -171,7 +171,8 @@ export default function GuestList() {
     try {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
-        const next = guests.map(g => (g.id === id || g._id === id) ? { ...g, rsvpStatus: status } : g);
+        const guestArray = Array.isArray(guests) ? guests : [];
+        const next = guestArray.map(g => (g.id === id || g._id === id) ? { ...g, rsvpStatus: status } : g);
         setGuests(next);
         localStorage.setItem('guests', JSON.stringify(next));
         return;
@@ -188,7 +189,8 @@ export default function GuestList() {
       });
 
       if (response.data.success) {
-        setGuests(guests.map(g => 
+        const guestArray = Array.isArray(guests) ? guests : [];
+        setGuests(guestArray.map(g => 
           (g.id === id || g._id === id) ? { ...g, rsvpStatus: status } : g
         ));
       }
