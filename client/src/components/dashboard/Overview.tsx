@@ -221,6 +221,11 @@ export default function Overview() {
             <Heart className="w-16 h-16" />
             <div>
               <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
+              {userSettings?.weddingDate && (
+                <p className="text-primary-100 text-sm mb-2">
+                  📅 {new Date(userSettings.weddingDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+              )}
               {stats.daysUntilWedding > 0 ? (
                 <div>
                   <p className="text-primary-100 text-lg">

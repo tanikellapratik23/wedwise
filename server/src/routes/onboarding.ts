@@ -10,12 +10,18 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
     const userId = req.userId;
     const onboardingData = req.body;
 
+    // Ensure all fields are preserved
+    const updateData = {
+      onboardingCompleted: true,
+      onboardingData: {
+        ...onboardingData,
+        wantsBachelorParty: onboardingData.wantsBachelorParty || false,
+      },
+    };
+
     const user = await User.findByIdAndUpdate(
       userId,
-      {
-        onboardingCompleted: true,
-        onboardingData,
-      },
+      updateData,
       { new: true }
     );
 
@@ -33,6 +39,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
       },
     });
   } catch (error) {
+    console.error('Onboarding save error:', error);
     res.status(500).json({ error: 'Failed to save onboarding data' });
   }
 });

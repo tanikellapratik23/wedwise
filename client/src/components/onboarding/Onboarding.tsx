@@ -104,24 +104,20 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
       }
 
       const token = localStorage.getItem('token');
-      // attempt to save to server but do not block navigation if it hangs
-      const savePromise = axios.post('/api/onboarding', data, {
-        headers: { Authorization: `Bearer ${token}` },
-        timeout: 8000,
-      }).catch((err) => {
-        console.warn('Server onboarding save failed (continuing offline):', err?.message || err);
-      });
+      // Save to server with proper timeout
+      try {
+        await axios.post('/api/onboarding', data, {
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 10000,
+        });
+      } catch (err: any) {
+        console.warn('Server onboarding save failed but continuing:', err?.message || err);
+      }
 
-      // mark completed locally and navigate immediately for fast UX
+      // mark completed locally and navigate
       localStorage.setItem('onboardingCompleted', 'true');
       setHasCompletedOnboarding(true);
       navigate('/dashboard');
-
-      // still wait a short time for the save request to settle in background
-      setTimeout(() => {
-        // ensure server save started; we don't require success
-        savePromise.catch(() => {});
-      }, 200);
 
       // fallback: if SPA navigation doesn't land on the dashboard (basename mismatch), force full reload
       setTimeout(() => {
