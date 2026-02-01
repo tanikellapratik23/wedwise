@@ -66,6 +66,13 @@ export default function Landing() {
   const demoRef = useRef<HTMLDivElement | null>(null);
   useScrollIntoDemo(demoRef, demoPlaying);
 
+  // start demo and ensure demo container is scrolled into view
+  const startDemo = () => {
+    setDemoPlaying(true);
+    // ensure demo content is rendered before scrolling
+    window.setTimeout(() => demoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 180);
+  };
+
   // preload images and start carousel (start with preferred image first)
   useEffect(() => {
     // prefer the side-view image first
@@ -118,7 +125,10 @@ export default function Landing() {
             <div className="bg-primary-500 text-white p-2 rounded-md">
               <Heart className="w-6 h-6" />
             </div>
-            <div className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center px-4">
+            <div>
+              <h1 className="text-xl font-bold">Vivaha</h1>
+              <p className="text-xs text-white/80">Your Wedding Planner</p>
+            </div>
           </div>
           <nav className="space-x-3">
             <Link to="/login" className="px-4 py-2 bg-white/90 text-primary-700 rounded-md font-medium">Log in</Link>
@@ -137,7 +147,7 @@ export default function Landing() {
 
             <div className="flex gap-3">
               <Link to="/register" onClick={() => setShowHero(false)} className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold">Get started — it's free</Link>
-              <DemoLauncher stopHero={() => setShowHero(false)} onStart={() => setDemoPlaying(true)} />
+              <DemoLauncher stopHero={() => setShowHero(false)} onStart={() => startDemo()} />
             </div>
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
