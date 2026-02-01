@@ -124,19 +124,17 @@ export default function VendorSearch() {
       const categories = selectedCategory === 'all' 
         ? ['Photography', 'Venue', 'DJ', 'Catering', 'Flowers', 'Officiant', 'Planning']
         : [selectedCategory];
-
-      const allVendors: Vendor[] = [];
-
-      for (const category of categories) {
+      // Parallelize vendor fetch across categories to speed up load
+      const vendorsByCategory = await Promise.all(categories.map(async (category) => {
         try {
           const response = await axios.get(`${API_URL}/api/vendors/search`, {
             headers: { Authorization: `Bearer ${token}` },
             params: { city: userCity, state: userState, category },
+            timeout: 10000,
           });
 
-          if (response.data.businesses && response.data.businesses.length > 0) {
-            // Map Yelp data to our Vendor format
-            const yelpVendors = response.data.businesses.map((business: any) => ({
+          if (response.data?.businesses && response.data.businesses.length > 0) {
+            return response.data.businesses.map((business: any) => ({
               id: business.id,
               name: business.name,
               category,
@@ -147,23 +145,23 @@ export default function VendorSearch() {
               rating: business.rating,
               phone: business.display_phone || business.phone,
               email: '',
-              website: business.url, // Yelp business page
+              website: business.url,
               specialties: business.categories?.map((c: any) => c.title) || [],
               religiousAccommodations: [],
               image: business.image_url,
-            }));
-            allVendors.push(...yelpVendors);
-          } else {
-            // Fallback to generated vendors if no Yelp data
-            allVendors.push(...generateVendorsForCity(userCity, userState).filter(v => v.category === category));
+            } as Vendor));
           }
-        } catch (error) {
-          // If Yelp fails, use generated vendors
-          allVendors.push(...generateVendorsForCity(userCity, userState).filter(v => v.category === category));
+        } catch (err) {
+          // ignore and fallback below
         }
-      }
 
-      setVendors(allVendors);
+        // fallback generated vendors for this category
+        return generateVendorsForCity(userCity, userState).filter(v => v.category === category);
+      }));
+
+      // flatten results
+      const flattened = vendorsByCategory.flat();
+      setVendors(flattened);
     } catch (error) {
       console.error('Failed to fetch vendors:', error);
       // final fallback: local generated vendors
@@ -173,9 +171,7 @@ export default function VendorSearch() {
     }
   };
 
-  useEffect(() => {
-    fetchUserLocation();
-  }, []);
+  // removed duplicate fetchUserLocation effect (initial fetch happens above)
 
   const fetchUserLocation = async () => {
     try {

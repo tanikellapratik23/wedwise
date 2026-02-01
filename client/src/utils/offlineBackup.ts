@@ -47,6 +47,42 @@ export function downloadBackupFile(filename = 'wedwise-backup.json') {
   URL.revokeObjectURL(url);
 }
 
+export function downloadBackupAsDoc(filename = 'wedwise-backup.doc') {
+  const data = collectBackup();
+  // Create a simple HTML representation which Word can open as a document
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>WedWise Backup</title></head><body>` +
+    `<h1>WedWise Backup</h1><p>Created: ${data.meta.createdAt}</p>` +
+    `<h2>User</h2><pre>${escapeHtml(JSON.stringify(data.user, null, 2) || 'No user data')}</pre>` +
+    `<h2>Onboarding Completed</h2><p>${String(data.onboardingCompleted)}</p>` +
+    `<h2>Guests</h2><pre>${escapeHtml(JSON.stringify(data.guests, null, 2) || 'No guests')}</pre>` +
+    `<h2>Todos</h2><pre>${escapeHtml(JSON.stringify(data.todos, null, 2) || 'No todos')}</pre>` +
+    `<h2>Budget</h2><pre>${escapeHtml(JSON.stringify(data.budget, null, 2) || 'No budget')}</pre>` +
+    `<h2>Favorite Vendors</h2><pre>${escapeHtml(JSON.stringify(data.favoriteVendors, null, 2) || 'No favorites')}</pre>` +
+    `<h2>Ceremonies</h2><pre>${escapeHtml(JSON.stringify(data.ceremonies, null, 2) || 'No ceremonies')}</pre>` +
+    `<h2>Playlists</h2><pre>${escapeHtml(JSON.stringify(data.playlists, null, 2) || 'No playlists')}</pre>` +
+    `<h2>Seating Charts</h2><pre>${escapeHtml(JSON.stringify(data.seatingCharts, null, 2) || 'No seating charts')}</pre>` +
+    `</body></html>`;
+
+  const blob = new Blob([html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function escapeHtml(unsafe: string) {
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export async function importBackupFile(file: File) {
   const text = await file.text();
   const data = JSON.parse(text) as BackupShape;

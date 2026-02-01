@@ -81,10 +81,10 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center space-x-3">
               <button
-                onClick={() => downloadBackupFile()}
+                onClick={() => downloadBackupAsDoc()}
                 className="px-3 py-2 text-sm bg-primary-50 text-primary-700 rounded-md hover:bg-primary-100"
               >
-                Download Backup
+                Download Backup (Word)
               </button>
               <input
                 type="file"
