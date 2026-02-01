@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Feature: Bachelor & Bachelorette Trip Planner</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f5f0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-collapse: collapse;
+        }
+        .header {
+            background: linear-gradient(135deg, #8B4513 0%, #D4A574 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #fff;
+            color: #8B4513;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+        }
+        .hero-banner {
+            background: linear-gradient(to right, #D4A574 0%, #f5e6d3 50%, #D4A574 100%);
+            padding: 50px 30px;
+            text-align: center;
+            color: #8B4513;
+            font-size: 64px;
+            line-height: 1.2;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #D4A574;
+            padding-bottom: 10px;
+        }
+        .body-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 16px;
+        }
+        .features-grid {
+            display: block;
+            margin: 30px 0;
+        }
+        .feature-card {
+            background-color: #faf6f1;
+            border: 2px solid #D4A574;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #8B4513;
+        }
+        .feature-card-title {
+            font-weight: bold;
+            color: #8B4513;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+        .feature-card-desc {
+            font-size: 13px;
+            color: #666;
+        }
+        .highlight {
+            background-color: #fff9e6;
+            padding: 20px;
+            border-left: 4px solid #D4A574;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .highlight-text {
+            font-size: 14px;
+            color: #555;
+            font-style: italic;
+            line-height: 1.6;
+        }
+        .cta-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            color: white;
+            padding: 16px 40px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .cta-button:hover {
+            background: linear-gradient(135deg, #7A3D0F 0%, #8B4513 100%);
+        }
+        .secondary-cta {
+            display: inline-block;
+            background-color: transparent;
+            color: #8B4513;
+            padding: 12px 24px;
+            text-decoration: none;
+            border: 2px solid #D4A574;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+        .divider {
+            border: none;
+            border-top: 1px solid #e0d5ca;
+            margin: 30px 0;
+        }
+        .footer {
+            background-color: #f8f5f0;
+            padding: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+        .footer-link {
+            color: #8B4513;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .footer-text {
+            margin: 10px 0;
+        }
+        .social-links {
+            margin-bottom: 15px;
+        }
+        .social-link {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            background-color: #D4A574;
+            border-radius: 50%;
+            line-height: 36px;
+            text-align: center;
+            margin: 0 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px 15px;
+            }
+            .hero-banner {
+                font-size: 48px;
+                padding: 40px 20px;
+            }
+            .cta-button {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 14px 20px;
+            }
+            .secondary-cta {
+                display: block;
+                margin-top: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <table class="email-container" width="100%" cellpadding="0" cellspacing="0">
+        <!-- Header -->
+        <tr>
+            <td class="header">
+                <p class="header-title">🎊 New Feature Alert!</p>
+                <span class="badge">🚀 Now Available</span>
+            </td>
+        </tr>
+
+        <!-- Hero Banner -->
+        <tr>
+            <td class="hero-banner">
+                ✈️ 🏨 🎉
+            </td>
+        </tr>
+
+        <!-- Main Content -->
+        <tr>
+            <td class="content">
+                <div class="section-title">Plan the Perfect Bachelor/Bachelorette Trip!</div>
+                
+                <p class="body-text">
+                    Hi {{user_name}},
+                </p>
+
+                <p class="body-text">
+                    We're excited to introduce our brand-new <strong>Bachelor & Bachelorette Trip Planner</strong>! Whether you're organizing an epic getaway or a cozy weekend retreat, we've got everything you need in one place.
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-card-title">✈️ Flight & Travel Booking</div>
+                        <div class="feature-card-desc">Organize flights, departure times, and transportation for the entire group</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-card-title">🏨 Accommodation Management</div>
+                        <div class="feature-card-desc">Track Airbnb, hotels, and room assignments with ease</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-card-title">💰 Expense Splitting</div>
+                        <div class="feature-card-desc">Calculate who owes whom with our smart cost-sharing calculator</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-card-title">🎯 Activity Planning</div>
+                        <div class="feature-card-desc">Plan activities, restaurants, and group outings</div>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <div class="highlight-text">
+                        <strong>💡 Pro Tip:</strong> Seamlessly link your bachelor/bachelorette trip to your main wedding plan. All your guests' contact info is already synced!
+                    </div>
+                </div>
+
+                <p class="body-text">
+                    Stop juggling spreadsheets and group chats. Your trip planning just got a whole lot easier.
+                </p>
+
+                <div class="cta-container">
+                    <a href="https://vivahaplan.com/dashboard/bachelor-trip?utm_source=email&utm_campaign=bachelor_feature&utm_medium=cta" class="cta-button">Plan Your Trip Now</a>
+                </div>
+
+                <p class="body-text" style="text-align: center; font-size: 13px; color: #999;">
+                    Want to see it in action? Log in to your account and head to the dashboard!
+                </p>
+            </td>
+        </tr>
+
+        <tr>
+            <td><hr class="divider"></td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+            <td class="footer">
+                <div class="social-links">
+                    <a href="https://instagram.com/vivahaplan?utm_source=email&utm_campaign=bachelor_feature" class="social-link">f</a>
+                    <a href="https://instagram.com/vivahaplan?utm_source=email&utm_campaign=bachelor_feature" class="social-link">📷</a>
+                    <a href="https://twitter.com/vivahaplan?utm_source=email&utm_campaign=bachelor_feature" class="social-link">𝕏</a>
+                </div>
+
+                <div class="footer-text">
+                    <a href="https://vivahaplan.com?utm_source=email&utm_campaign=bachelor_feature" class="footer-link">Website</a>
+                    <a href="https://vivahaplan.com/contact?utm_source=email&utm_campaign=bachelor_feature" class="footer-link">Contact Us</a>
+                    <a href="https://vivahaplan.com/privacy?utm_source=email&utm_campaign=bachelor_feature" class="footer-link">Privacy</a>
+                </div>
+
+                <div class="footer-text">
+                    <strong>VivahaPlan Team</strong><br>
+                    Making wedding planning joyful since 2024<br>
+                    <a href="mailto:support@vivahaplan.com" class="footer-link">support@vivahaplan.com</a>
+                </div>
+
+                <div class="footer-text" style="margin-top: 20px; font-size: 11px; color: #aaa;">
+                    © 2024 VivahaPlan. All rights reserved.<br>
+                    You're receiving this because you have an active VivahaPlan account.
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

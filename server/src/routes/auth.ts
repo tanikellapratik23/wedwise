@@ -3,99 +3,124 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import axios from 'axios';
+import { Resend } from 'resend';
 
 const router = Router();
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 // Send welcome email to new user
 const sendWelcomeEmail = async (user: any) => {
-  if (!RESEND_API_KEY) {
-    console.warn('RESEND_API_KEY not configured - skipping email');
+  if (!resend) {
+    console.warn('⚠️ Resend API not configured - welcome emails disabled');
     return;
   }
 
   try {
-    const templateHtml = `
-      <!DOCTYPE html>
-      <html>
-        <body style="font-family: 'Segoe UI', sans-serif; background-color: #faf7f2; margin: 0; padding: 20px;">
-          <table style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;">
-            <tr>
-              <td style="padding: 40px 20px; text-align: center; background-color: white; border-bottom: 1px solid #ede9e0;">
-                <h1 style="font-family: 'Garamond', serif; color: #8b3a3a; margin: 0; font-size: 28px;">Vivaha</h1>
-                <p style="color: #999; margin: 8px 0 0 0; font-size: 12px;">Multicultural Wedding Planning</p>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 40px 20px;">
-                <h2 style="font-family: 'Garamond', serif; color: #2d2d2d; margin: 0 0 16px 0;">Welcome, ${user.name}!</h2>
-                <p style="color: #666; margin: 0 0 24px 0; line-height: 1.6;">
-                  We're honored to help you plan a wedding that celebrates your unique traditions and brings your families together.
-                </p>
+    const result = await resend.emails.send({
+      from: 'VivahaPlan <hello@vivahaplan.com>',
+      to: user.email,
+      subject: 'Welcome to VivahaPlan – Start Planning Your Dream Vivaha!',
+      html: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to VivahaPlan</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8f5f0;">
+    <table style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-collapse: collapse;">
+        <tr>
+            <td style="background: linear-gradient(135deg, #8B4513 0%, #D4A574 100%); padding: 40px 20px; text-align: center; color: white;">
+                <p style="font-size: 28px; font-weight: bold; letter-spacing: 1px; margin: 0;">🌟 VivahaPlan</p>
+                <p style="font-size: 14px; margin-top: 8px; opacity: 0.9;">Your Complete Wedding Planning Platform</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="background-color: #f5e6d3; padding: 40px 20px; text-align: center; color: #8B4513; font-size: 48px;">
+                👰💒🤵
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 40px 30px; color: #333;">
+                <div style="font-size: 22px; font-weight: bold; color: #8B4513; margin-bottom: 20px;">Welcome, ${user.name}! 🎉</div>
                 
-                <div style="background-color: #f5f2ed; padding: 16px; border-radius: 6px; margin: 24px 0;">
-                  <p style="color: #2d2d2d; margin: 0 0 12px 0; font-weight: 600;">Vivaha helps you:</p>
-                  <ul style="color: #666; margin: 0; padding-left: 20px; font-size: 14px;">
-                    <li style="margin: 8px 0;">Plan multi-day celebrations with all ceremonies and events</li>
-                    <li style="margin: 8px 0;">Coordinate cultural and inter-religious rituals seamlessly</li>
-                    <li style="margin: 8px 0;">Include family members while keeping decisions organized</li>
-                    <li style="margin: 8px 0;">Find local vendors who understand your vision</li>
-                  </ul>
-                </div>
-
-                <p style="color: #666; margin: 24px 0 16px 0; font-weight: 600;">Get Started in 3 Steps:</p>
-                <div style="background-color: white; border: 1px solid #ede9e0; border-radius: 6px; overflow: hidden;">
-                  <div style="padding: 14px; border-bottom: 1px solid #ede9e0;">
-                    <span style="background-color: #8b3a3a; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: 600;">1</span>
-                    <strong style="color: #2d2d2d; margin-left: 8px;">Add Wedding Dates</strong>
-                  </div>
-                  <div style="padding: 14px; border-bottom: 1px solid #ede9e0;">
-                    <span style="background-color: #8b3a3a; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: 600;">2</span>
-                    <strong style="color: #2d2d2d; margin-left: 8px;">Select Ceremonies</strong>
-                  </div>
-                  <div style="padding: 14px;">
-                    <span style="background-color: #8b3a3a; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: 600;">3</span>
-                    <strong style="color: #2d2d2d; margin-left: 8px;">Set Your Location</strong>
-                  </div>
-                </div>
-
-                <div style="text-align: center; margin: 32px 0;">
-                  <a href="${process.env.APP_URL || 'https://app.vivaha.co'}/dashboard/onboarding" style="background-color: #8b3a3a; color: white; padding: 14px 32px; border-radius: 4px; text-decoration: none; font-weight: 600; display: inline-block;">
-                    Complete Wedding Profile
-                  </a>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 20px; background-color: #f5f2ed; text-align: center; border-top: 1px solid #ede9e0;">
-                <p style="color: #999; font-size: 11px; margin: 0;">
-                  © ${new Date().getFullYear()} Vivaha. Planning with purpose.
+                <p style="font-size: 15px; line-height: 1.6; color: #555; margin-bottom: 20px;">
+                    We're thrilled you've joined VivahaPlan! Whether you're planning an intimate ceremony or a grand celebration, we're here to make your wedding journey seamless and joyful.
                 </p>
-              </td>
-            </tr>
-          </table>
-        </body>
-      </html>
-    `;
 
-    await axios.post(
-      'https://api.resend.com/emails',
-      {
-        from: 'Vivaha <onboarding@resend.dev>',
-        to: user.email,
-        subject: 'Welcome to Vivaha - Start Planning Your Wedding',
-        html: templateHtml,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+                <p style="font-size: 15px; line-height: 1.6; color: #555; margin-bottom: 20px;">
+                    Here's what you can do right now:
+                </p>
 
-    console.log('Welcome email sent to:', user.email);
+                <div style="background-color: #faf6f1; border-left: 4px solid #D4A574; padding: 20px; margin: 30px 0; border-radius: 4px;">
+                    <div style="font-size: 14px; margin-bottom: 12px; color: #555; display: flex; align-items: flex-start;">
+                        <div style="color: #8B4513; font-weight: bold; margin-right: 12px; font-size: 18px;">📋</div>
+                        <div><strong>Ceremony Planner</strong> – Organize rituals, timelines, and logistics in one place</div>
+                    </div>
+                    <div style="font-size: 14px; margin-bottom: 12px; color: #555; display: flex; align-items: flex-start;">
+                        <div style="color: #8B4513; font-weight: bold; margin-right: 12px; font-size: 18px;">👥</div>
+                        <div><strong>Guest List Manager</strong> – Track invites, RSVPs, and dietary preferences</div>
+                    </div>
+                    <div style="font-size: 14px; margin-bottom: 12px; color: #555; display: flex; align-items: flex-start;">
+                        <div style="color: #8B4513; font-weight: bold; margin-right: 12px; font-size: 18px;">💰</div>
+                        <div><strong>Budget Tracker</strong> – Monitor spending across vendors and categories</div>
+                    </div>
+                    <div style="font-size: 14px; color: #555; display: flex; align-items: flex-start;">
+                        <div style="color: #8B4513; font-weight: bold; margin-right: 12px; font-size: 18px;">🎉</div>
+                        <div><strong>Bachelor/Bachelorette Planner</strong> – Plan trips, activities, and cost-sharing</div>
+                    </div>
+                </div>
+
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="https://vivahaplan.com/dashboard?utm_source=email&utm_campaign=welcome&utm_medium=cta" style="display: inline-block; background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">Start Planning Now</a>
+                </p>
+
+                <p style="font-size: 15px; line-height: 1.6; color: #555;">
+                    Your wedding planning journey starts here. Let's make it unforgettable! 💕
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td style="background-color: #f8f5f0; padding: 30px; text-align: center; font-size: 12px; color: #888;">
+                <div style="margin-bottom: 15px;">
+                    <a href="https://instagram.com/vivahaplan?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #D4A574; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">f</a>
+                    <a href="https://instagram.com/vivahaplan?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #D4A574; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">📷</a>
+                    <a href="https://twitter.com/vivahaplan?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #D4A574; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">𝕏</a>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <a href="https://vivahaplan.com?utm_source=email&utm_campaign=welcome" style="color: #8B4513; text-decoration: none; margin: 0 10px;">Website</a>
+                    <a href="https://vivahaplan.com/contact?utm_source=email&utm_campaign=welcome" style="color: #8B4513; text-decoration: none; margin: 0 10px;">Contact Us</a>
+                    <a href="https://vivahaplan.com/privacy?utm_source=email&utm_campaign=welcome" style="color: #8B4513; text-decoration: none; margin: 0 10px;">Privacy</a>
+                </div>
+
+                <div style="margin: 10px 0;">
+                    <strong>VivahaPlan Team</strong><br>
+                    Making wedding planning joyful since 2024<br>
+                    <a href="mailto:support@vivahaplan.com" style="color: #8B4513; text-decoration: none;">support@vivahaplan.com</a>
+                </div>
+
+                <div style="margin-top: 20px; font-size: 11px; color: #aaa;">
+                    © 2024 VivahaPlan. All rights reserved.<br>
+                    You're receiving this because you signed up for VivahaPlan.
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+      `,
+    });
+
+    if (result.error) {
+      console.error('Failed to send welcome email:', result.error);
+      return;
+    }
+
+    console.log('✅ Welcome email sent to:', user.email);
   } catch (error) {
     console.error('Failed to send welcome email:', error);
     // Don't throw - email failure shouldn't block registration

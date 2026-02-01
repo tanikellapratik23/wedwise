@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don't Forget – Your Vivaha Plan Awaits!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f5f0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-collapse: collapse;
+        }
+        .header {
+            background: linear-gradient(135deg, #8B4513 0%, #D4A574 100%);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        .header-logo {
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+        .hero-graphic {
+            background: linear-gradient(45deg, #f5e6d3, #fff9e6);
+            padding: 60px 30px;
+            text-align: center;
+            font-size: 72px;
+            color: #D4A574;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333;
+        }
+        .greeting {
+            font-size: 22px;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 20px;
+        }
+        .body-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 16px;
+        }
+        .urgency-box {
+            background: linear-gradient(135deg, #fff9e6 0%, #fffaed 100%);
+            border-left: 4px solid #D4A574;
+            padding: 16px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .urgency-title {
+            color: #8B4513;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .urgency-text {
+            font-size: 13px;
+            color: #666;
+        }
+        .highlights-section {
+            margin: 30px 0;
+        }
+        .highlight-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 16px;
+        }
+        .highlight-item {
+            background-color: #faf6f1;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border-left: 4px solid #8B4513;
+            display: flex;
+            align-items: flex-start;
+        }
+        .highlight-icon {
+            font-size: 24px;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+        .highlight-content {
+            flex-grow: 1;
+        }
+        .highlight-content-title {
+            font-weight: bold;
+            color: #8B4513;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .highlight-content-desc {
+            font-size: 13px;
+            color: #666;
+        }
+        .progress-box {
+            background-color: #f5f5f5;
+            border: 2px solid #e0d5ca;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .progress-label {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .progress-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 8px;
+        }
+        .progress-text {
+            font-size: 13px;
+            color: #666;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            color: white;
+            padding: 16px 40px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 25px auto;
+            display: block;
+            text-align: center;
+        }
+        .cta-button:hover {
+            background: linear-gradient(135deg, #7A3D0F 0%, #8B4513 100%);
+        }
+        .closing-text {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            margin: 25px 0;
+        }
+        .divider {
+            border: none;
+            border-top: 1px solid #e0d5ca;
+            margin: 30px 0;
+        }
+        .footer {
+            background-color: #f8f5f0;
+            padding: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+        .footer-link {
+            color: #8B4513;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .footer-text {
+            margin: 10px 0;
+        }
+        .social-links {
+            margin-bottom: 15px;
+        }
+        .social-link {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            background-color: #D4A574;
+            border-radius: 50%;
+            line-height: 36px;
+            text-align: center;
+            margin: 0 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px 15px;
+            }
+            .greeting {
+                font-size: 18px;
+            }
+            .hero-graphic {
+                font-size: 56px;
+                padding: 40px 20px;
+            }
+            .cta-button {
+                padding: 14px 20px;
+            }
+            .highlight-item {
+                margin-bottom: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <table class="email-container" width="100%" cellpadding="0" cellspacing="0">
+        <!-- Header -->
+        <tr>
+            <td class="header">
+                <p class="header-logo">✨ VivahaPlan</p>
+            </td>
+        </tr>
+
+        <!-- Hero Graphic -->
+        <tr>
+            <td class="hero-graphic">
+                📝 💭 ⏰
+            </td>
+        </tr>
+
+        <!-- Main Content -->
+        <tr>
+            <td class="content">
+                <div class="greeting">We Miss You, {{user_name}}! 💕</div>
+                
+                <p class="body-text">
+                    Your Vivaha Plan is waiting! We noticed it's been a while since you logged in, and we'd love to help you keep the momentum going.
+                </p>
+
+                <div class="urgency-box">
+                    <div class="urgency-title">⏳ Getting Close to Your Big Day?</div>
+                    <div class="urgency-text">
+                        The more you plan now, the more you can enjoy later. Let's tackle those pending tasks together!
+                    </div>
+                </div>
+
+                <div class="highlights-section">
+                    <div class="highlight-title">Here's What You Can Do:</div>
+                    
+                    <div class="highlight-item">
+                        <div class="highlight-icon">📋</div>
+                        <div class="highlight-content">
+                            <div class="highlight-content-title">Complete Ceremony Setup</div>
+                            <div class="highlight-content-desc">Define rituals, timelines, and venue details for a smooth event day</div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-item">
+                        <div class="highlight-icon">👥</div>
+                        <div class="highlight-content">
+                            <div class="highlight-content-title">Finalize Your Guest List</div>
+                            <div class="highlight-content-desc">Get RSVPs, dietary preferences, and seating arrangements sorted</div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-item">
+                        <div class="highlight-icon">💼</div>
+                        <div class="highlight-content">
+                            <div class="highlight-content-title">Search for Vendors</div>
+                            <div class="highlight-content-desc">Find photographers, caterers, florists, and more—all in one place</div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-item">
+                        <div class="highlight-icon">💰</div>
+                        <div class="highlight-content">
+                            <div class="highlight-content-title">Track Your Budget</div>
+                            <div class="highlight-content-desc">Stay within budget with our intuitive expense tracker</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-box">
+                    <div class="progress-label">Your Planning Progress</div>
+                    <div class="progress-number">{{progress_percent}}%</div>
+                    <div class="progress-text">You're on your way! Keep going.</div>
+                </div>
+
+                <a href="https://vivahaplan.com/dashboard?utm_source=email&utm_campaign=reminder&utm_medium=cta" class="cta-button">Continue Planning</a>
+
+                <p class="closing-text">
+                    Every task checked off brings you closer to your perfect Vivaha! 🎉
+                </p>
+            </td>
+        </tr>
+
+        <tr>
+            <td><hr class="divider"></td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+            <td class="footer">
+                <div class="social-links">
+                    <a href="https://instagram.com/vivahaplan?utm_source=email&utm_campaign=reminder" class="social-link">f</a>
+                    <a href="https://instagram.com/vivahaplan?utm_source=email&utm_campaign=reminder" class="social-link">📷</a>
+                    <a href="https://twitter.com/vivahaplan?utm_source=email&utm_campaign=reminder" class="social-link">𝕏</a>
+                </div>
+
+                <div class="footer-text">
+                    <a href="https://vivahaplan.com?utm_source=email&utm_campaign=reminder" class="footer-link">Website</a>
+                    <a href="https://vivahaplan.com/faq?utm_source=email&utm_campaign=reminder" class="footer-link">FAQ</a>
+                    <a href="https://vivahaplan.com/contact?utm_source=email&utm_campaign=reminder" class="footer-link">Support</a>
+                </div>
+
+                <div class="footer-text">
+                    <strong>VivahaPlan Team</strong><br>
+                    Making wedding planning joyful since 2024<br>
+                    <a href="mailto:support@vivahaplan.com" class="footer-link">support@vivahaplan.com</a>
+                </div>
+
+                <div class="footer-text" style="margin-top: 20px; font-size: 11px; color: #aaa;">
+                    © 2024 VivahaPlan. All rights reserved.<br>
+                    You're receiving this reminder because you have an active VivahaPlan account.
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
