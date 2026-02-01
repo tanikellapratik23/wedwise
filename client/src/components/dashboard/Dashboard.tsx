@@ -35,7 +35,10 @@ export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isReligious, setIsReligious] = useState(false);
-  const [wantsBachelorParty, setWantsBachelorParty] = useState(false);
+  const [wantsBachelorParty, setWantsBachelorParty] = useState(() => {
+    // Initialize from localStorage immediately to show nav button faster
+    return localStorage.getItem('wantsBachelorParty') === 'true';
+  });
   const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
