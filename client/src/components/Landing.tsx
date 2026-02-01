@@ -137,9 +137,10 @@ export default function Landing() {
         </div>
       </header>
       <main className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full flex items-center justify-center">
-          <div className="w-[1040px] max-w-full flex flex-col md:flex-row gap-8 items-stretch justify-center mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl p-6 w-full md:w-[500px] max-w-[520px] flex flex-col justify-center items-start min-w-0 border mx-auto">
+        <div className="max-w-6xl w-full mx-auto px-6">
+          <div className="w-full flex items-center justify-center">
+            <div className="w-full md:max-w-[1040px] flex flex-col md:flex-row gap-8 items-stretch justify-center mx-auto">
+              <div className="bg-white rounded-2xl shadow-xl p-6 w-full md:w-[500px] max-w-[520px] flex flex-col justify-center items-start min-w-0 border mx-auto">
               <div className="w-full">
                 <div className="text-3xl md:text-4xl font-extrabold leading-tight mb-3">
                   <span className="block text-primary-700">{lines[step]}</span>
@@ -172,6 +173,7 @@ export default function Landing() {
                   <li>Favorites and saved vendors show up instantly on your dashboard.</li>
                 </ul>
               </div>
+            </div>
             </div>
           </div>
         </div>
