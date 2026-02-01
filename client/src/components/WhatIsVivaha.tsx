@@ -29,7 +29,7 @@ export default function WhatIsVivaha() {
             Vivaha Planning for Modern & Interfaith Weddings
           </h1>
           <p className="text-xl text-gray-600">
-            Everything you need to plan your perfect Vivaha celebration
+            Everything you need to plan your perfect multicultural celebration
           </p>
         </div>
 
@@ -38,21 +38,21 @@ export default function WhatIsVivaha() {
           <h2 className="text-3xl font-bold text-gray-900 mb-6">What is Vivaha?</h2>
           
           <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-            <span className="font-semibold text-primary-700">Vivaha</span> is a modern platform designed for planning Indian weddings, interfaith ceremonies, and multicultural celebrations. Whether you're planning a traditional Hindu Vivaha, an interfaith wedding, or a blend of cultural traditions, Vivaha brings all your wedding planning into one beautiful, organized space.
+            <span className="font-semibold text-primary-700">Vivaha</span> is a modern platform designed for planning multicultural weddings and interfaith ceremonies. Whether you're planning a traditional celebration, an interfaith wedding, or a blend of cultural traditions, Vivaha brings all your wedding planning into one beautiful, organized space.
           </p>
 
           <div className="space-y-6 mb-8">
             <div className="border-l-4 border-primary-500 pl-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Plan Your Vivaha Ceremonies</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Plan Your Wedding Ceremonies</h3>
               <p className="text-gray-700">
-                Coordinate multiple ceremonies and rituals with ease. From pre-wedding celebrations to main events, manage each ritual's details, timing, and logistics all in one place.
+                Coordinate multiple ceremonies and rituals with ease. From pre-wedding celebrations to main events, manage each ceremony's details, timing, and logistics all in one place.
               </p>
             </div>
 
             <div className="border-l-4 border-primary-500 pl-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Interfaith & Cultural Support</h3>
               <p className="text-gray-700">
-                Planning an interfaith wedding? Vivaha supports Hindu, Muslim, Christian, Sikh, Jewish, and other cultural traditions. Mix and match rituals, honor multiple customs, and celebrate your unique love story.
+                Planning an interfaith wedding? Vivaha supports Christian, Muslim, Jewish, Sikh, Buddhist, and other cultural traditions. Mix and match rituals, honor multiple customs, and celebrate your unique love story.
               </p>
             </div>
 
@@ -76,7 +76,7 @@ export default function WhatIsVivaha() {
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start gap-3">
                 <span className="text-primary-600 font-bold text-lg">✓</span>
-                <span><strong>Built for Complexity:</strong> Indian wedding planning involves multiple ceremonies. Vivaha is designed to handle it all.</span>
+                <span><strong>Built for Complexity:</strong> Modern multicultural wedding planning involves multiple ceremonies. Vivaha is designed to handle it all.</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary-600 font-bold text-lg">✓</span>
@@ -125,7 +125,7 @@ export default function WhatIsVivaha() {
         {/* Footer */}
         <div className="mt-20 pt-8 border-t border-gray-200 text-center text-gray-600">
           <p className="mb-2">
-            <strong>Vivaha</strong> — Indian wedding planning for Vivaha ceremonies, interfaith weddings, and multicultural celebrations
+            <strong>Vivaha</strong> — Multicultural wedding planning for interfaith ceremonies and celebrations
           </p>
           <p className="text-sm">Plan rituals, manage guests, organize budgets, and coordinate vendors all in one place</p>
         </div>

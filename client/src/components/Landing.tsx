@@ -95,7 +95,7 @@ export default function Landing() {
   }, [showHero]);
   const lines = [
     'Vivaha Planning for Modern & Interfaith Weddings',
-    'Manage Hindu rituals, interfaith ceremonies & celebrations',
+    'Manage multicultural ceremonies & celebrations',
     'Organize guest lists, budgets & vendors in one place',
     'Plan bachelor/bachelorette parties with ease',
   ];
