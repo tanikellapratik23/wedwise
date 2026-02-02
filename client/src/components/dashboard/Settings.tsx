@@ -30,26 +30,74 @@ export default function Settings() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
+        console.warn('No token found, loading from localStorage');
+        // Load from local storage if no token
+        try {
+          const local = JSON.parse(localStorage.getItem('onboarding') || '{}');
+          if (Object.keys(local).length > 0) {
+            console.log('Loaded settings from localStorage:', local);
+            setSettings(prev => ({
+              ...prev,
+              ...local,
+            }));
+          }
+        } catch (e) {
+          console.error('Failed to load local settings:', e);
+        }
         setLoading(false);
         return;
       }
       
+      console.log('Fetching settings from API...');
       const response = await axios.get('/api/onboarding', {
         headers: { Authorization: `Bearer ${token}` },
         timeout: 5000,
       });
       
-      if (response.data) {
+      console.log('API Response:', response.data);
+      
+      if (response.data && Object.keys(response.data).length > 0) {
+        const fetchedData = {
+          role: response.data.role || '',
+          weddingStyle: response.data.weddingStyle || '',
+          topPriority: Array.isArray(response.data.topPriority) ? response.data.topPriority : [],
+          goals: response.data.goals || '',
+          weddingCity: response.data.weddingCity || '',
+          weddingState: response.data.weddingState || '',
+          weddingCountry: response.data.weddingCountry || 'United States',
+          isReligious: response.data.isReligious || false,
+          religions: Array.isArray(response.data.religions) ? response.data.religions : [],
+          ceremonyDetails: response.data.ceremonyDetails || {},
+          estimatedBudget: response.data.estimatedBudget || 0,
+          guestCount: response.data.guestCount || 0,
+          weddingDate: response.data.weddingDate || '',
+          weddingTime: response.data.weddingTime || '',
+          preferredColorTheme: response.data.preferredColorTheme || '',
+          wantsBachelorParty: response.data.wantsBachelorParty || false,
+        };
+        
+        console.log('Setting fetched data:', fetchedData);
         setSettings(prev => ({
           ...prev,
-          ...response.data,
+          ...fetchedData,
         }));
+      } else {
+        console.warn('Empty response from API, trying localStorage');
+        // Fallback to localStorage
+        const local = JSON.parse(localStorage.getItem('onboarding') || '{}');
+        if (Object.keys(local).length > 0) {
+          setSettings(prev => ({
+            ...prev,
+            ...local,
+          }));
+        }
       }
     } catch (error) {
-      console.error('Failed to fetch settings:', error);
+      console.error('Failed to fetch settings from API:', error);
       // Load from local storage as fallback
       try {
         const local = JSON.parse(localStorage.getItem('onboarding') || '{}');
+        console.log('Loading from localStorage as fallback:', local);
         if (Object.keys(local).length > 0) {
           setSettings(prev => ({
             ...prev,
@@ -69,14 +117,29 @@ export default function Settings() {
     setSuccessMessage('');
     try {
       const token = localStorage.getItem('token');
-      await axios.put('/api/onboarding', settings, {
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      
+      console.log('Saving settings:', settings);
+      
+      const response = await axios.put('/api/onboarding', settings, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
+      console.log('Save response:', response.data);
+      
+      // Also update localStorage
+      localStorage.setItem('onboarding', JSON.stringify(settings));
+      
       setSuccessMessage('Settings saved successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Failed to save settings:', error);
-      alert('Failed to save settings. Please try again.');
+      const errorMessage = axios.isAxiosError(error) 
+        ? error.response?.data?.error || error.message
+        : 'Failed to save settings. Please try again.';
+      alert(errorMessage);
     } finally {
       setSaving(false);
     }

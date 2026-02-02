@@ -52,14 +52,19 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
 router.get('/', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId;
+    console.log('📖 Fetching onboarding data for user:', userId);
+    
     const user = await User.findById(userId).select('onboardingData onboardingCompleted');
 
     if (!user) {
+      console.warn('❌ User not found:', userId);
       return res.status(404).json({ error: 'User not found' });
     }
 
+    console.log('✅ Fetched onboarding data:', user.onboardingData);
     res.json(user.onboardingData || {});
   } catch (error) {
+    console.error('❌ Error fetching onboarding data:', error);
     res.status(500).json({ error: 'Failed to fetch onboarding data' });
   }
 });
@@ -69,6 +74,9 @@ router.put('/', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId;
     const updatedData = req.body;
+
+    console.log('📝 Updating onboarding data for user:', userId);
+    console.log('📊 Updated data:', updatedData);
 
     const user = await User.findByIdAndUpdate(
       userId,
@@ -80,15 +88,18 @@ router.put('/', authMiddleware, async (req: AuthRequest, res) => {
     );
 
     if (!user) {
+      console.warn('❌ User not found:', userId);
       return res.status(404).json({ error: 'User not found' });
     }
 
+    console.log('✅ Onboarding data updated successfully');
     res.json({
       success: true,
       message: 'Settings updated successfully',
       data: user.onboardingData,
     });
   } catch (error) {
+    console.error('❌ Error updating onboarding data:', error);
     res.status(500).json({ error: 'Failed to update settings' });
   }
 });

@@ -18,6 +18,16 @@ export interface IUser extends Document {
     goals: string;
     preferredColorTheme?: string;
     wantsBachelorParty?: boolean;
+    weddingDate?: Date;
+    weddingTime?: string;
+    weddingCity?: string;
+    weddingState?: string;
+    weddingCountry?: string;
+    isReligious?: boolean;
+    religions?: string[];
+    ceremonyDetails?: {
+      officiantType?: string;
+    };
   };
   sharedLinks?: Array<{
     token: string;
@@ -49,6 +59,16 @@ const UserSchema = new Schema<IUser>(
       goals: String,
       preferredColorTheme: String,
       wantsBachelorParty: Boolean,
+      weddingDate: Date,
+      weddingTime: String,
+      weddingCity: String,
+      weddingState: String,
+      weddingCountry: String,
+      isReligious: Boolean,
+      religions: [String],
+      ceremonyDetails: {
+        officiantType: String,
+      },
     },
     sharedLinks: [
       {
