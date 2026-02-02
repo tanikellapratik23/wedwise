@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, MapPin, Star, Loader, Phone, Mail } from 'lucide-react';
+import axios from 'axios';
 import Welcome from './onboarding/steps/Welcome';
 import RoleSelection from './onboarding/steps/RoleSelection';
 import WeddingDate from './onboarding/steps/WeddingDate';
@@ -10,6 +11,279 @@ import CeremonyDetails from './onboarding/steps/CeremonyDetails';
 import Goals from './onboarding/steps/Goals';
 import Summary from './onboarding/steps/Summary';
 import { OnboardingData } from './onboarding/Onboarding';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+interface PreviewVendor {
+  id: string;
+  name: string;
+  category: string;
+  location: { city: string; state: string };
+  rating?: number;
+  estimatedCost?: number;
+  phone?: string;
+  email?: string;
+  image?: string;
+}
+
+function VendorPreview() {
+  const [vendors, setVendors] = useState<PreviewVendor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState<{ city: string; state: string } | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  useEffect(() => {
+    detectLocation();
+  }, []);
+
+  const detectLocation = async () => {
+    try {
+      // Try to get location from browser geolocation
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            try {
+              const { latitude, longitude } = position.coords;
+              // Use reverse geocoding (simple approach - use a city list)
+              const response = await axios.get(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+              );
+              const city = response.data.address.city || response.data.address.town || 'San Francisco';
+              const state = response.data.address.state || 'CA';
+              setUserLocation({ city, state });
+              fetchVendors(city, state);
+            } catch (e) {
+              // Fallback to San Francisco
+              setUserLocation({ city: 'San Francisco', state: 'CA' });
+              fetchVendors('San Francisco', 'CA');
+            }
+          },
+          () => {
+            // Fallback if geolocation fails
+            setUserLocation({ city: 'San Francisco', state: 'CA' });
+            fetchVendors('San Francisco', 'CA');
+          }
+        );
+      } else {
+        // Fallback if geolocation not available
+        setUserLocation({ city: 'San Francisco', state: 'CA' });
+        fetchVendors('San Francisco', 'CA');
+      }
+    } catch (e) {
+      // Final fallback
+      setUserLocation({ city: 'San Francisco', state: 'CA' });
+      fetchVendors('San Francisco', 'CA');
+    }
+  };
+
+  const fetchVendors = async (city: string, state: string) => {
+    setLoading(true);
+    try {
+      const categories = selectedCategory === 'all'
+        ? ['Photography', 'Venue', 'DJ', 'Catering', 'Flowers']
+        : [selectedCategory];
+
+      let allVendors: PreviewVendor[] = [];
+
+      for (const category of categories) {
+        try {
+          // Generate mock vendors for preview (no auth needed)
+          const mockVendors = generateMockVendors(city, state, category);
+          allVendors = [...allVendors, ...mockVendors];
+        } catch (err) {
+          console.error(`Failed to fetch ${category}:`, err);
+        }
+      }
+
+      setVendors(allVendors.slice(0, 12)); // Show max 12 vendors
+    } catch (error) {
+      console.error('Failed to fetch vendors:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateMockVendors = (city: string, state: string, category: string): PreviewVendor[] => {
+    const vendors: PreviewVendor[] = [];
+    const categoryNames: { [key: string]: string[] } = {
+      Photography: [
+        `${city} Wedding Photography`,
+        `${city} Professional Photographers`,
+        `Artistic Wedding Photos ${city}`,
+      ],
+      Venue: [
+        `${city} Wedding Venue`,
+        `Elegant Ballroom ${city}`,
+        `Garden Wedding Space ${city}`,
+      ],
+      DJ: [
+        `${city} Wedding DJ Services`,
+        `Professional DJ - ${city}`,
+        `${city} Party DJ`,
+      ],
+      Catering: [
+        `${city} Wedding Catering`,
+        `Fine Dining Catering ${city}`,
+        `${city} Cuisine Catering`,
+      ],
+      Flowers: [
+        `${city} Wedding Florist`,
+        `Fresh Flower Arrangements ${city}`,
+        `${city} Floral Design Studio`,
+      ],
+    };
+
+    const names = categoryNames[category] || [];
+    names.slice(0, 3).forEach((name, i) => {
+      vendors.push({
+        id: `${category}-${i}`,
+        name,
+        category,
+        location: { city, state },
+        rating: 4.5 + Math.random() * 0.5,
+        estimatedCost: category === 'Photography' ? 2500 + Math.random() * 2500 :
+                       category === 'Venue' ? 5000 + Math.random() * 5000 :
+                       category === 'DJ' ? 1000 + Math.random() * 2000 :
+                       category === 'Catering' ? 3000 + Math.random() * 3000 :
+                       1000 + Math.random() * 2000,
+        phone: `(555) ${100 + Math.floor(Math.random() * 900)}-${1000 + Math.floor(Math.random() * 8999)}`,
+        email: name.toLowerCase().replace(/\s+/g, '') + '@example.com',
+        image: `https://images.unsplash.com/photo-${
+          category === 'Photography' ? '1606216174928-cebf47ba24ca?w=400&h=300&fit=crop' :
+          category === 'Venue' ? '1519671482677-e389f3dd404b?w=400&h=300&fit=crop' :
+          category === 'DJ' ? '1493225457124-06091f128d93?w=400&h=300&fit=crop' :
+          category === 'Catering' ? '1555939594-58d7cb561404?w=400&h=300&fit=crop' :
+          '1578509332210-a500ae6c36f0?w=400&h=300&fit=crop'
+        }`,
+      });
+    });
+
+    return vendors;
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <MapPin className="w-5 h-5 text-primary-600" />
+          <h3 className="text-2xl font-bold text-gray-900">
+            {loading ? 'Detecting location...' : `Vendors near ${userLocation?.city}, ${userLocation?.state}`}
+          </h3>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {['all', 'Photography', 'Venue', 'DJ', 'Catering', 'Flowers'].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => {
+                setSelectedCategory(cat);
+                if (userLocation) {
+                  fetchVendors(userLocation.city, userLocation.state);
+                }
+              }}
+              className={`px-4 py-2 rounded-lg transition font-medium ${
+                selectedCategory === cat
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {cat === 'all' ? 'All' : cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader className="w-8 h-8 animate-spin text-primary-600" />
+        </div>
+      ) : vendors.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600 mb-4">No vendors found for this category</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {vendors.map((vendor) => (
+              <div key={vendor.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
+                {/* Vendor Image */}
+                <div className="h-48 bg-gray-200 overflow-hidden">
+                  <img
+                    src={vendor.image}
+                    alt={vendor.name}
+                    className="w-full h-full object-cover hover:scale-105 transition"
+                  />
+                </div>
+
+                {/* Vendor Info */}
+                <div className="p-4">
+                  <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">{vendor.name}</h4>
+                  
+                  {/* Category Badge */}
+                  <span className="inline-block text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded mb-2 font-medium">
+                    {vendor.category}
+                  </span>
+
+                  {/* Rating */}
+                  {vendor.rating && (
+                    <div className="flex items-center gap-1 mb-2">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-medium text-gray-700">{vendor.rating.toFixed(1)}</span>
+                    </div>
+                  )}
+
+                  {/* Cost */}
+                  {vendor.estimatedCost && (
+                    <p className="text-sm text-gray-600 mb-3">
+                      Est. ${vendor.estimatedCost.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    </p>
+                  )}
+
+                  {/* Contact Info Preview */}
+                  <div className="space-y-1 text-xs text-gray-500 mb-3">
+                    {vendor.phone && (
+                      <div className="flex items-center gap-1">
+                        <Phone className="w-3 h-3" />
+                        <span className="truncate">{vendor.phone}</span>
+                      </div>
+                    )}
+                    {vendor.email && (
+                      <div className="flex items-center gap-1">
+                        <Mail className="w-3 h-3" />
+                        <span className="truncate">{vendor.email}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Search More CTA */}
+          <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-lg border border-primary-200 p-6 text-center">
+            <h4 className="text-lg font-semibold text-gray-900 mb-2">Want to see more vendors?</h4>
+            <p className="text-gray-600 mb-4">Sign up to unlock full vendor search, favorites, ratings, and more!</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                to="/register"
+                className="px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white font-semibold rounded-lg transition"
+              >
+                🔍 Search Vendors (Sign Up)
+              </Link>
+              <Link
+                to="/login"
+                className="px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-lg border border-gray-300 transition"
+              >
+                Already have account? Sign In
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 const Feature = ({ title, desc }: { title: string; desc: string }) => (
   <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md">
@@ -198,7 +472,7 @@ export default function Landing() {
 
       {/* Find Vendors Section */}
       <section className="w-full py-16 bg-gradient-to-b from-white to-pink-50">
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-6">
           {/* Promotional Text */}
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
@@ -212,68 +486,8 @@ export default function Landing() {
             </p>
           </div>
 
-          {/* Vendor Search Card */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
-            <div className="space-y-6">
-              {/* Location Input */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Your City or Location
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g., San Francisco, CA"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Vendor Category Selection */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  What are you looking for?
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {['Photographers', 'Venues', 'Caterers', 'DJs', 'Florists', 'Planners', 'Officiants', 'Decorators'].map((category) => (
-                    <button
-                      key={category}
-                      className="p-3 border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition font-medium text-gray-700"
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <Link
-                  to="/register"
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white font-semibold rounded-lg transition text-center"
-                >
-                  🔍 Search Vendors (Sign Up)
-                </Link>
-                <Link
-                  to="/login"
-                  className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition text-center"
-                >
-                  Already have account? Sign In
-                </Link>
-              </div>
-
-              {/* Benefits */}
-              <div className="bg-primary-50 rounded-lg p-4 border border-primary-200">
-                <p className="text-sm text-primary-900 mb-2 font-semibold">When you sign up, you'll get:</p>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-primary-800">
-                  <li>✓ Real vendor recommendations</li>
-                  <li>✓ Ratings and reviews</li>
-                  <li>✓ Save favorites</li>
-                  <li>✓ Compare quotes</li>
-                  <li>✓ Contact vendors directly</li>
-                  <li>✓ Track communications</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          {/* Location Detection & Vendor Display */}
+          <VendorPreview />
         </div>
       </section>
 
