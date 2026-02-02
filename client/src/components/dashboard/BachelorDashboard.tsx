@@ -74,6 +74,17 @@ export default function BachelorDashboard() {
     fetchTrip();
   }, []);
 
+  // Regenerate flights & stays when location/date changes (in edit mode or after update)
+  useEffect(() => {
+    if (trip && !editMode && tripDate && selectedState && selectedCountry) {
+      console.log('📍 Location/date changed, regenerating flights & stays');
+      const newFlights = generateMockFlights();
+      const newStays = generateMockStays();
+      setFlights(newFlights);
+      setStays(newStays);
+    }
+  }, [tripDate, selectedState, selectedCountry]);
+
   const fetchTrip = async () => {
     try {
       const token = localStorage.getItem('token');

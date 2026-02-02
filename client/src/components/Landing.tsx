@@ -20,11 +20,13 @@ const Feature = ({ title, desc }: { title: string; desc: string }) => (
 
 function OnboardingPreview() {
   const steps = [
-    { title: 'Role', text: 'Who are you planning for? (Getting Married / Parent / Planner)' },
-    { title: 'Religion', text: 'Do you have religious or cultural preferences?' },
-    { title: 'Location', text: "Where's the wedding? We use this to find local vendors." },
-    { title: 'Vendors', text: 'We find photographers, DJs, venues and caterers near you.' },
-    { title: 'Summary', text: 'Quick summary and dashboard preview — you are ready to go!' },
+    { title: 'Role', text: 'Who are you planning for? (Getting Married / Parent / Planner)', example: 'Example: "I\'m getting married"' },
+    { title: 'Date', text: 'When is your wedding? We\'ll help you track everything leading up to it.', example: 'Example: "March 15, 2026"' },
+    { title: 'Location', text: "Where's the wedding? We use this to find local vendors.", example: 'Example: "San Francisco, CA"' },
+    { title: 'Vendors', text: 'We find photographers, DJs, venues and caterers near you.', example: 'Example: "Show me photographers near San Francisco"' },
+    { title: 'Preferences', text: 'Tell us your style, budget, and what matters most.', example: 'Example: "Modern wedding, $50,000 budget, 150 guests"' },
+    { title: 'Ceremonies', text: 'Plan your ceremonies and cultural traditions.', example: 'Example: "Hindu ceremony with modern reception"' },
+    { title: 'Summary', text: 'Quick summary and dashboard preview — you are ready to go!', example: 'Example: "Review your wedding plan"' },
   ];
   const [i, setI] = useState(0);
   useEffect(() => {
@@ -40,7 +42,7 @@ function OnboardingPreview() {
             <div className="w-full">
               <div className="text-sm text-primary-700 font-semibold">{s.title}</div>
               <div className="mt-2 text-gray-700 text-sm">{s.text}</div>
-              <div className="mt-3 text-xs text-gray-500">Example: "Show me photographers near San Francisco"</div>
+              <div className="mt-3 text-xs text-gray-500">{s.example}</div>
             </div>
           </div>
         ))}

@@ -22,6 +22,7 @@ interface WeddingDay {
   dayNumber: number;
   date: string;
   title: string;
+  dayType: 'pre-wedding' | 'wedding' | 'post-wedding'; // Track the type
   events: DayEvent[];
 }
 
@@ -114,29 +115,87 @@ export default function CeremonyPlanning() {
     const baseDate = weddingDate ? new Date(weddingDate) : new Date();
     const defaultDays: WeddingDay[] = [];
 
-    // Create 4-day wedding structure
-    const dayTemplates = [
-      {
-        offset: -2,
-        title: 'Pre-Wedding Day 1',
-        defaultEvents: ['Mehndi Ceremony', 'Welcome Dinner', 'Family Gathering'],
-      },
-      {
-        offset: -1,
-        title: 'Pre-Wedding Day 2',
-        defaultEvents: ['Sangeet/Music Night', 'Haldi Ceremony', 'Rehearsal Dinner'],
-      },
-      {
+    // Create days based on numberOfDays selection
+    const daysCount = numberOfDays || 4;
+    const dayTemplates: Array<{ offset: number; title: string; dayType: 'pre-wedding' | 'wedding' | 'post-wedding'; defaultEvents: string[] }> = [];
+
+    // Build day templates based on numberOfDays
+    if (daysCount === 1) {
+      dayTemplates.push({
         offset: 0,
         title: 'Wedding Day',
+        dayType: 'wedding',
         defaultEvents: ['Main Ceremony', 'Reception', 'Grand Celebration'],
-      },
-      {
+      });
+    } else if (daysCount === 2) {
+      dayTemplates.push({
+        offset: -1,
+        title: 'Pre-Wedding Day',
+        dayType: 'pre-wedding',
+        defaultEvents: ['Mehndi/Sangeet', 'Welcome Dinner', 'Rehearsal'],
+      });
+      dayTemplates.push({
+        offset: 0,
+        title: 'Wedding Day',
+        dayType: 'wedding',
+        defaultEvents: ['Main Ceremony', 'Reception', 'Grand Celebration'],
+      });
+    } else if (daysCount === 3) {
+      dayTemplates.push({
+        offset: -1,
+        title: 'Pre-Wedding Day',
+        dayType: 'pre-wedding',
+        defaultEvents: ['Mehndi/Sangeet', 'Welcome Dinner'],
+      });
+      dayTemplates.push({
+        offset: 0,
+        title: 'Wedding Day',
+        dayType: 'wedding',
+        defaultEvents: ['Main Ceremony', 'Reception', 'Grand Celebration'],
+      });
+      dayTemplates.push({
         offset: 1,
         title: 'Post-Wedding',
+        dayType: 'post-wedding',
+        defaultEvents: ['Farewell Brunch', 'Gift Opening'],
+      });
+    } else {
+      // 4+ days: default to original structure
+      dayTemplates.push({
+        offset: -2,
+        title: 'Pre-Wedding Day 1',
+        dayType: 'pre-wedding',
+        defaultEvents: ['Mehndi Ceremony', 'Welcome Dinner', 'Family Gathering'],
+      });
+      dayTemplates.push({
+        offset: -1,
+        title: 'Pre-Wedding Day 2',
+        dayType: 'pre-wedding',
+        defaultEvents: ['Sangeet/Music Night', 'Haldi Ceremony', 'Rehearsal Dinner'],
+      });
+      dayTemplates.push({
+        offset: 0,
+        title: 'Wedding Day',
+        dayType: 'wedding',
+        defaultEvents: ['Main Ceremony', 'Reception', 'Grand Celebration'],
+      });
+      dayTemplates.push({
+        offset: 1,
+        title: 'Post-Wedding',
+        dayType: 'post-wedding',
         defaultEvents: ['Farewell Brunch', 'Gift Opening', 'Thank You Gathering'],
-      },
-    ];
+      });
+
+      // Add extra days if > 4
+      for (let i = 4; i < daysCount; i++) {
+        dayTemplates.push({
+          offset: i - 2,
+          title: `Day ${i}`,
+          dayType: i <= 2 ? 'pre-wedding' : 'post-wedding',
+          defaultEvents: ['Activities', 'Celebration'],
+        });
+      }
+    }
 
     dayTemplates.forEach((template, index) => {
       const dayDate = new Date(baseDate);
@@ -146,6 +205,7 @@ export default function CeremonyPlanning() {
         dayNumber: index + 1,
         date: dayDate.toISOString().split('T')[0],
         title: template.title,
+        dayType: template.dayType,
         events: template.defaultEvents.map((eventName, eventIndex) => ({
           id: `day${index}-event${eventIndex}`,
           name: eventName,
@@ -201,6 +261,22 @@ export default function CeremonyPlanning() {
         } else {
           event.rituals = [...rituals, ritual];
         }
+      }
+      setWeddingDays(updatedDays);
+    }
+  };
+
+  const changeDayType = (dayIndex: number, newType: 'pre-wedding' | 'wedding' | 'post-wedding') => {
+    const updatedDays = [...weddingDays];
+    if (updatedDays[dayIndex]) {
+      updatedDays[dayIndex].dayType = newType;
+      // Update title based on type
+      if (newType === 'wedding') {
+        updatedDays[dayIndex].title = 'Wedding Day';
+      } else if (newType === 'post-wedding') {
+        updatedDays[dayIndex].title = 'Post-Wedding';
+      } else {
+        updatedDays[dayIndex].title = `Pre-Wedding Day ${dayIndex + 1}`;
       }
       setWeddingDays(updatedDays);
     }
@@ -412,8 +488,19 @@ export default function CeremonyPlanning() {
       {weddingDays[selectedDay] && (
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">{weddingDays[selectedDay].title}</h3>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="text-2xl font-bold text-gray-900">{weddingDays[selectedDay].title}</h3>
+                <select
+                  value={weddingDays[selectedDay].dayType || 'pre-wedding'}
+                  onChange={(e) => changeDayType(selectedDay, e.target.value as 'pre-wedding' | 'wedding' | 'post-wedding')}
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-pink-500"
+                >
+                  <option value="pre-wedding">Pre-Wedding</option>
+                  <option value="wedding">Wedding Day</option>
+                  <option value="post-wedding">Post-Wedding</option>
+                </select>
+              </div>
               <p className="text-gray-600">
                 {new Date(weddingDays[selectedDay].date).toLocaleDateString('en-US', {
                   weekday: 'long',
