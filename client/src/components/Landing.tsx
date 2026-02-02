@@ -196,6 +196,87 @@ export default function Landing() {
         </div>
       </main>
 
+      {/* Find Vendors Section */}
+      <section className="w-full py-16 bg-gradient-to-b from-white to-pink-50">
+        <div className="max-w-4xl mx-auto px-6">
+          {/* Promotional Text */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+              Find Vendors Near You
+            </h2>
+            <p className="text-lg text-gray-600 mb-2">
+              Discover photographers, venues, caterers, and more in your area
+            </p>
+            <p className="text-sm text-primary-600 font-semibold">
+              ✨ And many more features when you sign up
+            </p>
+          </div>
+
+          {/* Vendor Search Card */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+            <div className="space-y-6">
+              {/* Location Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Your City or Location
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., San Francisco, CA"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Vendor Category Selection */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  What are you looking for?
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {['Photographers', 'Venues', 'Caterers', 'DJs', 'Florists', 'Planners', 'Officiants', 'Decorators'].map((category) => (
+                    <button
+                      key={category}
+                      className="p-3 border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition font-medium text-gray-700"
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <Link
+                  to="/register"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-600 to-pink-600 hover:from-primary-700 hover:to-pink-700 text-white font-semibold rounded-lg transition text-center"
+                >
+                  🔍 Search Vendors (Sign Up)
+                </Link>
+                <Link
+                  to="/login"
+                  className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition text-center"
+                >
+                  Already have account? Sign In
+                </Link>
+              </div>
+
+              {/* Benefits */}
+              <div className="bg-primary-50 rounded-lg p-4 border border-primary-200">
+                <p className="text-sm text-primary-900 mb-2 font-semibold">When you sign up, you'll get:</p>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-primary-800">
+                  <li>✓ Real vendor recommendations</li>
+                  <li>✓ Ratings and reviews</li>
+                  <li>✓ Save favorites</li>
+                  <li>✓ Compare quotes</li>
+                  <li>✓ Contact vendors directly</li>
+                  <li>✓ Track communications</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Gallery carousel section */}
       <section className="w-full py-12">
         <div className="max-w-6xl mx-auto px-6">
