@@ -243,3 +243,56 @@ export const exportSeatingToCSV = (seatingData: any) => {
   
   downloadCSV(csv, `seating-${Date.now()}`);
 };
+
+/**
+ * Export seating chart to CSV with detailed table information
+ * Includes table number, shape, name, capacity, and guest names
+ */
+export const exportSeatingTableToCSV = (tables: any[]) => {
+  const rows: string[][] = [];
+  
+  // Header
+  rows.push(['Seating Arrangement', '', '', '', '']);
+  rows.push(['']);
+  rows.push(['Table #', 'Name', 'Shape', 'Capacity', 'Guest Names']);
+  
+  // Data rows - one per table
+  tables.forEach((table, index) => {
+    const guestNames = table.guests?.map((g: any) => g.name).join('; ') || 'Empty';
+    rows.push([
+      String(index + 1),
+      table.name || `Table ${index + 1}`,
+      table.shape || 'Round',
+      String(table.capacity),
+      guestNames
+    ]);
+  });
+  
+  // Add summary
+  rows.push(['']);
+  rows.push(['Summary', '', '', '', '']);
+  const totalTables = tables.length;
+  const totalCapacity = tables.reduce((sum: number, table: any) => sum + table.capacity, 0);
+  const totalAssigned = tables.reduce((sum: number, table: any) => sum + (table.guests?.length || 0), 0);
+  
+  rows.push(['Total Tables', String(totalTables), '', '', '']);
+  rows.push(['Total Capacity', String(totalCapacity), '', '', '']);
+  rows.push(['Total Guests Assigned', String(totalAssigned), '', '', '']);
+  rows.push(['Empty Seats', String(totalCapacity - totalAssigned), '', '', '']);
+  
+  // Convert to CSV
+  const csv = rows.map(row => 
+    row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(',')
+  ).join('\n');
+  
+  // Download
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `seating-arrangement-${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+};
