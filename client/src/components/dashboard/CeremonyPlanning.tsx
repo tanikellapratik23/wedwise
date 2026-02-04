@@ -1084,7 +1084,7 @@ export default function CeremonyPlanning() {
                       : 'bg-white border-2 border-pink-300 text-pink-700 hover:bg-pink-50'
                   }`}
                 >
-                  {interfaithMode ? 'Yes, show interfaith options' : 'No, single faith'}
+                  {interfaithMode ? 'No, single faith' : 'Yes, show interfaith options'}
                 </button>
               </div>
               {interfaithMode && (
