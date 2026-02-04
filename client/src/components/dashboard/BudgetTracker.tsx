@@ -32,20 +32,33 @@ export default function BudgetTracker() {
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
+    // Load from localStorage immediately for instant display
+    try {
+      const cached = localStorage.getItem('budget');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCategories(parsed);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load cached budget:', e);
+    }
+    
     fetchUserSettings();
     fetchBudgetCategories();
   }, []);
 
-  // Autosave budget categories locally while user is active (debounced)
+  // Save to localStorage immediately whenever categories change
   useEffect(() => {
-    const id = setTimeout(() => {
+    if (categories.length > 0) {
       try {
+        localStorage.setItem('budget', JSON.stringify(categories));
         if (isAutoSaveEnabled()) setWithTTL('budget', categories, 24 * 60 * 60 * 1000);
       } catch (e) {
-        // ignore
+        console.error('Failed to save budget:', e);
       }
-    }, 1000);
-    return () => clearTimeout(id);
+    }
   }, [categories]);
 
   const fetchBudgetCategories = async () => {

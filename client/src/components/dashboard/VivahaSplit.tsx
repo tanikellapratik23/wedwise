@@ -58,28 +58,111 @@ export default function VivahaSplit() {
   useEffect(() => {
     fetchData();
   }, []);
+  
+  // Auto-sync budget to expenses when budget categories or people change
+  useEffect(() => {
+    if (budgetCategories.length > 0 && people.length > 0) {
+      syncBudgetNow();
+    }
+  }, [budgetCategories.length, people.length]);
+  
+  const syncBudgetNow = () => {
+    if (budgetCategories.length === 0) {
+      alert('No budget categories found. Add items to your Budget first!');
+      return;
+    }
+    
+    const synced = syncBudgetToExpenses(budgetCategories, expenses);
+    setExpenses(synced);
+    localStorage.setItem('vivahaSplitExpenses', JSON.stringify(synced));
+  };
 
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
       
-      // Fetch budget categories
-      const budgetRes = await axios.get(`${API_URL}/api/budget`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (budgetRes.data.success) {
-        setBudgetCategories(budgetRes.data.data || []);
+      // Load budget from localStorage first (instant display)
+      const cachedBudget = localStorage.getItem('budget');
+      let budgetData: any[] = [];
+      if (cachedBudget) {
+        try {
+          budgetData = JSON.parse(cachedBudget);
+          setBudgetCategories(budgetData);
+        } catch (e) {
+          console.error('Failed to parse cached budget:', e);
+        }
+      }
+      
+      // Fetch budget categories from API
+      try {
+        const budgetRes = await axios.get(`${API_URL}/api/budget`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (budgetRes.data.success && budgetRes.data.data) {
+          budgetData = budgetRes.data.data;
+          setBudgetCategories(budgetData);
+        }
+      } catch (error) {
+        console.log('Using cached budget data');
       }
 
-      // Load people and expenses from localStorage for now
+      // Load people and expenses from localStorage
       const savedPeople = localStorage.getItem('vivahaSplitPeople');
       const savedExpenses = localStorage.getItem('vivahaSplitExpenses');
       
       if (savedPeople) setPeople(JSON.parse(savedPeople));
-      if (savedExpenses) setExpenses(JSON.parse(savedExpenses));
+      
+      let existingExpenses: Expense[] = [];
+      if (savedExpenses) {
+        existingExpenses = JSON.parse(savedExpenses);
+      }
+      
+      // Auto-sync budget expenses to VivahaSplit
+      const budgetExpenses = syncBudgetToExpenses(budgetData, existingExpenses);
+      if (budgetExpenses.length > existingExpenses.length) {
+        setExpenses(budgetExpenses);
+        localStorage.setItem('vivahaSplitExpenses', JSON.stringify(budgetExpenses));
+      } else {
+        setExpenses(existingExpenses);
+      }
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
+  };
+  
+  // Sync budget categories to expenses automatically
+  const syncBudgetToExpenses = (budgetCategories: any[], existingExpenses: Expense[]): Expense[] => {
+    const synced: Expense[] = [...existingExpenses];
+    const existingIds = new Set(synced.map(e => e.id || e._id));
+    
+    budgetCategories.forEach((category) => {
+      const budgetId = `budget-${category._id || category.id}`;
+      
+      // Check if this budget category is already in expenses
+      if (!existingIds.has(budgetId) && (category.actualAmount > 0 || category.estimatedAmount > 0)) {
+        const amount = category.actualAmount || category.estimatedAmount;
+        
+        // Create expense from budget category
+        const expense: Expense = {
+          id: budgetId,
+          categoryName: category.name,
+          description: `${category.name} (from Budget)`,
+          totalAmount: amount,
+          paidBy: people.length > 0 ? people[0].id : '',
+          splits: people.length > 0 ? people.map(p => ({
+            personId: p.id,
+            amount: parseFloat((amount / people.length).toFixed(2)),
+            paid: false,
+          })) : [],
+          date: new Date().toISOString(),
+          settled: false,
+        };
+        
+        synced.push(expense);
+      }
+    });
+    
+    return synced;
   };
 
   const savePeople = (updatedPeople: Person[]) => {
@@ -254,6 +337,17 @@ export default function VivahaSplit() {
         </div>
         
         <div className="flex gap-3">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={syncBudgetNow}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition"
+            title="Sync expenses from Budget"
+          >
+            <ArrowRight className="w-4 h-4" />
+            Sync Budget
+          </motion.button>
+          
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
