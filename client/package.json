@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^3.3.4",
     "axios": "^1.6.5",
     "date-fns": "^3.3.1",
+    "framer-motion": "^12.31.0",
     "lucide-react": "^0.323.0",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",

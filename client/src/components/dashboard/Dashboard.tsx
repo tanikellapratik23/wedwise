@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music, PartyPopper, Sparkles, BookOpen, MoreHorizontal } from 'lucide-react';
+import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music, PartyPopper, Sparkles, BookOpen, MoreHorizontal, Split } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { downloadBackupFile, importBackupFile, downloadBackupAsDoc } from '../../utils/offlineBackup';
 import axios from 'axios';
@@ -16,6 +16,7 @@ import MusicPlanner from './MusicPlanner';
 import BachelorDashboard from './BachelorDashboard';
 import OutfitPlanner from './OutfitPlanner';
 import PostWeddingStory from './PostWeddingStory';
+import VivahaSplit from './VivahaSplit';
 import AdminDashboard from './AdminDashboard';
 import { setAutoSaveEnabled, isAutoSaveEnabled } from '../../utils/autosave';
 import { ErrorBoundary } from '../ErrorBoundary';
@@ -145,6 +146,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
     { name: 'Overview', path: '/dashboard', icon: LayoutGrid },
     { name: 'Guest List', path: '/dashboard/guests', icon: Users },
     { name: 'Budget', path: '/dashboard/budget', icon: DollarSign },
+    { name: 'Vivaha Split', path: '/dashboard/split', icon: Split },
     { name: 'To-Dos', path: '/dashboard/todos', icon: CheckSquare },
     { name: 'Ceremony', path: '/dashboard/ceremony', icon: Church },
     { name: 'Sound & Music', path: '/dashboard/music', icon: Music },
@@ -320,6 +322,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
                 <Route path="/" element={<Overview />} />
                 <Route path="/guests" element={<GuestList />} />
                 <Route path="/budget" element={<BudgetTracker />} />
+                <Route path="/split" element={<VivahaSplit />} />
                 <Route path="/todos" element={<TodoList />} />
                 <Route path="/ceremony" element={<CeremonyPlanning />} />
                 <Route path="/music" element={<MusicPlanner />} />
