@@ -75,16 +75,21 @@ export default function BachelorDashboard() {
     fetchTrip();
   }, []);
 
-  // Regenerate flights & stays when location/date changes (in edit mode or after update)
+  // Regenerate flights & stays when location/date changes
   useEffect(() => {
-    if (trip && !editMode && tripDate && selectedState && selectedCountry) {
-      console.log('📍 Location/date changed, regenerating flights & stays');
-      const newFlights = generateMockFlights();
-      const newStays = generateMockStays();
+    if (tripDate && destination) {
+      console.log('📍 Location/date changed, regenerating flights & stays for:', {
+        destination,
+        tripDate,
+        state: selectedState,
+        country: selectedCountry
+      });
+      const newFlights = generateMockFlights(destination, tripDate, selectedState, selectedCountry);
+      const newStays = generateMockStays(destination, tripDate, selectedState, selectedCountry);
       setFlights(newFlights);
       setStays(newStays);
     }
-  }, [tripDate, selectedState, selectedCountry]);
+  }, [tripDate, destination, selectedState, selectedCountry]);
 
   const fetchTrip = async () => {
     try {
@@ -104,19 +109,36 @@ export default function BachelorDashboard() {
         setSelectedFlight(tripData.selectedFlight || null);
         setSelectedStay(tripData.selectedStay || null);
         
-        // Update state variables from trip data so generateMockFlights/Stays uses correct location/date
+        // Update state variables from trip data
         if (tripData.tripDate) setTripDate(tripData.tripDate);
+        if (tripData.location?.city) setDestination(tripData.location.city);
         if (tripData.location?.state) setSelectedState(tripData.location.state);
         if (tripData.location?.country) setSelectedCountry(tripData.location.country);
+        if (tripData.eventName) setEventName(tripData.eventName);
+        if (tripData.eventType) setEventType(tripData.eventType);
+        if (tripData.estimatedBudget) setTotalBudget(tripData.estimatedBudget.toString());
         
-        // Generate flights and stays for the trip
+        // Generate flights and stays for the trip with actual trip data
         console.log('🎉 Fetched trip, generating flights/stays with:', {
+          destination: tripData.location?.city,
           tripDate: tripData.tripDate,
           state: tripData.location?.state,
           country: tripData.location?.country
         });
-        setFlights(generateMockFlights());
-        setStays(generateMockStays());
+        const fetchedFlights = generateMockFlights(
+          tripData.location?.city || '',
+          tripData.tripDate,
+          tripData.location?.state || 'CA',
+          tripData.location?.country || 'US'
+        );
+        const fetchedStays = generateMockStays(
+          tripData.location?.city || '',
+          tripData.tripDate,
+          tripData.location?.state || 'CA',
+          tripData.location?.country || 'US'
+        );
+        setFlights(fetchedFlights);
+        setStays(fetchedStays);
       }
       setError('');
     } catch (error: any) {
@@ -128,7 +150,7 @@ export default function BachelorDashboard() {
     }
   };
 
-  const generateMockFlights = (): Flight[] => {
+  const generateMockFlights = (dest: string, date: string, state: string, country: string): Flight[] => {
     const airlines = [
       { name: 'United', logo: 'https://images.unsplash.com/photo-1552881173-d3d42e0be9c3?w=400&h=300&fit=crop', code: 'UA' },
       { name: 'Delta', logo: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=300&fit=crop', code: 'DL' },
@@ -136,9 +158,12 @@ export default function BachelorDashboard() {
       { name: 'Southwest', logo: 'https://images.unsplash.com/photo-1513521399740-d52e2ff8e000?w=400&h=300&fit=crop', code: 'SW' },
     ];
     
-    const baseDate = tripDate ? new Date(tripDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const baseDate = date ? new Date(date) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const departureDate = baseDate.toISOString().split('T')[0];
     const returnDate = new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
+    // Use passed destination parameter instead of closure variable
+    const targetDestination = dest || state || 'vacation';
     
     try {
       return Array.from({ length: 4 }).map((_, i) => {
@@ -146,33 +171,37 @@ export default function BachelorDashboard() {
         const departureTime = new Date(baseDate.getTime() + i * 2 * 60 * 60 * 1000);
         const arrivalTime = new Date(baseDate.getTime() + (i * 2 + 5.5) * 60 * 60 * 1000);
         
+        // Generate unique booking URL for each destination and date
+        const bookingUrl = generateSkyscannerUrl('Los Angeles', targetDestination, departureDate, returnDate, 4);
+        console.log(`✈️ Generated flight ${i + 1} to ${targetDestination} on ${departureDate}, URL: ${bookingUrl.substring(0, 80)}...`);
+        
         return {
-          id: `flight-${i}`,
+          id: `flight-${i}-${Date.now()}`,
           airline: airline.name,
           departure: departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
           arrival: arrivalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
           price: 250 + Math.random() * 300,
           duration: '5h 30m',
           image: airline.logo,
-          bookingUrl: generateSkyscannerUrl('Los Angeles', destination || selectedState, departureDate, returnDate, 4)
+          bookingUrl
         };
       });
     } catch (err) {
       console.error('Error generating flights:', err);
       return Array.from({ length: 4 }).map((_, i) => ({
-        id: `flight-${i}`,
+        id: `flight-${i}-${Date.now()}`,
         airline: ['United', 'Delta', 'American', 'Southwest'][i],
-        departure: ['08:00 AM', '10:00 PM', '12:00 AM', '02:00 AM'][i],
-        arrival: ['11:00 AM', '01:00 AM', '03:00 AM', '05:00 AM'][i],
+        departure: ['08:00 AM', '10:00 AM', '12:00 PM', '02:00 PM'][i],
+        arrival: ['11:00 AM', '01:00 PM', '03:00 PM', '05:00 PM'][i],
         price: 250 + Math.random() * 300,
         duration: '5h 30m',
         image: 'https://images.unsplash.com/photo-1552881173-d3d42e0be9c3?w=400&h=300&fit=crop',
-        bookingUrl: generateSkyscannerUrl('Los Angeles', destination || 'vacation', departureDate, returnDate, 4)
+        bookingUrl: generateSkyscannerUrl('Los Angeles', targetDestination, departureDate, returnDate, 4)
       }));
     }
   };
 
-  const generateMockStays = (): Stay[] => {
+  const generateMockStays = (dest: string, date: string, state: string, country: string): Stay[] => {
     const stayTypes = [
       { name: 'Luxury Hotel', type: 'Hotel', image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop', booking: 'booking.com' },
       { name: 'Modern Airbnb', type: 'Airbnb', image: 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=300&fit=crop', booking: 'airbnb.com' },
@@ -181,20 +210,24 @@ export default function BachelorDashboard() {
       { name: 'Private Villa', type: 'Villa', image: 'https://images.unsplash.com/photo-1512376991164-a485fb76f51f?w=400&h=300&fit=crop', booking: 'airbnb.com' },
     ];
     
-    const checkIn = tripDate ? new Date(tripDate).toISOString().split('T')[0] : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    const checkOut = tripDate ? new Date(new Date(tripDate).getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const checkIn = date ? new Date(date).toISOString().split('T')[0] : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const checkOut = date ? new Date(new Date(date).getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
+    // Use passed destination parameter instead of closure variable
+    const targetDestination = dest || state || 'vacation';
     
     return Array.from({ length: 5 }).map((_, i) => {
       const stay = stayTypes[i];
       
-      // Generate proper booking URLs with destination
-      const dest = destination || selectedState || 'vacation';
+      // Generate proper booking URLs with actual destination and dates
       const bookingLink = stay.booking === 'airbnb.com' 
-        ? generateAirbnbUrl(dest, checkIn, checkOut, 4)
-        : generateBookingComUrl(dest, checkIn, checkOut, 4);
+        ? generateAirbnbUrl(targetDestination, checkIn, checkOut, 4)
+        : generateBookingComUrl(targetDestination, checkIn, checkOut, 4);
+      
+      console.log(`🏨 Generated stay ${i + 1} for ${targetDestination} (${checkIn} to ${checkOut}), URL: ${bookingLink.substring(0, 80)}...`);
       
       return {
-        id: `stay-${i}`,
+        id: `stay-${i}-${Date.now()}`,
         name: stay.name,
         type: stay.type,
         price: 150 + Math.random() * 400,
@@ -229,10 +262,11 @@ export default function BachelorDashboard() {
 
       if (response.data.success || response.data.data) {
         setTrip(response.data.data);
-        const generatedFlights = generateMockFlights();
-        const generatedStays = generateMockStays();
-        console.log('✈️ Generated flights:', generatedFlights.length);
-        console.log('🏨 Generated stays:', generatedStays.length);
+        // Generate flights and stays with the actual trip parameters
+        const generatedFlights = generateMockFlights(destination, tripDate, selectedState, selectedCountry);
+        const generatedStays = generateMockStays(destination, tripDate, selectedState, selectedCountry);
+        console.log('✈️ Generated flights:', generatedFlights.length, 'for', destination);
+        console.log('🏨 Generated stays:', generatedStays.length, 'for', destination);
         setFlights(generatedFlights);
         setStays(generatedStays);
         setError('');
@@ -272,10 +306,28 @@ export default function BachelorDashboard() {
       });
 
       if (response.data.success || response.data.data) {
-        setTrip(response.data.data);
+        const updatedTrip = response.data.data;
+        setTrip(updatedTrip);
+        
+        // Regenerate flights and stays with updated parameters
+        const newFlights = generateMockFlights(
+          updatedTrip.location.city,
+          updatedTrip.tripDate,
+          updatedTrip.location.state,
+          updatedTrip.location.country
+        );
+        const newStays = generateMockStays(
+          updatedTrip.location.city,
+          updatedTrip.tripDate,
+          updatedTrip.location.state,
+          updatedTrip.location.country
+        );
+        setFlights(newFlights);
+        setStays(newStays);
+        
         setEditMode(false);
         setError('');
-        alert('✅ Trip updated successfully!');
+        alert('✅ Trip updated! Flights and stays refreshed for new destination/dates.');
       } else {
         setError(response.data.error || 'Failed to update trip');
       }
@@ -638,24 +690,18 @@ export default function BachelorDashboard() {
                   </div>
                 )}
 
-                {/* City */}
-                {cityList.length > 0 && (
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
-                    <select
-                      value={destination}
-                      onChange={(e) => setDestination(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                    >
-                      <option value="">Select a city</option>
-                      {cityList.map((c: any) => (
-                        <option key={c.code} value={c.code}>
-                          {c.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                {/* City / Destination - text input for flexibility */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Destination City</label>
+                  <input
+                    type="text"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    placeholder="e.g., Las Vegas, Miami, Cancun..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Flights & stays will update based on your destination</p>
+                </div>
 
                 {/* Budget */}
                 <div>
