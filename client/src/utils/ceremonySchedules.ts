@@ -899,6 +899,161 @@ export const interfaithSchedules = {
     ],
     whyEffective: 'Separate ceremonies respect each faith\'s requirements and sanctity. Shared celebrations emphasize common Abrahamic values of family, commitment, and love. Focuses on religious harmony and mutual respect.',
   },
+
+  'hindu-muslim': {
+    religions: 'Hindu & Muslim',
+    description: 'Harmonious blend of two rich ancient traditions',
+    totalDays: 4,
+    schedule: [
+      {
+        dayNumber: 1,
+        dayName: 'Mehendi & Ganesh Puja',
+        dayType: 'pre-wedding',
+        events: [
+          {
+            time: '10:00 AM',
+            duration: '1 hour',
+            name: 'Ganesh Puja',
+            description: 'Hindu ceremony invoking Lord Ganesh for blessings',
+            significance: 'Removing obstacles and blessing the upcoming union',
+            tips: [
+              'Set up small mandap or altar',
+              'Have priest conduct brief ceremony',
+              'Welcome Muslim family to observe',
+            ],
+          },
+          {
+            time: '3:00 PM',
+            duration: '4 hours',
+            name: 'Mehendi Ceremony',
+            description: 'Elaborate henna application ceremony',
+            significance: 'Shared tradition in both Hindu and Muslim cultures',
+            tips: [
+              'Celebrate that both cultures cherish mehendi',
+              'Mix traditional music from both backgrounds',
+              'Create inclusive atmosphere for all guests',
+            ],
+          },
+        ],
+        whyEffective: 'Mehendi is a beautiful shared tradition between both cultures, creating immediate common ground. Starting with blessings from both traditions sets respectful tone.',
+      },
+      {
+        dayNumber: 2,
+        dayName: 'Sangeet & Pre-Wedding Feast',
+        dayType: 'pre-wedding',
+        events: [
+          {
+            time: '7:00 PM',
+            duration: '4 hours',
+            name: 'Sangeet with Qawwali',
+            description: 'Musical evening blending Bollywood and Sufi traditions',
+            significance: 'Music as universal language bringing families together',
+            tips: [
+              'Include qawwali performances alongside Bollywood',
+              'Mix traditional and modern songs',
+              'Encourage both families to perform together',
+              'Create fusion dance performances',
+            ],
+          },
+        ],
+        whyEffective: 'Music transcends religious boundaries. Combining Bollywood energy with Sufi devotional music creates magical cultural exchange that educates and entertains.',
+      },
+      {
+        dayNumber: 3,
+        dayName: 'Wedding Day - Dual Ceremonies',
+        dayType: 'wedding',
+        events: [
+          {
+            time: '8:00 AM',
+            duration: '1 hour',
+            name: 'Haldi Ceremony',
+            description: 'Traditional Hindu turmeric blessing',
+            significance: 'Purification and beautification before wedding',
+            tips: [
+              'Keep it intimate with close family',
+              'Brief Muslim family on significance',
+              'Set up for easy cleanup',
+            ],
+          },
+          {
+            time: '10:00 AM',
+            duration: '1.5 hours',
+            name: 'Nikah Ceremony',
+            description: 'Islamic marriage contract with imam',
+            significance: 'Religious and legal union in Islamic tradition',
+            tips: [
+              'Hold at mosque or neutral elegant venue',
+              'Ensure mahr is discussed and agreed',
+              'Provide program explaining nikah for Hindu guests',
+              'Have witnesses from both families',
+            ],
+          },
+          {
+            time: '12:00 PM',
+            duration: '2 hours',
+            name: 'Lunch Break & Outfit Change',
+            description: 'Time to rest and change for Hindu ceremony',
+          },
+          {
+            time: '2:00 PM',
+            duration: '3 hours',
+            name: 'Hindu Wedding Ceremony',
+            description: 'Vedic ceremony under mandap with sacred rituals',
+            significance: 'Sacred union with saptapadi and agni as witness',
+            tips: [
+              'Include key rituals: kanyadaan, saptapadi, sindoor',
+              'Provide explanations for Muslim guests',
+              'Consider shortened ceremony to respect all guests',
+              'Have pandit explain each ritual in English/Urdu',
+            ],
+          },
+          {
+            time: '5:00 PM',
+            duration: '5 hours',
+            name: 'Grand Reception',
+            description: 'Evening celebration honoring both traditions',
+            significance: 'United celebration of new beginning',
+            tips: [
+              'Serve fusion menu - biryani, chaat, and traditional Indian dishes',
+              'Ensure all food is halal',
+              'Mix Bollywood, qawwali, and contemporary music',
+              'Include traditions from both (cake cutting AND ceremonial rituals)',
+              'Create photo displays celebrating both cultures',
+            ],
+          },
+        ],
+        whyEffective: 'Morning nikah respects Islamic timing. Afternoon Hindu ceremony allows for proper auspicious muhurat. Separation between ceremonies gives each tradition full dignity without rushing. Joint reception celebrates unified future.',
+      },
+      {
+        dayNumber: 4,
+        dayName: 'Walima & Blessings',
+        dayType: 'post-wedding',
+        events: [
+          {
+            time: '12:00 PM',
+            duration: '3 hours',
+            name: 'Walima Lunch',
+            description: 'Islamic tradition reception hosted by groom\'s family',
+            significance: 'Formal announcement of marriage to community',
+            tips: [
+              'Serve elaborate halal feast',
+              'Welcome both Hindu and Muslim community',
+              'Keep atmosphere joyful and inclusive',
+            ],
+          },
+          {
+            time: '7:00 PM',
+            duration: '2 hours',
+            name: 'Family Blessings Dinner',
+            description: 'Intimate gathering with immediate family',
+            significance: 'Elders from both families bless the newlyweds',
+          },
+        ],
+        whyEffective: 'Walima honors Islamic tradition of community celebration. Final blessing dinner brings both families together in intimate setting, strengthening bonds for future.',
+      },
+    ],
+    whyEffective: 'This schedule honors both Hindu and Muslim traditions equally, using shared love of celebration, music, and family. Mehendi as common ground, separate religious ceremonies for full respect, and fusion celebrations that create something beautiful and new. Demonstrates that ancient traditions can coexist harmoniously.',
+  },
 };
 
 export const getCeremonySchedule = (religion: string): CeremonySchedule | null => {

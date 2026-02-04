@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Plus, DollarSign, Users, CheckCircle, XCircle, ArrowRight, ArrowLeft, Trash2, Edit2, Save, X } from 'lucide-react';
+import { Plus, DollarSign, Users, CheckCircle, XCircle, ArrowRight, ArrowLeft, Trash2, Edit2, Save, X, FileText, Mail, Download } from 'lucide-react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
+import { generateInvoiceNumber, downloadInvoice, emailInvoice } from '../../utils/invoiceGenerator';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -43,6 +44,10 @@ export default function VivahaSplit() {
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [selectedExpenseForInvoice, setSelectedExpenseForInvoice] = useState<Expense | null>(null);
+  const [invoiceEmail, setInvoiceEmail] = useState('');
+  const [sendingInvoice, setSendingInvoice] = useState(false);
 
   const [newExpense, setNewExpense] = useState({
     categoryName: '',
@@ -321,6 +326,94 @@ export default function VivahaSplit() {
   const settledAmount = expenses.filter(e => e.settled).reduce((sum, e) => sum + e.totalAmount, 0);
 
   const getPersonName = (id: string) => people.find(p => p.id === id)?.name || 'Unknown';
+  const getPersonEmail = (id: string) => people.find(p => p.id === id)?.email || '';
+
+  const openInvoiceModal = (expense: Expense) => {
+    setSelectedExpenseForInvoice(expense);
+    setShowInvoiceModal(true);
+    setInvoiceEmail('');
+  };
+
+  const handleDownloadInvoice = (expense: Expense, personId: string) => {
+    const person = people.find(p => p.id === personId);
+    const payer = people.find(p => p.id === expense.paidBy);
+    const split = expense.splits.find(s => s.personId === personId);
+    
+    if (!person || !payer || !split) return;
+
+    const invoiceData = {
+      invoiceNumber: generateInvoiceNumber(),
+      date: expense.date,
+      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+      from: {
+        name: payer.name,
+        email: payer.email,
+      },
+      to: {
+        name: person.name,
+        email: person.email,
+      },
+      items: [
+        {
+          description: `${expense.categoryName}: ${expense.description}`,
+          amount: split.amount,
+        }
+      ],
+      total: split.amount,
+    };
+
+    downloadInvoice(invoiceData);
+    alert('Invoice downloaded successfully!');
+  };
+
+  const handleEmailInvoice = async (expense: Expense, personId: string, email: string) => {
+    if (!email.trim()) {
+      alert('Please enter an email address');
+      return;
+    }
+
+    setSendingInvoice(true);
+    try {
+      const person = people.find(p => p.id === personId);
+      const payer = people.find(p => p.id === expense.paidBy);
+      const split = expense.splits.find(s => s.personId === personId);
+      
+      if (!person || !payer || !split) {
+        throw new Error('Invalid expense data');
+      }
+
+      const invoiceData = {
+        invoiceNumber: generateInvoiceNumber(),
+        date: expense.date,
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        from: {
+          name: payer.name,
+          email: payer.email,
+        },
+        to: {
+          name: person.name,
+          email: email,
+        },
+        items: [
+          {
+            description: `${expense.categoryName}: ${expense.description}`,
+            amount: split.amount,
+          }
+        ],
+        total: split.amount,
+      };
+
+      await emailInvoice(invoiceData, email);
+      alert('Invoice sent successfully!');
+      setShowInvoiceModal(false);
+      setSelectedExpenseForInvoice(null);
+    } catch (error) {
+      console.error('Failed to send invoice:', error);
+      alert('Failed to send invoice. Please try again or download instead.');
+    } finally {
+      setSendingInvoice(false);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
@@ -554,6 +647,16 @@ export default function VivahaSplit() {
                       </div>
                       
                       <div className="flex gap-2">
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => openInvoiceModal(expense)}
+                          className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition"
+                          title="Generate Invoice"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </motion.button>
+                        
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
@@ -826,6 +929,116 @@ export default function VivahaSplit() {
                     </motion.button>
                   </div>
                 )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Invoice Modal */}
+      <AnimatePresence>
+        {showInvoiceModal && selectedExpenseForInvoice && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-50"
+              onClick={() => setShowInvoiceModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl z-50 w-full max-w-lg max-h-[80vh] overflow-y-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 text-blue-600 p-3 rounded-lg">
+                      <FileText className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">Generate Invoice</h3>
+                      <p className="text-sm text-gray-600">{selectedExpenseForInvoice.description}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowInvoiceModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-gray-700">
+                    Generate professional invoices for each person who owes money for this expense. 
+                    Download as HTML or email directly.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {selectedExpenseForInvoice.splits
+                    .filter(split => split.personId !== selectedExpenseForInvoice.paidBy && split.amount > 0)
+                    .map((split) => {
+                      const person = people.find(p => p.id === split.personId);
+                      if (!person) return null;
+
+                      return (
+                        <div key={split.personId} className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                              <p className="font-semibold text-gray-900">{person.name}</p>
+                              <p className="text-sm text-gray-600">{person.email || 'No email'}</p>
+                            </div>
+                            <div className="text-xl font-bold text-blue-600">
+                              ${split.amount.toFixed(2)}
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleDownloadInvoice(selectedExpenseForInvoice, split.personId)}
+                              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition text-sm font-medium"
+                            >
+                              <Download className="w-4 h-4" />
+                              Download Invoice
+                            </button>
+                            
+                            <button
+                              onClick={() => {
+                                const email = person.email || prompt(`Enter email address for ${person.name}:`);
+                                if (email) {
+                                  handleEmailInvoice(selectedExpenseForInvoice, split.personId, email);
+                                }
+                              }}
+                              disabled={sendingInvoice}
+                              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition text-sm font-medium disabled:opacity-50"
+                            >
+                              <Mail className="w-4 h-4" />
+                              {sendingInvoice ? 'Sending...' : 'Email Invoice'}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                {selectedExpenseForInvoice.splits.filter(s => s.personId !== selectedExpenseForInvoice.paidBy && s.amount > 0).length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No one owes money for this expense.</p>
+                  </div>
+                )}
+
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <button
+                    onClick={() => setShowInvoiceModal(false)}
+                    className="w-full px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition font-medium"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </motion.div>
           </>
