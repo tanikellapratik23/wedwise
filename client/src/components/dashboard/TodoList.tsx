@@ -66,7 +66,6 @@ export default function TodoList() {
 
   const fetchTodos = async () => {
     try {
-      setLoading(true);
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
         const cached = localStorage.getItem('todos');
@@ -103,21 +102,37 @@ export default function TodoList() {
     }
   };
 
-  useEffect(() => { fetchTodos(); }, []);
-
-  // Autosave todos locally while user is on this screen (debounced + TTL)
   useEffect(() => {
-    const id = setTimeout(() => {
+    // Load from localStorage immediately for instant display
+    try {
+      const cached = localStorage.getItem('todos');
+      if (cached) {
+        const parsed = JSON.parse(cached) as any[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const items = parsed.map((t) => ({ ...t, dueDate: t.dueDate ? new Date(t.dueDate) : undefined }));
+          setTodos(items);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load cached todos:', e);
+    }
+    
+    fetchTodos();
+  }, []);
+
+  // Save to localStorage immediately whenever todos change
+  useEffect(() => {
+    if (todos.length > 0) {
       try {
+        const serial = todos.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
+        localStorage.setItem('todos', JSON.stringify(serial));
         if (isAutoSaveEnabled()) {
-          const serial = todos.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
           setWithTTL('todos', serial, 24 * 60 * 60 * 1000);
         }
       } catch (e) {
-        // ignore
+        console.error('Failed to save todos:', e);
       }
-    }, 1000);
-    return () => clearTimeout(id);
+    }
   }, [todos]);
 
   const addTodo = async () => {

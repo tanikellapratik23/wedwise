@@ -36,21 +36,34 @@ export default function GuestList() {
   });
 
   useEffect(() => {
+    // Load from localStorage immediately for instant display
+    try {
+      const cached = localStorage.getItem('guests');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setGuests(parsed);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load cached guests:', e);
+    }
+    
     fetchGuests();
   }, []);
 
-  // Autosave guests locally while the user is on this screen (uses TTL)
+  // Save to localStorage immediately whenever guests change
   useEffect(() => {
-    const id = setTimeout(() => {
+    if (guests.length > 0) {
       try {
+        localStorage.setItem('guests', JSON.stringify(guests));
         if (isAutoSaveEnabled()) {
           setWithTTL('guests', guests, 24 * 60 * 60 * 1000);
         }
       } catch (e) {
-        // ignore storage errors
+        console.error('Failed to save guests:', e);
       }
-    }, 1000);
-    return () => clearTimeout(id);
+    }
   }, [guests]);
 
   const fetchGuests = async () => {

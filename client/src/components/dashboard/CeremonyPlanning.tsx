@@ -50,26 +50,38 @@ export default function CeremonyPlanning() {
   });
 
   useEffect(() => {
+    // Load from localStorage immediately for instant display
+    try {
+      const cached = localStorage.getItem('ceremony');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.userSettings) setUserSettings(parsed.userSettings);
+        if (parsed.selectedRituals) setSelectedRituals(parsed.selectedRituals);
+        if (parsed.selectedTraditions) setSelectedTraditions(parsed.selectedTraditions);
+        if (parsed.weddingDays) setWeddingDays(parsed.weddingDays);
+      }
+    } catch (e) {
+      console.error('Failed to load cached ceremony:', e);
+    }
+    
     fetchUserSettings();
   }, []);
 
-  // Autosave ceremony planning state locally (debounced)
+  // Save to localStorage immediately whenever ceremony data changes
   useEffect(() => {
-    const id = setTimeout(() => {
-      try {
-        const payload = {
-          userSettings,
-          selectedRituals,
-          selectedTraditions,
-          weddingDays,
-        };
-        const { isAutoSaveEnabled, setWithTTL } = require('../../utils/autosave');
-        if (isAutoSaveEnabled()) setWithTTL('ceremony', payload, 24 * 60 * 60 * 1000);
-      } catch (e) {
-        // ignore
-      }
-    }, 1000);
-    return () => clearTimeout(id);
+    try {
+      const payload = {
+        userSettings,
+        selectedRituals,
+        selectedTraditions,
+        weddingDays,
+      };
+      localStorage.setItem('ceremony', JSON.stringify(payload));
+      const { isAutoSaveEnabled, setWithTTL } = require('../../utils/autosave');
+      if (isAutoSaveEnabled()) setWithTTL('ceremony', payload, 24 * 60 * 60 * 1000);
+    } catch (e) {
+      console.error('Failed to save ceremony:', e);
+    }
   }, [userSettings, selectedRituals, selectedTraditions, weddingDays]);
 
   const fetchUserSettings = async () => {

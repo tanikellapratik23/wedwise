@@ -31,21 +31,33 @@ export default function SeatingPlanner() {
     shape: 'round' as 'round' | 'rectangle'
   });
 
-  // Load seating from backend on mount
+  // Load seating from localStorage immediately, then from backend
   useEffect(() => {
+    // Load from localStorage immediately for instant display
+    try {
+      const cached = localStorage.getItem('seating');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setTables(parsed);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load cached seating:', e);
+    }
+    
     fetchSeating();
   }, []);
 
-  // Autosave locally
+  // Save to localStorage immediately whenever tables change
   useEffect(() => {
-    const id = setTimeout(() => {
+    if (tables.length > 0) {
       try {
         localStorage.setItem('seating', JSON.stringify(tables));
       } catch (e) {
-        // ignore storage errors
+        console.error('Failed to save seating:', e);
       }
-    }, 1000);
-    return () => clearTimeout(id);
+    }
   }, [tables]);
 
   const fetchSeating = async () => {
