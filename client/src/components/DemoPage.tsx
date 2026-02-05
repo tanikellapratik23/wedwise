@@ -110,29 +110,24 @@ export default function DemoPage() {
           </div>
 
           <div className="bg-white/95 rounded-2xl shadow-xl p-4 md:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[50vh]">
-              {/* Onboarding Section */}
-              <div className="flex flex-col min-w-0">
-                <h3 className="text-lg md:text-xl font-semibold mb-4">Your Setup</h3>
-                <div className="bg-gradient-to-br from-primary-50 to-purple-50 rounded-xl p-4 md:p-6 flex-1 overflow-auto border border-primary-100">
-                  <div className="min-h-96 w-full">
-                    {demoStep === 1 && <RoleSelection data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(2)} onBack={()=>setDemoStep(1)} />}
-                    {demoStep === 2 && <WeddingDate data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(3)} onBack={()=>setDemoStep(1)} />}
-                    {demoStep === 3 && <Location data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(4)} onBack={()=>setDemoStep(2)} />}
-                    {demoStep === 4 && <Preferences data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(5)} onBack={()=>setDemoStep(3)} />}
-                    {demoStep === 5 && <CeremonyDetails data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(6)} onBack={()=>setDemoStep(4)} />}
-                    {demoStep === 6 && <Goals data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(7)} onBack={()=>setDemoStep(5)} />}
-                    {demoStep === 7 && <Summary data={data} onBack={()=>setDemoStep(6)} onComplete={()=>setDemoStep(8)} />}
-                    {demoStep === 8 && (
-                      <div className="text-center py-16 flex flex-col items-center justify-center h-full">
-                        <div className="text-4xl mb-4">🎉</div>
-                        <h3 className="text-2xl font-bold text-primary-600">All Set!</h3>
-                        <p className="text-gray-600 mt-3">Your personalized dashboard is loading...</p>
-                      </div>
-                    )}
+            <div className={`grid gap-6 min-h-[50vh] ${demoStep === 8 ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
+              {/* Onboarding Section - Hide when complete */}
+              {demoStep !== 8 && (
+                <div className="flex flex-col min-w-0">
+                  <h3 className="text-lg md:text-xl font-semibold mb-4">Your Setup</h3>
+                  <div className="bg-gradient-to-br from-primary-50 to-purple-50 rounded-xl p-4 md:p-6 flex-1 overflow-auto border border-primary-100">
+                    <div className="min-h-96 w-full">
+                      {demoStep === 1 && <RoleSelection data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(2)} onBack={()=>setDemoStep(1)} />}
+                      {demoStep === 2 && <WeddingDate data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(3)} onBack={()=>setDemoStep(1)} />}
+                      {demoStep === 3 && <Location data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(4)} onBack={()=>setDemoStep(2)} />}
+                      {demoStep === 4 && <Preferences data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(5)} onBack={()=>setDemoStep(3)} />}
+                      {demoStep === 5 && <CeremonyDetails data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(6)} onBack={()=>setDemoStep(4)} />}
+                      {demoStep === 6 && <Goals data={data} updateData={(d)=>setData(prev=>({...prev,...d}))} onNext={()=>setDemoStep(7)} onBack={()=>setDemoStep(5)} />}
+                      {demoStep === 7 && <Summary data={data} onBack={()=>setDemoStep(6)} onComplete={()=>setDemoStep(8)} />}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Dashboard Preview Section */}
               <div className="flex flex-col min-w-0">
