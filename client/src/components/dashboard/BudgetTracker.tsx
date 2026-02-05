@@ -340,8 +340,8 @@ export default function BudgetTracker() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900">Budget Tracker</h1>
-          <p className="text-gray-500 mt-1">Monitor your wedding expenses</p>
+          <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">Budget Tracker</h1>
+          <p className="text-gray-100 mt-1 drop-shadow-md">Monitor your wedding expenses</p>
         </div>
         <div className="flex items-center gap-3">
           <input ref={fileRef} type="file" accept="application/json" onChange={handleUpload} className="hidden" />

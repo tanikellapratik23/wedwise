@@ -674,7 +674,7 @@ export default function BachelorDashboard() {
                 <PartyPopper className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-white drop-shadow-md">
                   Bachelor/Bachelorette Party Planner
                 </h1>
                 <p className="text-gray-600 mt-1">

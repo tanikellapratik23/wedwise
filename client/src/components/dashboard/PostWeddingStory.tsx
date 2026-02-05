@@ -98,7 +98,7 @@ export default function PostWeddingStoryBuilder() {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-rose-100 to-orange-100 rounded-xl p-6">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">📖 Post-Wedding Story Builder</h2>
+        <h2 className="text-3xl font-bold text-white drop-shadow-md mb-2">📖 Post-Wedding Story Builder</h2>
         <p className="text-gray-700">Create a digital keepsake of your wedding events, traditions, and memories</p>
       </div>
 

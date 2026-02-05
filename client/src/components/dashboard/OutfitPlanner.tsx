@@ -94,7 +94,7 @@ export default function OutfitPlanner() {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-6">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">👗 Outfit & Jewelry Planner</h2>
+        <h2 className="text-3xl font-bold text-white drop-shadow-md mb-2">👗 Outfit & Jewelry Planner</h2>
         <p className="text-gray-700">Assign outfits to guests for each event, track designers, and auto-detect conflicts</p>
       </div>
 

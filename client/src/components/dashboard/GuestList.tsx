@@ -334,8 +334,8 @@ export default function GuestList() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900">Guest List</h1>
-          <p className="text-gray-500 mt-1">Manage your wedding guests and RSVPs</p>
+          <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">Guest List</h1>
+          <p className="text-gray-100 mt-1 drop-shadow-md">Manage your wedding guests and RSVPs</p>
         </div>
         <div className="flex gap-3">
           <input

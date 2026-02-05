@@ -72,7 +72,7 @@ export default function VendorManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Vendor Management</h1>
+          <h1 className="text-3xl font-bold text-white drop-shadow-md">Vendor Management</h1>
           <p className="text-gray-500 mt-1">Manage your wedding vendors and contracts</p>
         </div>
         <button className="flex items-center space-x-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition shadow-lg">

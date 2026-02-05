@@ -134,7 +134,7 @@ export default function SeatingPlanner() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Seating Planner</h1>
+          <h1 className="text-3xl font-bold text-white drop-shadow-md">Seating Planner</h1>
           <p className="text-gray-500 mt-1">Arrange your guests' seating</p>
         </div>
         <div className="flex gap-3">

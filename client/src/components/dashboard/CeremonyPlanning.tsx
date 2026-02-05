@@ -456,7 +456,7 @@ export default function CeremonyPlanning() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Ceremony Planning</h1>
+          <h1 className="text-3xl font-bold text-white drop-shadow-md">Ceremony Planning</h1>
           <p className="text-gray-500 mt-1">
             {ceremonyType} Wedding - Plan your celebration day by day
           </p>
