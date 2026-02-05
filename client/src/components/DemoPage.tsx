@@ -97,17 +97,19 @@ export default function DemoPage() {
 
       <main className="flex-1 flex items-center justify-center p-4 md:p-8">
         <div className="w-full max-w-7xl">
-          {/* Movie Trailer Style Descriptions */}
-          <div className="mb-6 h-12 flex items-center justify-center">
-            <MovieTrailerText text="Tell us who you are" show={trailerTexts[0]} />
-            <MovieTrailerText text="When's the big day?" show={trailerTexts[1]} />
-            <MovieTrailerText text="Where will it be?" show={trailerTexts[2]} />
-            <MovieTrailerText text="What's your style?" show={trailerTexts[3]} />
-            <MovieTrailerText text="Budget & guest count" show={trailerTexts[4]} />
-            <MovieTrailerText text="Tell us your dreams" show={trailerTexts[5]} />
-            <MovieTrailerText text="Your dashboard is ready!" show={trailerTexts[6]} />
-            <MovieTrailerText text="Welcome to Vivaha ✨" show={trailerTexts[7]} />
-          </div>
+          {/* Movie Trailer Style Descriptions - Hide when dashboard loads */}
+          {demoStep !== 8 && (
+            <div className="mb-6 h-12 flex items-center justify-center">
+              <MovieTrailerText text="Tell us who you are" show={trailerTexts[0]} />
+              <MovieTrailerText text="When's the big day?" show={trailerTexts[1]} />
+              <MovieTrailerText text="Where will it be?" show={trailerTexts[2]} />
+              <MovieTrailerText text="What's your style?" show={trailerTexts[3]} />
+              <MovieTrailerText text="Budget & guest count" show={trailerTexts[4]} />
+              <MovieTrailerText text="Tell us your dreams" show={trailerTexts[5]} />
+              <MovieTrailerText text="Your dashboard is ready!" show={trailerTexts[6]} />
+              <MovieTrailerText text="Welcome to Vivaha ✨" show={trailerTexts[7]} />
+            </div>
+          )}
 
           <div className="bg-white/95 rounded-2xl shadow-xl p-4 md:p-8">
             <div className={`grid gap-6 min-h-[50vh] ${demoStep === 8 ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
@@ -131,7 +133,7 @@ export default function DemoPage() {
 
               {/* Dashboard Preview Section */}
               <div className="flex flex-col min-w-0">
-                <h3 className="text-lg md:text-xl font-semibold mb-4">Your Dashboard</h3>
+                {demoStep !== 8 && <h3 className="text-lg md:text-xl font-semibold mb-4">Your Dashboard</h3>}
                 <div className="bg-gradient-to-br from-gray-50 to-primary-50 rounded-xl p-4 md:p-6 flex-1 overflow-auto border border-gray-200">
                   {!showDashboard ? (
                     <div className="flex items-center justify-center h-full text-gray-400 text-sm">
