@@ -229,13 +229,13 @@ export default function Overview() {
   const COLORS = ['#ec4899', '#e0e7ff'];
 
   const StatCard = ({ icon: Icon, label, value, color }: any) => (
-    <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-gray-200/50 hover:shadow-xl transition-all">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500 font-medium">{label}</p>
-          <p className="text-4xl font-bold text-gray-900 mt-2">{value}</p>
+          <p className="text-sm text-gray-600 font-semibold uppercase tracking-wide">{label}</p>
+          <p className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mt-2">{value}</p>
         </div>
-        <div className={`p-3 rounded-lg ${color}`}>
+        <div className={`p-3 rounded-xl shadow-md ${color}`}>
           <Icon className="w-8 h-8" />
         </div>
       </div>
@@ -245,7 +245,7 @@ export default function Overview() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-primary-500 to-purple-600 rounded-2xl shadow-lg p-8 text-white">
+      <div className="bg-gradient-to-r from-primary-500 via-pink-500 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-primary-400/30">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Heart className="w-16 h-16" />
@@ -294,22 +294,22 @@ export default function Overview() {
 
       {/* AI Budget Optimization */}
       {Array.isArray(aiSuggestions) && aiSuggestions.length > 0 && (
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl shadow-sm p-6 border border-purple-200">
-          <h2 className="text-2xl font-semibold tracking-tight text-gray-900 mb-4 flex items-center">
-            <Sparkles className="w-6 h-6 mr-2 text-purple-600" />
+        <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 rounded-2xl shadow-lg p-6 border border-purple-200/50 backdrop-blur-sm">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-4 flex items-center">
+            <Sparkles className="w-7 h-7 mr-2 text-purple-600" />
             AI Budget Optimization
           </h2>
           <div className="space-y-3">
             {(Array.isArray(aiSuggestions) ? aiSuggestions : []).map((suggestion, index) => (
-              <div key={index} className="flex items-start gap-3 bg-white/70 backdrop-blur-sm rounded-lg p-3">
+              <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
                 <span className="text-2xl">{suggestion.split(' ')[0]}</span>
-                <p className="text-gray-700 text-sm flex-1">{suggestion.substring(suggestion.indexOf(' ') + 1)}</p>
+                <p className="text-gray-700 text-sm flex-1 font-medium leading-relaxed">{suggestion.substring(suggestion.indexOf(' ') + 1)}</p>
               </div>
             ))}
           </div>
           {userSettings?.weddingCity && (
             <div className="mt-4 pt-4 border-t border-purple-200">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-700 font-medium">
                 <strong>City Average:</strong> ${getCityAverageCost(userSettings.weddingCity).toLocaleString()} 
                 {userSettings.estimatedBudget && (
                   <span className={userSettings.estimatedBudget < getCityAverageCost(userSettings.weddingCity) ? 'text-orange-600' : 'text-green-600'}>
@@ -324,16 +324,16 @@ export default function Overview() {
 
       {/* Ceremony Planning Assistant */}
       {Array.isArray(ceremonySuggestions) && ceremonySuggestions.length > 0 && (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-sm p-6 border border-blue-200">
-          <h2 className="text-2xl font-semibold tracking-tight text-gray-900 mb-4 flex items-center">
-            <Church className="w-6 h-6 mr-2 text-blue-600" />
+        <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 rounded-2xl shadow-lg p-6 border border-blue-200/50 backdrop-blur-sm">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-4 flex items-center">
+            <Church className="w-7 h-7 mr-2 text-blue-600" />
             Ceremony Planning Assistant
           </h2>
           <div className="space-y-3">
             {(Array.isArray(ceremonySuggestions) ? ceremonySuggestions : []).map((suggestion, index) => (
-              <div key={index} className="flex items-start gap-3 bg-white/70 backdrop-blur-sm rounded-lg p-3">
+              <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
                 <span className="text-2xl">{suggestion.split(' ')[0]}</span>
-                <p className="text-gray-700 text-sm flex-1">{suggestion.substring(suggestion.indexOf(' ') + 1)}</p>
+                <p className="text-gray-700 text-sm flex-1 font-medium leading-relaxed">{suggestion.substring(suggestion.indexOf(' ') + 1)}</p>
               </div>
             ))}
           </div>
@@ -370,7 +370,7 @@ export default function Overview() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Budget Overview */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-gray-200/50">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
             <DollarSign className="w-6 h-6 mr-2 text-primary-500" />
             Budget Overview
@@ -399,14 +399,14 @@ export default function Overview() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-gray-200/50">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
             <TrendingUp className="w-6 h-6 mr-2 text-primary-500" />
             Recent Activity
           </h2>
           <div className="space-y-4">
             <div className="text-center py-8">
-              <p className="text-gray-500 text-sm">No recent activity yet</p>
+              <p className="text-gray-600 text-sm font-medium">No recent activity yet</p>
               <p className="text-gray-400 text-xs mt-1">Start planning to see updates here</p>
             </div>
           </div>
@@ -416,22 +416,22 @@ export default function Overview() {
       {/* Loading / Error / Restore Banner */}
       {(loadError || localRestoreAvailable || restored) && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className={`rounded-xl p-4 ${loadError ? 'bg-red-50 border border-red-200 text-red-800' : restored ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-yellow-50 border border-yellow-200 text-yellow-800'}`}>
+          <div className={`rounded-2xl p-4 shadow-lg backdrop-blur-sm ${loadError ? 'bg-red-50/90 border border-red-200 text-red-800' : restored ? 'bg-green-50/90 border border-green-200 text-green-800' : 'bg-yellow-50/90 border border-yellow-200 text-yellow-800'}`}>
             <div className="flex items-center justify-between">
-              <div>
+              <div className="font-medium">
                 {loadError && (<div><strong>Error:</strong> {loadError}</div>)}
                 {!loadError && localRestoreAvailable && (<div>Local onboarding data found — you can restore it to populate your dashboard immediately.</div>)}
                 {restored && (<div>Local onboarding restored. Dashboard updated.</div>)}
               </div>
               <div className="flex items-center gap-2">
                 {localRestoreAvailable && (
-                  <button onClick={restoreLocalOnboarding} className="px-4 py-2 bg-yellow-600 text-white rounded-lg">Restore Local Onboarding</button>
+                  <button onClick={restoreLocalOnboarding} className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg shadow-md transition-all">Restore Local Onboarding</button>
                 )}
                 {loadError && (
-                  <button onClick={() => { setLoadError(null); fetchUserSettings(); }} className="px-4 py-2 bg-red-600 text-white rounded-lg">Retry</button>
+                  <button onClick={() => { setLoadError(null); fetchUserSettings(); }} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition-all">Retry</button>
                 )}
                 {restored && (
-                  <button onClick={() => setRestored(false)} className="px-4 py-2 bg-green-600 text-white rounded-lg">Dismiss</button>
+                  <button onClick={() => setRestored(false)} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all">Dismiss</button>
                 )}
               </div>
             </div>
@@ -440,24 +440,24 @@ export default function Overview() {
       )}
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-2xl font-semibold tracking-tight text-gray-900 mb-4">Quick Actions</h2>
+      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-gray-200/50">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-6">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: 'Add Guest', icon: Users, color: 'bg-blue-500', action: () => navigate('/dashboard/guests') },
-            { label: 'Add Expense', icon: DollarSign, color: 'bg-green-500', action: () => navigate('/dashboard/budget') },
-            { label: 'New Task', icon: CheckSquare, color: 'bg-purple-500', action: () => navigate('/dashboard/todos') },
-            { label: 'Add Vendor', icon: Briefcase, color: 'bg-pink-500', action: () => navigate('/dashboard/vendor-search') },
+            { label: 'Add Guest', icon: Users, color: 'bg-gradient-to-br from-blue-500 to-blue-600', action: () => navigate('/dashboard/guests') },
+            { label: 'Add Expense', icon: DollarSign, color: 'bg-gradient-to-br from-green-500 to-green-600', action: () => navigate('/dashboard/budget') },
+            { label: 'New Task', icon: CheckSquare, color: 'bg-gradient-to-br from-purple-500 to-purple-600', action: () => navigate('/dashboard/todos') },
+            { label: 'Add Vendor', icon: Briefcase, color: 'bg-gradient-to-br from-pink-500 to-pink-600', action: () => navigate('/dashboard/vendor-search') },
           ].map((action, index) => {
             const Icon = action.icon;
             return (
               <button
                 key={index}
                 onClick={action.action}
-                className={`${action.color} hover:opacity-90 text-white p-6 rounded-xl transition shadow-lg hover:shadow-xl cursor-pointer`}
+                className={`${action.color} hover:scale-105 text-white p-6 rounded-2xl transition-all shadow-lg hover:shadow-xl cursor-pointer`}
               >
                 <Icon className="w-8 h-8 mx-auto mb-2" />
-                <span className="block text-sm font-medium">{action.label}</span>
+                <span className="block text-sm font-semibold">{action.label}</span>
               </button>
             );
           })}

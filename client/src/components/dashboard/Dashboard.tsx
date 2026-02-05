@@ -29,7 +29,7 @@ function AutoSaveToggle() {
     setAutoSaveEnabled(next);
   };
   return (
-    <button onClick={toggle} className={`px-3 py-2 text-sm rounded-md ${enabled ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+    <button onClick={toggle} className={`px-4 py-2.5 text-sm font-semibold rounded-lg transition-all shadow-sm ${enabled ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}`}>
       Auto-save: {enabled ? 'On' : 'Off'}
     </button>
   );
@@ -163,26 +163,26 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 dark:from-gray-800 dark:via-gray-900 dark:to-black">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="bg-primary-500 text-white p-2 rounded-lg">
-                <Heart className="w-6 h-6" />
+              <div className="bg-gradient-to-br from-primary-500 to-pink-500 text-white p-2.5 rounded-xl shadow-md">
+                <Heart className="w-7 h-7" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Vivaha</h1>
-                <p className="text-sm text-gray-500">Your Wedding Planner</p>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-pink-600 bg-clip-text text-transparent">Vivaha</h1>
+                <p className="text-sm text-gray-600 font-medium">Your Wedding Planner</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => downloadBackupAsDoc()}
-                className="px-3 py-2 text-sm bg-primary-50 text-primary-700 rounded-md hover:bg-primary-100"
+                className="px-4 py-2.5 text-sm font-semibold bg-gradient-to-r from-primary-50 to-pink-50 text-primary-700 rounded-lg hover:from-primary-100 hover:to-pink-100 transition-all shadow-sm"
               >
-                Download Backup (Word)
+                Download Backup
               </button>
               <AutoSaveToggle />
               <input
@@ -203,7 +203,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
               />
               <button
                 onClick={handleLogoutClick}
-                className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+                className="flex items-center space-x-2 px-4 py-2.5 text-gray-700 hover:text-gray-900 hover:bg-white/80 rounded-lg transition-all font-medium shadow-sm border border-gray-200"
               >
                 <LogOut className="w-5 h-5" />
                 <span>Logout</span>
@@ -215,20 +215,20 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
 
       {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm mx-4">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Confirm Logout</h3>
-            <p className="text-gray-600 mb-6">Are you sure you want to logout? You will be redirected to the home page.</p>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 max-w-sm mx-auto border border-gray-200">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Confirm Logout</h3>
+            <p className="text-gray-600 mb-6 leading-relaxed">Are you sure you want to logout? You will be redirected to the home page.</p>
             <div className="flex gap-3">
               <button
                 onClick={confirmLogout}
-                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition"
+                className="flex-1 px-5 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-xl transition-all shadow-md"
               >
                 Logout
               </button>
               <button
                 onClick={cancelLogout}
-                className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition"
+                className="flex-1 px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all"
               >
                 Cancel
               </button>
@@ -248,7 +248,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Sidebar Navigation */}
             <aside className="lg:w-64 flex-shrink-0">
-              <nav className="bg-white rounded-xl shadow-sm p-4 space-y-1">
+              <nav className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-4 space-y-1 border border-gray-200/50">
                 {navigation.map((item) => {
                   const Icon = item.icon;
                   const isActive = location.pathname === item.path;
@@ -257,10 +257,10 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition ${
+                    className={`flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all font-medium ${
                       isActive
-                        ? 'bg-primary-50 text-primary-700 font-medium'
-                        : 'text-gray-600 hover:bg-gray-50'
+                        ? 'bg-gradient-to-r from-primary-50 to-pink-50 text-primary-700 shadow-sm border border-primary-200'
+                        : 'text-gray-700 hover:bg-white/60 hover:shadow-sm'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -274,7 +274,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
                 <button
                   ref={moreButtonRef}
                   onClick={() => setShowMoreFeatures(!showMoreFeatures)}
-                  className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 transition"
+                  className="w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl text-gray-700 hover:bg-white/60 hover:shadow-sm transition-all font-medium"
                 >
                   <MoreHorizontal className="w-5 h-5" />
                   <span>More features</span>
@@ -288,7 +288,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
                       onClick={() => setShowMoreFeatures(false)}
                     />
                     {/* Dropdown menu */}
-                    <div className="absolute left-0 mt-2 w-full bg-white rounded-lg shadow-lg z-50 border border-gray-200">
+                    <div className="absolute left-0 mt-2 w-full bg-white/95 backdrop-blur-md rounded-xl shadow-xl z-50 border border-gray-200 overflow-hidden">
                       {moreFeatures.map((item) => {
                         const Icon = item.icon;
                         const isActive = location.pathname === item.path;
@@ -297,10 +297,10 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
                             key={item.path}
                             to={item.path}
                             onClick={() => setShowMoreFeatures(false)}
-                            className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition block w-full text-left ${
+                            className={`flex items-center space-x-3 px-4 py-3.5 transition-all block w-full text-left font-medium ${
                               isActive
-                                ? 'bg-primary-50 text-primary-700 font-medium'
-                                : 'text-gray-600 hover:bg-gray-50'
+                                ? 'bg-gradient-to-r from-primary-50 to-pink-50 text-primary-700'
+                                : 'text-gray-700 hover:bg-gray-50'
                             }`}
                           >
                             <Icon className="w-5 h-5" />
