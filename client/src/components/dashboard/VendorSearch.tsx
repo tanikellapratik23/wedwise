@@ -76,7 +76,7 @@ export default function VendorSearch() {
     if (userCity && userState) {
       fetchVendors();
     }
-  }, [userCity, userState, selectedCategory]);
+  }, [userCity, userState, selectedCategory, fetchVendors]);
 
   const fetchFavoriteVendors = async () => {
     try {
@@ -138,7 +138,117 @@ export default function VendorSearch() {
     }
   };
 
-  const fetchVendors = async () => {
+  // Generate vendors with real Google Maps links
+  const generateVendorsForCity = useCallback((city: string, state: string): Vendor[] => {
+    if (!city) return [];
+    
+    const createGoogleMapsLink = (category: string) => 
+      `https://www.google.com/maps/search/wedding+${category.toLowerCase().replace(/\s+/g, '+')}+${city.replace(/\s+/g, '+')}+${state.replace(/\s+/g, '+')}`;
+    
+    return [
+      {
+        id: '1',
+        name: `${city} Elite Photography`,
+        category: 'Photography',
+        location: { city, state },
+        rating: 4.9,
+        estimatedCost: 3500,
+        phone: '(555) 010-0100',
+        email: `info@${city.toLowerCase().replace(/\s+/g, '')}photo.com`,
+        website: createGoogleMapsLink('photographers'),
+        specialties: ['Wedding', 'Engagement', 'Pre-wedding'],
+        religiousAccommodations: ['All faiths welcome', 'Cultural ceremonies'],
+      },
+      {
+        id: '2',
+        name: `Grand ${city} Ballroom`,
+        category: 'Venue',
+        location: { city, state },
+        rating: 4.8,
+        estimatedCost: 8000,
+        phone: '(555) 010-0101',
+        email: `events@grand${city.toLowerCase().replace(/\s+/g, '')}.com`,
+        website: createGoogleMapsLink('wedding+venues'),
+        specialties: ['Indoor', 'Up to 300 guests', 'Full catering'],
+        religiousAccommodations: ['Interfaith ceremonies', 'All traditions welcome'],
+      },
+      {
+        id: '3',
+        name: `${city} Premier DJ Services`,
+        category: 'DJ',
+        location: { city, state },
+        rating: 4.7,
+        estimatedCost: 1500,
+        phone: '(555) 010-0102',
+        email: `bookings@${city.toLowerCase().replace(/\s+/g, '')}dj.com`,
+        website: createGoogleMapsLink('wedding+dj'),
+        specialties: ['Multi-cultural music', 'Interactive host', 'Lighting'],
+        religiousAccommodations: ['Respectful of all cultural music traditions'],
+      },
+      {
+        id: '4',
+        name: `${city} Sacred Ceremonies`,
+        category: 'Officiant',
+        location: { city, state },
+        rating: 5.0,
+        estimatedCost: 800,
+        phone: '(555) 010-0103',
+        email: `contact@${city.toLowerCase().replace(/\s+/g, '')}ceremonies.com`,
+        website: createGoogleMapsLink('wedding+officiant'),
+        specialties: ['Interfaith', 'Non-denominational', 'Custom ceremonies'],
+        religiousAccommodations: userReligions.length > 0 
+          ? [...userReligions, 'Interfaith unions', 'All traditions welcome']
+          : ['All faiths', 'Interfaith unions', 'Secular ceremonies', 'LGBTQ+ weddings'],
+      },
+      {
+        id: '5',
+        name: `${city} Gourmet Catering`,
+        category: 'Catering',
+        location: { city, state },
+        rating: 4.6,
+        estimatedCost: 5500,
+        phone: '(555) 010-0104',
+        email: `catering@${city.toLowerCase().replace(/\s+/g, '')}gourmet.com`,
+        website: createGoogleMapsLink('wedding+catering'),
+        specialties: ['Buffet', 'Plated service', 'Dietary restrictions'],
+        religiousAccommodations: ['Halal', 'Kosher', 'Vegetarian', 'Vegan'],
+      },
+      {
+        id: '6',
+        name: `${city} Floral Designs`,
+        category: 'Flowers',
+        location: { city, state },
+        rating: 4.8,
+        estimatedCost: 2000,
+        phone: '(555) 010-0105',
+        email: `flowers@${city.toLowerCase().replace(/\s+/g, '')}florals.com`,
+        website: createGoogleMapsLink('wedding+florist'),
+        specialties: ['Bouquets', 'Centerpieces', 'Ceremony arches'],
+        religiousAccommodations: ['Cultural flower preferences', 'Traditional arrangements'],
+      },
+      {
+        id: '7',
+        name: `${city} Event Planning Co.`,
+        category: 'Planning',
+        location: { city, state },
+        rating: 4.9,
+        estimatedCost: 4000,
+        phone: '(555) 010-0106',
+        email: `info@${city.toLowerCase().replace(/\s+/g, '')}events.com`,
+        website: createGoogleMapsLink('wedding+planner'),
+        specialties: ['Full planning', 'Day-of coordination', 'Destination weddings'],
+        religiousAccommodations: ['Cultural wedding expertise', 'Multilingual coordinators'],
+      },
+    ];
+  }, [userReligions]);
+
+  const fetchVendors = useCallback(async () => {
+    if (!userCity || !userState) {
+      console.log('Skipping vendor fetch: missing location');
+      return;
+    }
+
+    console.log('Fetching vendors for:', userCity, userState);
     setLoadingVendors(true);
 
     const CACHE_TTL = 1000 * 60 * 60 * 12; // 12 hours
@@ -277,7 +387,7 @@ export default function VendorSearch() {
     } finally {
       setLoadingVendors(false);
     }
-  };
+  }, [userCity, userState, selectedCategory, generateVendorsForCity]);
 
   // removed duplicate fetchUserLocation effect (initial fetch happens above)
 
@@ -333,120 +443,18 @@ export default function VendorSearch() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Update local state
+      // Update local state - this will trigger the useEffect to fetch vendors
       setUserCity(city);
       setUserState(state);
       setShowLocationPrompt(false);
     } catch (error) {
       console.error('Failed to save location:', error);
+      // Still update local state even if save fails
+      setUserCity(city);
+      setUserState(state);
+      setShowLocationPrompt(false);
     }
   };
-
-  // Generate vendors with real Google Maps links
-  const generateVendorsForCity = (city: string, state: string): Vendor[] => {
-    if (!city) return [];
-    
-    const createGoogleMapsLink = (category: string) => 
-      `https://www.google.com/maps/search/wedding+${category.toLowerCase().replace(/\s+/g, '+')}+${city.replace(/\s+/g, '+')}+${state.replace(/\s+/g, '+')}`;
-    
-    return [
-      {
-        id: '1',
-        name: `${city} Elite Photography`,
-        category: 'Photography',
-        location: { city, state },
-        rating: 4.9,
-        estimatedCost: 3500,
-        phone: '(555) 010-0100',
-        email: `info@${city.toLowerCase().replace(/\s+/g, '')}photo.com`,
-        website: createGoogleMapsLink('photographers'),
-        specialties: ['Wedding', 'Engagement', 'Pre-wedding'],
-        religiousAccommodations: ['All faiths welcome', 'Cultural ceremonies'],
-      },
-      {
-        id: '2',
-        name: `Grand ${city} Ballroom`,
-        category: 'Venue',
-        location: { city, state },
-        rating: 4.8,
-        estimatedCost: 8000,
-        phone: '(555) 010-0101',
-        email: `events@grand${city.toLowerCase().replace(/\s+/g, '')}.com`,
-        website: createGoogleMapsLink('wedding+venues'),
-        specialties: ['Indoor', 'Up to 300 guests', 'Full catering'],
-        religiousAccommodations: ['Interfaith ceremonies', 'All traditions welcome'],
-      },
-      {
-        id: '3',
-        name: `${city} Premier DJ Services`,
-        category: 'DJ',
-        location: { city, state },
-        rating: 4.7,
-        estimatedCost: 1500,
-        phone: '(555) 010-0102',
-        email: `bookings@${city.toLowerCase().replace(/\s+/g, '')}dj.com`,
-        website: createGoogleMapsLink('wedding+dj'),
-        specialties: ['Multi-cultural music', 'Interactive host', 'Lighting'],
-        religiousAccommodations: ['Respectful of all cultural music traditions'],
-      },
-      {
-        id: '4',
-        name: `${city} Sacred Ceremonies`,
-        category: 'Officiant',
-        location: { city, state },
-        rating: 5.0,
-        estimatedCost: 800,
-        phone: '(555) 010-0103',
-        email: `contact@${city.toLowerCase().replace(/\s+/g, '')}ceremonies.com`,
-        website: createGoogleMapsLink('wedding+officiant'),
-        specialties: ['Interfaith', 'Non-denominational', 'Custom ceremonies'],
-        religiousAccommodations: userReligions.length > 0 
-          ? [...userReligions, 'Interfaith unions', 'All traditions welcome']
-          : ['All faiths', 'Interfaith unions', 'Secular ceremonies', 'LGBTQ+ weddings'],
-      },
-      {
-        id: '5',
-        name: `${city} Gourmet Catering`,
-        category: 'Catering',
-        location: { city, state },
-        rating: 4.6,
-        estimatedCost: 5500,
-        phone: '(555) 010-0104',
-        email: `catering@${city.toLowerCase().replace(/\s+/g, '')}gourmet.com`,
-        website: createGoogleMapsLink('wedding+catering'),
-        specialties: ['Buffet', 'Plated service', 'Dietary restrictions'],
-        religiousAccommodations: ['Halal', 'Kosher', 'Vegetarian', 'Vegan'],
-      },
-      {
-        id: '6',
-        name: `${city} Floral Designs`,
-        category: 'Flowers',
-        location: { city, state },
-        rating: 4.8,
-        estimatedCost: 2000,
-        phone: '(555) 010-0105',
-        email: `flowers@${city.toLowerCase().replace(/\s+/g, '')}florals.com`,
-        website: createGoogleMapsLink('wedding+florist'),
-        specialties: ['Bouquets', 'Centerpieces', 'Ceremony arches'],
-        religiousAccommodations: ['Cultural flower preferences', 'Traditional arrangements'],
-      },
-      {
-        id: '7',
-        name: `${city} Event Planning Co.`,
-        category: 'Planning',
-        location: { city, state },
-        rating: 4.9,
-        estimatedCost: 4000,
-        phone: '(555) 010-0106',
-        email: `info@${city.toLowerCase().replace(/\s+/g, '')}events.com`,
-        website: createGoogleMapsLink('wedding+planner'),
-        specialties: ['Full planning', 'Day-of coordination', 'Destination weddings'],
-        religiousAccommodations: ['Cultural wedding expertise', 'Multilingual coordinators'],
-      },
-    ];
-  };
-
-  // Remove the line: const vendors = generateVendorsForCity(userCity, userState);
 
   const categories = [
     { id: 'all', name: 'All Vendors' },
