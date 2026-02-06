@@ -49,14 +49,17 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
       sessionStorage.setItem('onboardingCompleted', 'true');
       setIsAuthenticated(true);
 
-      // Check if admin - go directly to dashboard
-      if (response.data.user.isAdmin) {
-        navigate('/dashboard');
-      } else {
-        // For ALL returning users (anyone who successfully logs in), show welcome back
-        console.log('✅ Returning user, showing welcome back');
-        navigate('/welcome-back');
-      }
+      // Small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        // Check if admin - go directly to dashboard
+        if (response.data.user.isAdmin) {
+          navigate('/dashboard');
+        } else {
+          // For ALL returning users (anyone who successfully logs in), show welcome back
+          console.log('✅ Returning user, showing welcome back');
+          navigate('/welcome-back');
+        }
+      }, 100);
     } catch (err: any) {
       clearTimeout(timer);
       if (didFallback) return;
@@ -80,8 +83,13 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
     localStorage.setItem('user', JSON.stringify({ email: formData.email }));
     // mark not fully onboarded so user goes through onboarding
     localStorage.setItem('onboardingCompleted', 'false');
+    sessionStorage.setItem('onboardingCompleted', 'false');
     setIsAuthenticated(true);
-    navigate('/onboarding');
+    
+    // Small delay to ensure state is updated
+    setTimeout(() => {
+      navigate('/onboarding');
+    }, 100);
   };
 
   const fileRef = useRef<HTMLInputElement | null>(null);

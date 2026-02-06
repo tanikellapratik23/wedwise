@@ -58,8 +58,13 @@ export default function Register({ setIsAuthenticated }: RegisterProps) {
       authStorage.setToken(response.data.token);
       authStorage.setUser(response.data.user);
       sessionStorage.setItem('isNewUser', 'true'); // Mark as new user so onboarding is required
+      sessionStorage.setItem('onboardingCompleted', 'false'); // Ensure onboarding is required
       setIsAuthenticated(true);
-      navigate('/onboarding');
+      
+      // Small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        navigate('/onboarding');
+      }, 100);
     } catch (err: any) {
       clearTimeout(timer);
       if (didFallback) return;
@@ -80,8 +85,13 @@ export default function Register({ setIsAuthenticated }: RegisterProps) {
     localStorage.setItem('offlineMode', 'true');
     localStorage.setItem('user', JSON.stringify({ name: formData.name, email: formData.email }));
     localStorage.setItem('onboardingCompleted', 'false');
+    sessionStorage.setItem('onboardingCompleted', 'false');
     setIsAuthenticated(true);
-    navigate('/onboarding');
+    
+    // Small delay to ensure state is updated
+    setTimeout(() => {
+      navigate('/onboarding');
+    }, 100);
   };
 
   const fileRef = useRef<HTMLInputElement | null>(null);
