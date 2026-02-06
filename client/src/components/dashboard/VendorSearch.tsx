@@ -72,12 +72,6 @@ export default function VendorSearch() {
     fetchFavoriteVendors();
   }, []);
 
-  useEffect(() => {
-    if (userCity && userState) {
-      fetchVendors();
-    }
-  }, [userCity, userState, selectedCategory, fetchVendors]);
-
   const fetchFavoriteVendors = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -388,6 +382,13 @@ export default function VendorSearch() {
       setLoadingVendors(false);
     }
   }, [userCity, userState, selectedCategory, generateVendorsForCity]);
+
+  // Trigger vendor fetch when location changes
+  useEffect(() => {
+    if (userCity && userState) {
+      fetchVendors();
+    }
+  }, [userCity, userState, selectedCategory, fetchVendors]);
 
   // removed duplicate fetchUserLocation effect (initial fetch happens above)
 

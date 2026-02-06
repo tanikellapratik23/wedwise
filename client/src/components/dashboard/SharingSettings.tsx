@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Share2, Copy, Trash2, Eye, Edit, Check, Link as LinkIcon } from 'lucide-react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface SharedLink {
   token: string;
   accessLevel: 'view' | 'edit';
@@ -22,7 +24,7 @@ export default function SharingSettings() {
   const fetchSharedLinks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/sharing/links', {
+      const response = await axios.get(`${API_URL}/api/sharing/links`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLinks(response.data.links || []);
@@ -38,7 +40,7 @@ export default function SharingSettings() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        '/api/sharing/generate',
+        `${API_URL}/api/sharing/generate`,
         { accessLevel },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -55,11 +57,12 @@ export default function SharingSettings() {
       setLinks([...links, newLink]);
 
       // Copy to clipboard
-      navigator.clipboard.writeText(response.data.shareLink);
+      const fullLink = response.data.shareLink;
+      navigator.clipboard.writeText(fullLink);
       setCopiedToken(response.data.shareToken);
       setTimeout(() => setCopiedToken(''), 3000);
 
-      alert(`${accessLevel === 'edit' ? 'Editing' : 'View-only'} link created and copied to clipboard!`);
+      alert(`${accessLevel === 'edit' ? 'Editing' : 'View-only'} link created and copied to clipboard!\n\nLink: ${fullLink}`);
     } catch (error) {
       console.error('Failed to generate link:', error);
       alert('Failed to generate share link');
@@ -75,7 +78,7 @@ export default function SharingSettings() {
 
     try {
       const authToken = localStorage.getItem('token');
-      await axios.delete(`/api/sharing/${token}`, {
+      await axios.delete(`${API_URL}/api/sharing/${token}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
 
