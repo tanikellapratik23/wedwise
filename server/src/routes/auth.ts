@@ -19,63 +19,63 @@ const sendWelcomeEmail = async (user: any) => {
 
   try {
     const result = await resend.emails.send({
-      from: 'VivahaPlan <hello@vivahaplan.com>',
+      from: 'Vivaha <hello@vivahaplan.com>',
       to: user.email,
-      subject: 'Welcome to VivahaPlan – Start Planning Your Dream Vivaha!',
+      subject: 'Welcome to Vivaha – Start Planning Your Dream Wedding! 💕',
       html: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to VivahaPlan</title>
+    <title>Welcome to Vivaha</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8f5f0;">
     <table style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-collapse: collapse;">
         <tr>
-            <td style="background: linear-gradient(135deg, #8B4513 0%, #D4A574 100%); padding: 40px 20px; text-align: center; color: white;">
-                <p style="font-size: 28px; font-weight: bold; letter-spacing: 1px; margin: 0;">🌟 VivahaPlan</p>
+            <td style="background: linear-gradient(135deg, #EC4899 0%, #F97316 100%); padding: 40px 20px; text-align: center; color: white;">
+                <p style="font-size: 28px; font-weight: bold; letter-spacing: 1px; margin: 0;">💕 Vivaha</p>
                 <p style="font-size: 14px; margin-top: 8px; opacity: 0.9;">Your Complete Wedding Planning Platform</p>
             </td>
         </tr>
         <tr>
-            <td style="background-color: #f5e6d3; padding: 40px 20px; text-align: center; color: #8B4513; font-size: 48px;">
+            <td style="background-color: #FEF3F2; padding: 40px 20px; text-align: center; color: #EC4899; font-size: 48px;">
                 👰💒🤵
             </td>
         </tr>
         <tr>
             <td style="padding: 40px 30px; color: #333;">
-                <div style="font-size: 22px; font-weight: bold; color: #8B4513; margin-bottom: 20px;">Welcome, ${user.name}! 🎉</div>
+                <div style="font-size: 22px; font-weight: bold; color: #EC4899; margin-bottom: 20px;">Welcome, ${user.name}! 🎉</div>
                 
                 <p style="font-size: 15px; line-height: 1.6; color: #555; margin-bottom: 20px;">
-                    We're thrilled you've joined VivahaPlan! Whether you're planning an intimate ceremony or a grand celebration, we're here to make your wedding journey seamless and joyful.
+                    We're thrilled you've joined Vivaha! Whether you're planning an intimate ceremony or a grand celebration, we're here to make your wedding journey seamless and joyful.
                 </p>
 
                 <p style="font-size: 15px; line-height: 1.6; color: #555; margin-bottom: 20px;">
                     Here's what you can do right now:
                 </p>
 
-                <div style="background-color: #faf6f1; border-left: 4px solid #D4A574; padding: 20px; margin: 30px 0; border-radius: 4px;">
+                <div style="background-color: #FFF7ED; border-left: 4px solid #F97316; padding: 20px; margin: 30px 0; border-radius: 4px;">
                     <div style="font-size: 14px; margin-bottom: 12px; color: #555; display: flex; align-items: flex-start;">
-                        <div style="color: #8B4513; font-weight: bold; margin-right: 12px; font-size: 18px;">📋</div>
+                        <div style="color: #EC4899; font-weight: bold; margin-right: 12px; font-size: 18px;">📋</div>
                         <div><strong>Ceremony Planner</strong> – Organize rituals, timelines, and logistics in one place</div>
                     </div>
                     <div style="font-size: 14px; margin-bottom: 12px; color: #555; display: flex; align-items: flex-start;">
-                        <div style="color: #8B4513; font-weight: bold; margin-right: 12px; font-size: 18px;">👥</div>
+                        <div style="color: #EC4899; font-weight: bold; margin-right: 12px; font-size: 18px;">👥</div>
                         <div><strong>Guest List Manager</strong> – Track invites, RSVPs, and dietary preferences</div>
                     </div>
                     <div style="font-size: 14px; margin-bottom: 12px; color: #555; display: flex; align-items: flex-start;">
-                        <div style="color: #8B4513; font-weight: bold; margin-right: 12px; font-size: 18px;">💰</div>
+                        <div style="color: #EC4899; font-weight: bold; margin-right: 12px; font-size: 18px;">💰</div>
                         <div><strong>Budget Tracker</strong> – Monitor spending across vendors and categories</div>
                     </div>
                     <div style="font-size: 14px; color: #555; display: flex; align-items: flex-start;">
-                        <div style="color: #8B4513; font-weight: bold; margin-right: 12px; font-size: 18px;">🎉</div>
+                        <div style="color: #EC4899; font-weight: bold; margin-right: 12px; font-size: 18px;">🎉</div>
                         <div><strong>Bachelor/Bachelorette Planner</strong> – Plan trips, activities, and cost-sharing</div>
                     </div>
                 </div>
 
                 <p style="text-align: center; margin: 30px 0;">
-                    <a href="https://vivahaplan.com/dashboard?utm_source=email&utm_campaign=welcome&utm_medium=cta" style="display: inline-block; background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">Start Planning Now</a>
+                    <a href="https://vivahaplan.com/dashboard?utm_source=email&utm_campaign=welcome&utm_medium=cta" style="display: inline-block; background: linear-gradient(135deg, #EC4899 0%, #F97316 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Start Planning Now</a>
                 </p>
 
                 <p style="font-size: 15px; line-height: 1.6; color: #555;">
@@ -86,26 +86,26 @@ const sendWelcomeEmail = async (user: any) => {
         <tr>
             <td style="background-color: #f8f5f0; padding: 30px; text-align: center; font-size: 12px; color: #888;">
                 <div style="margin-bottom: 15px;">
-                    <a href="https://instagram.com/vivahaplan?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #D4A574; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">f</a>
-                    <a href="https://instagram.com/vivahaplan?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #D4A574; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">📷</a>
-                    <a href="https://twitter.com/vivahaplan?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #D4A574; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">𝕏</a>
+                    <a href="https://instagram.com/vivaha?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #EC4899; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">f</a>
+                    <a href="https://instagram.com/vivaha?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #EC4899; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">📷</a>
+                    <a href="https://twitter.com/vivaha?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #EC4899; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">𝕏</a>
                 </div>
                 
                 <div style="margin: 10px 0;">
-                    <a href="https://vivahaplan.com?utm_source=email&utm_campaign=welcome" style="color: #8B4513; text-decoration: none; margin: 0 10px;">Website</a>
-                    <a href="https://vivahaplan.com/contact?utm_source=email&utm_campaign=welcome" style="color: #8B4513; text-decoration: none; margin: 0 10px;">Contact Us</a>
-                    <a href="https://vivahaplan.com/privacy?utm_source=email&utm_campaign=welcome" style="color: #8B4513; text-decoration: none; margin: 0 10px;">Privacy</a>
+                    <a href="https://vivahaplan.com?utm_source=email&utm_campaign=welcome" style="color: #EC4899; text-decoration: none; margin: 0 10px;">Website</a>
+                    <a href="https://vivahaplan.com/contact?utm_source=email&utm_campaign=welcome" style="color: #EC4899; text-decoration: none; margin: 0 10px;">Contact Us</a>
+                    <a href="https://vivahaplan.com/privacy?utm_source=email&utm_campaign=welcome" style="color: #EC4899; text-decoration: none; margin: 0 10px;">Privacy</a>
                 </div>
 
                 <div style="margin: 10px 0;">
-                    <strong>VivahaPlan Team</strong><br>
+                    <strong>Vivaha Team</strong><br>
                     Making wedding planning joyful since 2024<br>
-                    <a href="mailto:support@vivahaplan.com" style="color: #8B4513; text-decoration: none;">support@vivahaplan.com</a>
+                    <a href="mailto:support@vivahaplan.com" style="color: #EC4899; text-decoration: none;">support@vivahaplan.com</a>
                 </div>
 
                 <div style="margin-top: 20px; font-size: 11px; color: #aaa;">
-                    © 2024 VivahaPlan. All rights reserved.<br>
-                    You're receiving this because you signed up for VivahaPlan.
+                    © ${new Date().getFullYear()} Vivaha. All rights reserved.<br>
+                    You're receiving this because you signed up for Vivaha.
                 </div>
             </td>
         </tr>
@@ -304,39 +304,89 @@ router.post('/forgot-password', async (req, res) => {
       try {
         const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
         
-        await resend.emails.send({
-          from: 'VivahaPlan <hello@vivahaplan.com>',
+        const emailResult = await resend.emails.send({
+          from: 'Vivaha <hello@vivahaplan.com>',
           to: user.email,
-          subject: 'Reset Your VivahaPlan Password',
+          subject: '🔐 Reset Your Vivaha Password',
           html: `
 <!DOCTYPE html>
-<html>
-<body style="font-family: Arial, sans-serif; background-color: #f8f5f0; margin: 0; padding: 20px;">
-  <div style="max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <h1 style="color: #D4A574; text-align: center;">🔐 Reset Your Password</h1>
-    <p style="color: #555; font-size: 15px; line-height: 1.6;">
-      Hi ${user.name},<br><br>
-      We received a request to reset your password. Click the button below to set a new password.
-    </p>
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="${resetUrl}" style="background-color: #D4A574; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
-        Reset Password
-      </a>
-    </div>
-    <p style="color: #888; font-size: 13px;">
-      Or copy this link: <a href="${resetUrl}" style="color: #D4A574;">${resetUrl}</a>
-    </p>
-    <p style="color: #888; font-size: 13px; margin-top: 20px;">
-      This link will expire in 1 hour. If you didn't request this, please ignore this email.
-    </p>
-  </div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8f5f0;">
+    <table style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-collapse: collapse;">
+        <tr>
+            <td style="background: linear-gradient(135deg, #EC4899 0%, #F97316 100%); padding: 40px 20px; text-align: center; color: white;">
+                <p style="font-size: 28px; font-weight: bold; letter-spacing: 1px; margin: 0;">💕 Vivaha</p>
+                <p style="font-size: 14px; margin-top: 8px; opacity: 0.9;">Your Wedding Planning Companion</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="background-color: #FEF3F2; padding: 40px 20px; text-align: center; font-size: 48px;">
+                🔐
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 40px 30px; color: #333;">
+                <div style="font-size: 22px; font-weight: bold; color: #EC4899; margin-bottom: 20px;">Reset Your Password</div>
+                
+                <p style="font-size: 15px; line-height: 1.6; color: #555; margin-bottom: 20px;">
+                    Hi ${user.name},
+                </p>
+
+                <p style="font-size: 15px; line-height: 1.6; color: #555; margin-bottom: 20px;">
+                    We received a request to reset your password. Click the button below to create a new password and get back to planning your special day.
+                </p>
+
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #EC4899 0%, #F97316 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Reset My Password</a>
+                </p>
+
+                <div style="background-color: #FFF7ED; border-left: 4px solid #F97316; padding: 20px; margin: 30px 0; border-radius: 4px;">
+                    <p style="font-size: 14px; color: #555; margin: 0;">
+                        <strong>🕐 Quick note:</strong> This link will expire in <strong>1 hour</strong> for security reasons.
+                    </p>
+                </div>
+
+                <p style="font-size: 13px; color: #888; line-height: 1.6;">
+                    Or copy and paste this link into your browser:<br>
+                    <a href="${resetUrl}" style="color: #EC4899; word-break: break-all;">${resetUrl}</a>
+                </p>
+
+                <p style="font-size: 13px; color: #888; line-height: 1.6; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB;">
+                    <strong>Didn't request this?</strong> You can safely ignore this email. Your password will remain unchanged.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td style="background-color: #f8f5f0; padding: 30px; text-align: center; font-size: 12px; color: #888;">
+                <div style="margin: 10px 0;">
+                    <strong>Vivaha Team</strong><br>
+                    Making wedding planning joyful<br>
+                    <a href="mailto:support@vivahaplan.com" style="color: #EC4899; text-decoration: none;">support@vivahaplan.com</a>
+                </div>
+
+                <div style="margin-top: 20px; font-size: 11px; color: #aaa;">
+                    © ${new Date().getFullYear()} Vivaha. All rights reserved.
+                </div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
 `,
         });
+
+        console.log('✅ Password reset email sent successfully:', emailResult);
       } catch (emailError) {
-        console.error('Failed to send reset email:', emailError);
+        console.error('❌ Failed to send reset email:', emailError);
+        // Continue anyway - don't fail the request if email fails
       }
+    } else {
+      console.warn('⚠️ Email not sent - Resend API key not configured');
     }
 
     res.json({ message: 'If email exists, reset link has been sent' });
