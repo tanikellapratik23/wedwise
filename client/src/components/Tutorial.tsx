@@ -206,15 +206,16 @@ export default function Tutorial({ onClose }: TutorialProps) {
           {/* Tutorial Content Box */}
           <motion.div
             key={currentStep}
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[101] w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden"
+            className="fixed inset-0 z-[101] flex items-center justify-center p-4"
           >
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              {/* Header with gradient */}
-              <div className="bg-gradient-to-r from-primary-500 via-pink-500 to-purple-600 p-6 text-white flex-shrink-0">
+            <div className="w-full max-w-2xl max-h-[90vh] overflow-hidden">
+              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                {/* Header with gradient */}
+                <div className="bg-gradient-to-r from-primary-500 via-pink-500 to-purple-600 p-6 text-white flex-shrink-0">
                 <div className="flex items-center justify-center mb-3">
                   {currentStepData.icon}
                 </div>
@@ -297,6 +298,7 @@ export default function Tutorial({ onClose }: TutorialProps) {
                   </button>
                 )}
               </div>
+            </div>
             </div>
           </motion.div>
         </>
