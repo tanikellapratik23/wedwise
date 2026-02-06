@@ -111,34 +111,15 @@ export default function SharingSettings() {
         <div className="flex items-start gap-3">
           <Share2 className="w-8 h-8 text-blue-600 flex-shrink-0" />
           <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Share Your Wedding Dashboard</h3>
-            <p className="text-gray-700 text-sm mb-4">
-              Create shareable links so family and friends can view or help edit your wedding plans without creating
-              an account. Links expire after 90 days.
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Share Dashboard - Feature Coming Soon</h3>
+            <p className="text-gray-700 text-sm">
+              We're working on making it easy to share your wedding dashboard with family and friends. This feature will be available soon!
             </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => generateLink('view')}
-                disabled={generating}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition disabled:opacity-50"
-              >
-                <Eye className="w-4 h-4" />
-                Create View-Only Link
-              </button>
-              <button
-                onClick={() => generateLink('edit')}
-                disabled={generating}
-                className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition disabled:opacity-50"
-              >
-                <Edit className="w-4 h-4" />
-                Create Editing Link
-              </button>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Active Links */}
+      {/* Active Links - Hidden for now
       {links.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Active Shared Links</h3>
@@ -169,7 +150,7 @@ export default function SharingSettings() {
                       {window.location.origin}/shared/{link.token.substring(0, 16)}...
                     </code>
                   </div>
-                  <p className="text-xs text-gray-100 mt-1 drop-shadow-md">
+                  <p className="text-xs text-gray-500 mt-1">
                     Created: {new Date(link.createdAt).toLocaleDateString()} • Expires:{' '}
                     {new Date(link.expiresAt).toLocaleDateString()}
                   </p>
@@ -199,14 +180,17 @@ export default function SharingSettings() {
           </div>
         </div>
       )}
+      */}
 
+      {/* Coming Soon Message - Hidden for now
       {links.length === 0 && !loading && (
         <div className="bg-gray-50 rounded-xl p-8 text-center border-2 border-dashed border-gray-300">
           <Share2 className="w-12 h-12 text-gray-400 mx-auto mb-3" />
           <p className="text-gray-600">No active shared links</p>
-          <p className="text-sm text-gray-100 mt-1 drop-shadow-md">Create a link above to share your dashboard</p>
+          <p className="text-sm text-gray-500 mt-1">Create a link above to share your dashboard</p>
         </div>
       )}
+      */}
     </div>
   );
 }

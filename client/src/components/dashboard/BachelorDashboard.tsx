@@ -127,6 +127,10 @@ export default function BachelorDashboard() {
   const [lodgings, setLodgings] = useState<Lodging[]>([]);
   const [selectedLodging, setSelectedLodging] = useState<Lodging | null>(null);
   
+  // Drive directions
+  const [driveTime, setDriveTime] = useState<string>('');
+  const [driveDirectionsUrl, setDriveDirectionsUrl] = useState<string>('');
+  
   // Transportation
   const [transportOptions, setTransportOptions] = useState<TransportOption[]>([]);
   const [selectedTransport, setSelectedTransport] = useState<TransportOption | null>(null);
