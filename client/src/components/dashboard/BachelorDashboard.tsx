@@ -158,6 +158,7 @@ export default function BachelorDashboard() {
   // UI State
   const [activeSection, setActiveSection] = useState<string>('master');
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['master']));
+  const [showBudget, setShowBudget] = useState(false);
 
   useEffect(() => {
     fetchTripData();
@@ -1332,12 +1333,32 @@ export default function BachelorDashboard() {
           </CollapsibleSection>
         )}
 
-        {/* Budget Summary - Always Visible */}
-        <div className="bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-2xl shadow-lg p-8 text-white">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-            <DollarSign className="w-7 h-7" />
-            Trip Budget Breakdown
-          </h2>
+        {/* Generate Budget Button - Show when selections made but budget not generated */}
+        {!showBudget && (selectedFlight || selectedLodging || driveTime) && (
+          <button
+            onClick={() => setShowBudget(true)}
+            className="w-full py-4 px-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-lg rounded-xl shadow-lg transition-all flex items-center justify-center gap-3"
+          >
+            <DollarSign className="w-6 h-6" />
+            Generate Total Estimate
+          </button>
+        )}
+
+        {/* Budget Summary - Show after Generate button clicked */}
+        {showBudget && (
+          <div className="bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-2xl shadow-lg p-8 text-white">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold flex items-center gap-3">
+                <DollarSign className="w-7 h-7" />
+                Trip Budget Breakdown
+              </h2>
+              <button
+                onClick={() => setShowBudget(false)}
+                className="text-white/80 hover:text-white transition"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
@@ -1373,6 +1394,7 @@ export default function BachelorDashboard() {
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Transport Type Modal */}
