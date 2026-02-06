@@ -41,7 +41,7 @@ async function sendTestEmail() {
 
   try {
     const result = await resend.emails.send({
-      from: 'Vivaha <hello@vivahaplan.com>',
+      from: 'Vivaha <onboarding@resend.dev>',
       to: testEmail,
       subject: '✅ Test Email from Vivaha',
       html: `
@@ -99,8 +99,9 @@ async function sendTestEmail() {
 
     console.log('✅ Email sent successfully!\n');
     console.log('📧 Email Details:');
-    console.log(`   ID: ${result.data?.id}`);
+    console.log(`   ID: ${result.data?.id || result.id}`);
     console.log(`   Status: Sent`);
+    console.log(`   Full response:`, JSON.stringify(result, null, 2));
     console.log('\n💡 Check your inbox (and spam folder)!\n');
     
   } catch (error) {
