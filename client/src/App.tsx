@@ -12,6 +12,7 @@ import Landing from './components/Landing';
 import WhatIsVivaha from './components/WhatIsVivaha';
 import DemoPage from './components/DemoPage';
 import SharedDashboard from './components/dashboard/SharedDashboard';
+import SharedWeddingInfo from './components/SharedWeddingInfo';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -102,6 +103,9 @@ function App() {
           <Route path="/register" element={<Register setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          
+          {/* Shared Wedding Info - No Auth Required */}
+          <Route path="/wedding/:token" element={<SharedWeddingInfo />} />
           
           {/* Shared Dashboard - No Auth Required */}
           <Route path="/shared/:token" element={<SharedDashboard />} />

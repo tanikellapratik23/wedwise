@@ -44,8 +44,11 @@ export default function SingleSourceOfTruth() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (response.data.shareLink) {
-        setShareLink(response.data.shareLink);
+      if (response.data.shareToken) {
+        // Use /wedding/ route for public wedding info page
+        const currentUrl = window.location.origin;
+        const shareUrl = `${currentUrl}/wedding/${response.data.shareToken}`;
+        setShareLink(shareUrl);
       }
     } catch (error) {
       console.error('Failed to generate share link:', error);
@@ -73,7 +76,7 @@ export default function SingleSourceOfTruth() {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-primary-500 via-pink-500 to-purple-600 rounded-2xl shadow-lg p-8 text-white">
-        <h1 className="text-3xl font-bold mb-2">Single Source of Truth</h1>
+        <h1 className="text-3xl font-bold mb-2">Share Wedding Information</h1>
         <p className="text-white/90 text-lg">
           One shareable page with all your wedding details. Auto-updates everywhere when you make changes.
         </p>
