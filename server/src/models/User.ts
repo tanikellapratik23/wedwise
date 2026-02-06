@@ -35,6 +35,10 @@ export interface IUser extends Document {
     createdAt: Date;
     expiresAt?: Date;
   }>;
+  navigationPreferences?: {
+    order: string[];
+    hidden: string[];
+  };
   createdAt: Date;
 }
 
@@ -78,6 +82,10 @@ const UserSchema = new Schema<IUser>(
         expiresAt: Date,
       },
     ],
+    navigationPreferences: {
+      order: [String],
+      hidden: [String],
+    },
     resetToken: { type: String, default: undefined },
     resetTokenExpires: { type: Date, default: undefined },
   },

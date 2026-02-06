@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music, PartyPopper, Sparkles, BookOpen, MoreHorizontal, Split, Hotel, FileText } from 'lucide-react';
+import { Heart, Users, DollarSign, CheckSquare, Briefcase, LayoutGrid, LogOut, Search, Settings as SettingsIcon, Church, Music, PartyPopper, Sparkles, BookOpen, MoreHorizontal, Split, Hotel, FileText, Edit3, Save, X, Eye, EyeOff, GripVertical } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { downloadBackupFile, importBackupFile, downloadBackupAsDoc } from '../../utils/offlineBackup';
 import { authStorage } from '../../utils/auth';
@@ -7,6 +7,8 @@ import axios from 'axios';
 import Tutorial from '../Tutorial';
 import SingleSourceOfTruth from './SingleSourceOfTruth';
 import HotelBlock from './HotelBlock';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 import Overview from './Overview';
 import GuestList from './GuestList';
 import BudgetTracker from './BudgetTracker';
@@ -56,6 +58,10 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [showMoreFeatures, setShowMoreFeatures] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [isEditingNav, setIsEditingNav] = useState(false);
+  const [customNavOrder, setCustomNavOrder] = useState<string[]>([]);
+  const [hiddenNavItems, setHiddenNavItems] = useState<string[]>([]);
+  const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const moreButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -81,6 +87,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
     if (!isAdmin) {
       fetchUserSettings();
       sendWelcomeEmail();
+      loadNavigationPreferences();
     }
   }, [isAdmin, propIsAdmin, navigate]);
 
@@ -151,6 +158,83 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
 
   const cancelLogout = () => {
     setShowLogoutConfirm(false);
+  };
+
+  const loadNavigationPreferences = async () => {
+    try {
+      const token = authStorage.getToken();
+      if (!token) return;
+
+      const response = await axios.get(`${API_URL}/api/navigation/preferences`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data.preferences) {
+        setCustomNavOrder(response.data.preferences.order || []);
+        setHiddenNavItems(response.data.preferences.hidden || []);
+      }
+    } catch (error) {
+      console.error('Failed to load navigation preferences:', error);
+    }
+  };
+
+  const saveNavigationPreferences = async () => {
+    try {
+      const token = authStorage.getToken();
+      if (!token) return;
+
+      await axios.post(
+        `${API_URL}/api/navigation/preferences`,
+        {
+          order: customNavOrder,
+          hidden: hiddenNavItems,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setIsEditingNav(false);
+    } catch (error) {
+      console.error('Failed to save navigation preferences:', error);
+      alert('Failed to save navigation preferences');
+    }
+  };
+
+  const discardNavigationChanges = () => {
+    loadNavigationPreferences();
+    setIsEditingNav(false);
+  };
+
+  const toggleNavItemVisibility = (itemName: string) => {
+    if (hiddenNavItems.includes(itemName)) {
+      setHiddenNavItems(hiddenNavItems.filter((name) => name !== itemName));
+    } else {
+      setHiddenNavItems([...hiddenNavItems, itemName]);
+    }
+  };
+
+  const handleDragStart = (itemName: string) => {
+    setDraggedItem(itemName);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (targetItemName: string) => {
+    if (!draggedItem || draggedItem === targetItemName) return;
+
+    const currentOrder = customNavOrder.length > 0 ? customNavOrder : navigation.map((item) => item.name);
+    const draggedIndex = currentOrder.indexOf(draggedItem);
+    const targetIndex = currentOrder.indexOf(targetItemName);
+
+    const newOrder = [...currentOrder];
+    newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, draggedItem);
+
+    setCustomNavOrder(newOrder);
+    setDraggedItem(null);
   };
 
   const navigation = [
@@ -253,25 +337,101 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
             {/* Sidebar Navigation */}
             <aside className="lg:w-64 flex-shrink-0">
               <nav className="bg-white backdrop-blur-md rounded-2xl shadow-lg p-4 space-y-1 border border-gray-200">
-                {navigation.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = location.pathname === item.path;
-                
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all font-semibold ${
-                      isActive
-                        ? 'bg-gradient-to-r from-primary-500 to-pink-500 text-white shadow-md border border-primary-300'
-                        : 'text-gray-900 hover:bg-gradient-to-r hover:from-primary-50 hover:to-pink-50 hover:text-primary-700 hover:shadow-sm'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
+                {/* Edit Button */}
+                <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-200">
+                  {!isEditingNav ? (
+                    <button
+                      onClick={() => setIsEditingNav(true)}
+                      className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                      Edit Nav
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2 w-full">
+                      <button
+                        onClick={saveNavigationPreferences}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all shadow-sm"
+                      >
+                        <Save className="w-4 h-4" />
+                        Save
+                      </button>
+                      <button
+                        onClick={discardNavigationChanges}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
+                      >
+                        <X className="w-4 h-4" />
+                        Discard
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Navigation Items */}
+                {(() => {
+                  const orderedNav = customNavOrder.length > 0
+                    ? customNavOrder.map((name) => navigation.find((item) => item.name === name)).filter(Boolean)
+                    : navigation;
+
+                  return orderedNav.map((item: any) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.path;
+                    const isHidden = hiddenNavItems.includes(item.name);
+
+                    if (isHidden && !isEditingNav) return null;
+
+                    return (
+                      <div
+                        key={item.path}
+                        draggable={isEditingNav}
+                        onDragStart={() => handleDragStart(item.name)}
+                        onDragOver={handleDragOver}
+                        onDrop={() => handleDrop(item.name)}
+                        className={`relative ${isEditingNav ? 'cursor-move' : ''} ${isHidden ? 'opacity-40' : ''}`}
+                      >
+                        {isEditingNav && (
+                          <div className="absolute left-1 top-1/2 -translate-y-1/2 z-10">
+                            <GripVertical className="w-4 h-4 text-gray-400" />
+                          </div>
+                        )}
+                        <Link
+                          to={item.path}
+                          onClick={(e) => {
+                            if (isEditingNav) {
+                              e.preventDefault();
+                            }
+                          }}
+                          className={`flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all font-semibold ${
+                            isEditingNav ? 'pl-8' : ''
+                          } ${
+                            isActive && !isEditingNav
+                              ? 'bg-gradient-to-r from-primary-500 to-pink-500 text-white shadow-md border border-primary-300'
+                              : 'text-gray-900 hover:bg-gradient-to-r hover:from-primary-50 hover:to-pink-50 hover:text-primary-700 hover:shadow-sm'
+                          }`}
+                        >
+                          <Icon className="w-5 h-5" />
+                          <span className="flex-1">{item.name}</span>
+                          {isEditingNav && (
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleNavItemVisibility(item.name);
+                              }}
+                              className="p-1 hover:bg-white/20 rounded"
+                            >
+                              {isHidden ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </button>
+                          )}
+                        </Link>
+                      </div>
+                    );
+                  });
+                })()}
               
               {/* More Features Dropdown */}
               <div className="relative mt-2">
