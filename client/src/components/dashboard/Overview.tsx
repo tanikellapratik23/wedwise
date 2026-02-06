@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, DollarSign, CheckSquare, Heart, MapPin, Briefcase } from 'lucide-react';
+import { Calendar, Users, DollarSign, CheckSquare, Heart, MapPin, Briefcase, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import { authStorage } from '../../utils/auth';
+import { getBudgetOptimizationSuggestions, getCityAverageCost } from '../../utils/cityData';
 
 export default function Overview() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function Overview() {
   const [userSettings, setUserSettings] = useState<any>(null);
   const [userName, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
 
   // Helper to capitalize first letter of name
   const capitalizeName = (name: string) => {
@@ -114,6 +116,17 @@ export default function Overview() {
           }));
         }
         
+        // Generate AI suggestions
+        if (response.data.weddingCity && response.data.estimatedBudget) {
+          const suggestions = getBudgetOptimizationSuggestions(
+            response.data.estimatedBudget,
+            response.data.guestCount || 150,
+            response.data.weddingCity,
+            response.data.topPriority || []
+          );
+          setAiSuggestions(suggestions);
+        }
+        
         setIsLoading(false);
       }
     } catch (error) {
@@ -123,23 +136,23 @@ export default function Overview() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-primary-500 via-pink-500 to-purple-600 rounded-3xl shadow-2xl p-10 text-white border border-primary-400/30">
-        <div className="flex items-center space-x-6">
-          <Heart className="w-20 h-20 drop-shadow-lg" />
+      <div className="bg-gradient-to-r from-primary-500 via-pink-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white border border-primary-400/30">
+        <div className="flex items-center space-x-4">
+          <Heart className="w-12 h-12 drop-shadow-lg" />
           <div>
-            <h1 className="text-5xl font-bold tracking-tight mb-4 text-white drop-shadow-lg">
+            <h1 className="text-3xl font-bold tracking-tight mb-2 text-white drop-shadow-lg">
               Welcome back{userName ? `, ${userName}` : ''}!
             </h1>
             {!isLoading && userSettings?.weddingCity && (
-              <div className="flex items-center gap-3 text-white/90 text-lg drop-shadow-md mb-3">
-                <MapPin className="w-5 h-5" />
+              <div className="flex items-center gap-2 text-white/90 text-sm drop-shadow-md mb-2">
+                <MapPin className="w-4 h-4" />
                 <span className="font-medium">{userSettings.weddingCity}, {userSettings.weddingState || userSettings.weddingCountry}</span>
               </div>
             )}
             {!isLoading && userSettings?.weddingDate && (
-              <p className="text-white/90 text-base mb-3 drop-shadow-md">
+              <p className="text-white/90 text-sm drop-shadow-md">
                 📅 {new Date(userSettings.weddingDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             )}
@@ -147,29 +160,67 @@ export default function Overview() {
         </div>
       </div>
 
-      {/* Days Until Wedding - Large Prominent Display */}
+      {/* Days Until Wedding */}
       {!isLoading && stats.daysUntilWedding > 0 && (
-        <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-12 border border-gray-200/50 text-center">
-          <Calendar className="w-16 h-16 mx-auto mb-4 text-pink-500" />
-          <h2 className="text-2xl font-semibold text-gray-700 mb-2">Your Wedding Day</h2>
-          <div className="text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-primary-500 bg-clip-text text-transparent mb-2">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-8 border border-gray-200/50 text-center">
+          <Calendar className="w-12 h-12 mx-auto mb-3 text-pink-500" />
+          <h2 className="text-xl font-semibold text-gray-700 mb-2">Your Wedding Day</h2>
+          <div className="text-6xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-primary-500 bg-clip-text text-transparent mb-2">
             {stats.daysUntilWedding}
           </div>
-          <p className="text-2xl font-semibold text-gray-700">
+          <p className="text-xl font-semibold text-gray-700">
             {stats.daysUntilWedding === 1 ? 'day' : 'days'} to go 💕
           </p>
           {userSettings?.weddingTime && (
-            <p className="text-gray-500 text-lg mt-4">
+            <p className="text-gray-500 text-sm mt-3">
               {stats.hoursUntilWedding} hours, {stats.minutesUntilWedding} minutes
             </p>
           )}
         </div>
       )}
 
+      {/* AI Budget Optimization - ALWAYS SHOWN */}
+      <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 rounded-2xl shadow-lg p-6 border border-purple-200/50 backdrop-blur-sm">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-4 flex items-center">
+          <Sparkles className="w-7 h-7 mr-2 text-purple-600" />
+          AI Budget Optimization
+        </h2>
+        {aiSuggestions.length > 0 ? (
+          <>
+            <div className="space-y-3">
+              {aiSuggestions.map((suggestion, index) => (
+                <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
+                  <span className="text-2xl">{suggestion.split(' ')[0]}</span>
+                  <p className="text-gray-700 text-sm flex-1 font-medium leading-relaxed">{suggestion.substring(suggestion.indexOf(' ') + 1)}</p>
+                </div>
+              ))}
+            </div>
+            {userSettings?.weddingCity && (
+              <div className="mt-4 pt-4 border-t border-purple-200">
+                <p className="text-sm text-gray-700 font-medium">
+                  <strong>City Average:</strong> ${getCityAverageCost(userSettings.weddingCity).toLocaleString()} 
+                  {userSettings.estimatedBudget && (
+                    <span className={userSettings.estimatedBudget < getCityAverageCost(userSettings.weddingCity) ? 'text-orange-600' : 'text-green-600'}>
+                      {' '}(Your budget: ${userSettings.estimatedBudget.toLocaleString()})
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-8">
+            <Sparkles className="w-12 h-12 mx-auto mb-3 text-purple-400" />
+            <p className="text-gray-600 font-medium">AI suggestions will appear here</p>
+            <p className="text-sm text-gray-500 mt-1">Complete your onboarding to get personalized budget tips</p>
+          </div>
+        )}
+      </div>
+
       {/* Quick Actions */}
-      <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-gray-200/50">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-8">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-gray-200/50">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-6">Quick Actions</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: 'Add Guest', icon: Users, color: 'bg-gradient-to-br from-blue-500 to-blue-600', action: () => navigate('/dashboard/guests') },
             { label: 'Add Expense', icon: DollarSign, color: 'bg-gradient-to-br from-green-500 to-green-600', action: () => navigate('/dashboard/budget') },
@@ -181,10 +232,10 @@ export default function Overview() {
               <button
                 key={index}
                 onClick={action.action}
-                className={`${action.color} hover:scale-105 text-white p-8 rounded-2xl transition-all shadow-xl hover:shadow-2xl cursor-pointer`}
+                className={`${action.color} hover:scale-105 text-white p-6 rounded-xl transition-all shadow-lg hover:shadow-xl cursor-pointer`}
               >
-                <Icon className="w-10 h-10 mx-auto mb-3" />
-                <span className="block text-base font-bold">{action.label}</span>
+                <Icon className="w-8 h-8 mx-auto mb-2" />
+                <span className="block text-sm font-bold">{action.label}</span>
               </button>
             );
           })}
