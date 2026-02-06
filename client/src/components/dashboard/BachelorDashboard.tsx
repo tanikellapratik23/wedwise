@@ -394,9 +394,16 @@ export default function BachelorDashboard() {
     // Generate dates based on target month and day
     let departureDate: Date;
     if (targetMonth && targetDayOfMonth) {
-      // Parse YYYY-MM format and add day
-      const [year, month] = targetMonth.split('-');
-      departureDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(targetDayOfMonth));
+      // targetMonth is now just MM format (e.g., "01" for January)
+      const currentYear = new Date().getFullYear();
+      const month = parseInt(targetMonth);
+      const day = parseInt(targetDayOfMonth);
+      departureDate = new Date(currentYear, month - 1, day);
+      
+      // If date is in the past, use next year
+      if (departureDate < new Date()) {
+        departureDate = new Date(currentYear + 1, month - 1, day);
+      }
     } else {
       // Default to 2 weeks from now
       departureDate = new Date();
@@ -491,8 +498,16 @@ export default function BachelorDashboard() {
     // Calculate dates based on target month and day
     let checkInDate: Date;
     if (targetMonth && targetDayOfMonth) {
-      const [year, month] = targetMonth.split('-');
-      checkInDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(targetDayOfMonth));
+      // targetMonth is now just MM format (e.g., "01" for January)
+      const currentYear = new Date().getFullYear();
+      const month = parseInt(targetMonth);
+      const day = parseInt(targetDayOfMonth);
+      checkInDate = new Date(currentYear, month - 1, day);
+      
+      // If date is in the past, use next year
+      if (checkInDate < new Date()) {
+        checkInDate = new Date(currentYear + 1, month - 1, day);
+      }
     } else {
       // Default to 2 weeks from now
       checkInDate = new Date();
@@ -521,6 +536,17 @@ export default function BachelorDashboard() {
     });
     const airbnbSearchUrl = `${airbnbBaseUrl}?${params.toString()}`;
 
+    // Destination-specific images
+    const destImages: {[key: string]: string[]} = {
+      'miami': ['https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=400', 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400', 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400', 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400'],
+      'las vegas': ['https://images.unsplash.com/photo-1522364723953-452492584e26?w=400', 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400', 'https://images.unsplash.com/photo-1562790351-d273a961e0e9?w=400', 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'],
+      'nashville': ['https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=400', 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400', 'https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=400', 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=400'],
+      'default': ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400', 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400', 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400']
+    };
+    
+    const destKey = destination.toLowerCase();
+    const images = destImages[destKey] || destImages['default'];
+
     const mockLodging: Lodging[] = [
       {
         id: '1',
@@ -533,7 +559,7 @@ export default function BachelorDashboard() {
         location: `${destination} Center`,
         partyTolerance: 'high',
         bookingUrl: airbnbSearchUrl,
-        image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400'
+        image: images[0]
       },
       {
         id: '2',
@@ -546,7 +572,7 @@ export default function BachelorDashboard() {
         location: `${destination} Downtown`,
         partyTolerance: 'high',
         bookingUrl: airbnbSearchUrl,
-        image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400'
+        image: images[1]
       },
       {
         id: '3',
@@ -559,7 +585,7 @@ export default function BachelorDashboard() {
         location: `${destination} Entertainment District`,
         partyTolerance: 'medium',
         bookingUrl: airbnbSearchUrl,
-        image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400'
+        image: images[2]
       },
       {
         id: '4',
@@ -572,7 +598,7 @@ export default function BachelorDashboard() {
         location: `${destination} Near Attractions`,
         partyTolerance: 'high',
         bookingUrl: airbnbSearchUrl,
-        image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400'
+        image: images[3]
       }
     ];
     setLodgings(mockLodging);
@@ -788,30 +814,18 @@ export default function BachelorDashboard() {
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
               >
                 <option value="">Select month...</option>
-                <option value="2024-01">January 2024</option>
-                <option value="2024-02">February 2024</option>
-                <option value="2024-03">March 2024</option>
-                <option value="2024-04">April 2024</option>
-                <option value="2024-05">May 2024</option>
-                <option value="2024-06">June 2024</option>
-                <option value="2024-07">July 2024</option>
-                <option value="2024-08">August 2024</option>
-                <option value="2024-09">September 2024</option>
-                <option value="2024-10">October 2024</option>
-                <option value="2024-11">November 2024</option>
-                <option value="2024-12">December 2024</option>
-                <option value="2025-01">January 2025</option>
-                <option value="2025-02">February 2025</option>
-                <option value="2025-03">March 2025</option>
-                <option value="2025-04">April 2025</option>
-                <option value="2025-05">May 2025</option>
-                <option value="2025-06">June 2025</option>
-                <option value="2025-07">July 2025</option>
-                <option value="2025-08">August 2025</option>
-                <option value="2025-09">September 2025</option>
-                <option value="2025-10">October 2025</option>
-                <option value="2025-11">November 2025</option>
-                <option value="2025-12">December 2025</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
               </select>
             </div>
 

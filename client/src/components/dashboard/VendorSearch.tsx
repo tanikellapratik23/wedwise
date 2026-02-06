@@ -763,11 +763,15 @@ export default function VendorSearch() {
             <div key={vendor.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden relative">
               {/* Favorite Heart Button */}
               <button
-                onClick={() => toggleFavorite(vendor.id, vendor)}
-                className={`absolute top-4 right-4 z-10 p-2 rounded-full transition ${
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleFavorite(vendor.id, vendor);
+                }}
+                className={`absolute top-4 right-4 z-10 p-2 rounded-full transition shadow-md ${
                   isFavorite
-                    ? 'bg-red-100 text-red-600'
-                    : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                    ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                    : 'bg-white text-gray-400 hover:text-red-500 hover:bg-red-50'
                 }`}
                 title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
