@@ -194,29 +194,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
                 <BookOpen className="w-4 h-4" />
                 Tutorial
               </button>
-              <button
-                onClick={() => downloadBackupAsDoc()}
-                className="px-4 py-2.5 text-sm font-semibold bg-gradient-to-r from-primary-50 to-pink-50 text-primary-700 rounded-lg hover:from-primary-100 hover:to-pink-100 transition-all shadow-sm"
-              >
-                Download Backup
-              </button>
               <AutoSaveToggle />
-              <input
-                type="file"
-                accept="application/json"
-                onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (!f) return;
-                  try {
-                    await importBackupFile(f);
-                    window.location.reload();
-                  } catch (err) {
-                    console.error('Import failed', err);
-                    alert('Failed to import backup file');
-                  }
-                }}
-                className="text-sm"
-              />
               <button
                 onClick={handleLogoutClick}
                 className="flex items-center space-x-2 px-4 py-2.5 text-gray-700 hover:text-gray-900 hover:bg-white/80 rounded-lg transition-all font-medium shadow-sm border border-gray-200"
