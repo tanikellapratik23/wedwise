@@ -27,6 +27,7 @@ export default function SharedDashboard() {
 
   useEffect(() => {
     fetchSharedDashboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const fetchSharedDashboard = async () => {

@@ -225,10 +225,12 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
       );
 
       if (response.data.shareToken) {
+        const base = import.meta.env.BASE_URL || '/';
+        const baseUrl = base === '/' ? '' : base.replace(/\/$/, '');
         const currentUrl = window.location.origin;
         const link = shareLinkType === 'anyone' 
-          ? `${currentUrl}/shared/${response.data.shareToken}`
-          : `${currentUrl}/shared/${response.data.shareToken}?email=${shareEmail}`;
+          ? `${currentUrl}${baseUrl}/shared/${response.data.shareToken}`
+          : `${currentUrl}${baseUrl}/shared/${response.data.shareToken}?email=${shareEmail}`;
         setShareLink(link);
       }
     } catch (error) {
