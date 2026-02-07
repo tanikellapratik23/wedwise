@@ -12,7 +12,6 @@ import Goals from './onboarding/steps/Goals';
 import Summary from './onboarding/steps/Summary';
 import { OnboardingData } from './onboarding/Onboarding';
 import VivahaMap from './VivahaMap';
-import AIAssistant from './AIAssistant';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -571,9 +570,6 @@ export default function Landing() {
           <VivahaMap onClose={() => setShowMap(false)} />
         </div>
       )}
-      
-      {/* AI Assistant */}
-      <AIAssistant />
     </div>
   );
 }

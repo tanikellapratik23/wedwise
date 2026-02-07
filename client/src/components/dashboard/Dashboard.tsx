@@ -7,6 +7,7 @@ import axios from 'axios';
 import Tutorial from '../Tutorial';
 import SingleSourceOfTruth from './SingleSourceOfTruth';
 import HotelBlock from './HotelBlock';
+import AIAssistant from '../AIAssistant';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 import Overview from './Overview';
@@ -351,6 +352,16 @@ export default function Dashboard({ isAdmin: propIsAdmin = false, setIsAuthentic
                 <LogOut className="w-5 h-5" />
                 <span>Logout</span>
               </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* AI Assistant */}
+      <AIAssistant />
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
             </div>
           </div>
         </div>
