@@ -29,6 +29,11 @@ jobs:
         run: |
           npm ci
 
+      - name: Check environment variables
+        run: |
+          echo "VITE_API_URL is set: ${{ secrets.PROD_API_URL != '' }}"
+          echo "VITE_GROQ_API_KEY is set: ${{ secrets.VITE_GROQ_API_KEY != '' }}"
+
       - name: Build client
         working-directory: ./client
         env:
