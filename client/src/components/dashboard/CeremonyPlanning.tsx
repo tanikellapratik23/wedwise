@@ -132,9 +132,63 @@ export default function CeremonyPlanning() {
   const initializeDefaultDays = (weddingDate: string, religions: string[]) => {
     const baseDate = weddingDate ? new Date(weddingDate) : new Date();
     const defaultDays: WeddingDay[] = [];
-
-    // Create days based on numberOfDays selection
     const daysCount = numberOfDays || 4;
+
+    // Try to load religion-specific schedule
+    let ceremonySchedule: CeremonySchedule | null = null;
+    
+    if (religions && religions.length > 0) {
+      // Check if single religion
+      if (religions.length === 1) {
+        ceremonySchedule = getCeremonySchedule(religions[0]);
+      } 
+      // Check if interfaith (2 religions)
+      else if (religions.length === 2) {
+        const interfaithSchedule = getInterfaithSchedule(religions[0], religions[1]);
+        if (interfaithSchedule) {
+          ceremonySchedule = interfaithSchedule;
+        }
+      }
+    }
+
+    // If we have a religion-specific schedule, use it
+    if (ceremonySchedule && ceremonySchedule.schedule) {
+      const scheduleToUse = ceremonySchedule.schedule.slice(0, daysCount);
+      
+      scheduleToUse.forEach((day, index) => {
+        const dayDate = new Date(baseDate);
+        // Calculate offset based on day type
+        let offset = 0;
+        if (day.dayType === 'pre-wedding') {
+          offset = -(scheduleToUse.length - index - 1) - (scheduleToUse.filter(d => d.dayType === 'pre-wedding').length - scheduleToUse.slice(0, index + 1).filter(d => d.dayType === 'pre-wedding').length);
+        } else if (day.dayType === 'wedding') {
+          offset = 0;
+        } else {
+          offset = scheduleToUse.slice(0, index).filter(d => d.dayType === 'post-wedding').length + 1;
+        }
+        dayDate.setDate(baseDate.getDate() + offset);
+
+        defaultDays.push({
+          dayNumber: index + 1,
+          date: dayDate.toISOString().split('T')[0],
+          title: day.dayName || day.title || `Day ${index + 1}`,
+          dayType: day.dayType,
+          events: (day.events || []).map((event, eventIndex) => ({
+            id: `day${index}-event${eventIndex}`,
+            name: event.name,
+            time: event.time,
+            duration: event.duration,
+            description: event.description || event.significance || '',
+            rituals: event.tips || [],
+          })),
+        });
+      });
+
+      setWeddingDays(defaultDays);
+      return;
+    }
+
+    // Fallback: Generic schedule when no religion-specific schedule found
     const dayTemplates: Array<{ offset: number; title: string; dayType: 'pre-wedding' | 'wedding' | 'post-wedding'; defaultEvents: string[] }> = [];
 
     // Build day templates based on numberOfDays
@@ -150,7 +204,7 @@ export default function CeremonyPlanning() {
         offset: -1,
         title: 'Pre-Wedding Day',
         dayType: 'pre-wedding',
-        defaultEvents: ['Mehndi/Sangeet', 'Welcome Dinner', 'Rehearsal'],
+        defaultEvents: ['Welcome Dinner', 'Rehearsal'],
       });
       dayTemplates.push({
         offset: 0,
@@ -163,7 +217,7 @@ export default function CeremonyPlanning() {
         offset: -1,
         title: 'Pre-Wedding Day',
         dayType: 'pre-wedding',
-        defaultEvents: ['Mehndi/Sangeet', 'Welcome Dinner'],
+        defaultEvents: ['Welcome Dinner'],
       });
       dayTemplates.push({
         offset: 0,
@@ -183,13 +237,13 @@ export default function CeremonyPlanning() {
         offset: -2,
         title: 'Pre-Wedding Day 1',
         dayType: 'pre-wedding',
-        defaultEvents: ['Mehndi Ceremony', 'Welcome Dinner', 'Family Gathering'],
+        defaultEvents: ['Welcome Dinner', 'Family Gathering'],
       });
       dayTemplates.push({
         offset: -1,
         title: 'Pre-Wedding Day 2',
         dayType: 'pre-wedding',
-        defaultEvents: ['Sangeet/Music Night', 'Haldi Ceremony', 'Rehearsal Dinner'],
+        defaultEvents: ['Rehearsal Dinner'],
       });
       dayTemplates.push({
         offset: 0,
