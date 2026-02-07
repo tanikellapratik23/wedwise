@@ -18,6 +18,7 @@ import adminRoutes from './routes/admin';
 import navigationRoutes from './routes/navigation';
 import postsRoutes from './routes/posts';
 import weddingPageRoutes from './routes/weddingPage';
+import aiRoutes from './routes/ai';
 
 dotenv.config();
 
