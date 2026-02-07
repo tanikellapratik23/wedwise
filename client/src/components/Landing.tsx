@@ -471,7 +471,7 @@ export default function Landing() {
 
               <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                 <Feature title="Fast Onboarding" desc="Answer a few quick questions and we customize your dashboard instantly." />
-                <Feature title="Autosave & Backup" desc="Automatic local saves and exportable backups (JSON + Word)." />
+                <Feature title="Offline Mode" desc="Access your wedding details anytime, anywhere — even without internet." />
               </div>
             </div>
           </div>

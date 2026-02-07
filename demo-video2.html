@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VivahaPlan Product Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .video-container {
+            width: 85vw;
+            height: 48vw;
+            max-width: 1400px;
+            max-height: 800px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.7);
+            position: relative;
+        }
+        
+        .scene {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+        
+        .scene.active { opacity: 1; }
+        
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ec4899;
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0;
+        }
+        
+        .cursor.visible { opacity: 1; }
+        .cursor.clicking { 
+            transform: scale(0.8);
+            background: rgba(236, 72, 153, 0.3);
+        }
+        
+        /* Scene 1: Google Search */
+        .google-scene {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 120px;
+        }
+        
+        .google-logo {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        
+        .g-letter-1 { color: #4285F4; }
+        .g-letter-2 { color: #EA4335; }
+        .g-letter-3 { color: #FBBC05; }
+        .g-letter-4 { color: #4285F4; }
+        .g-letter-5 { color: #34A853; }
+        .g-letter-6 { color: #EA4335; }
+        
+        .search-box {
+            width: 580px;
+            height: 46px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 0 20px;
+            font-size: 16px;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-text {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #202124;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        .search-results {
+            width: 600px;
+            margin-top: 30px;
+        }
+        
+        .result-item {
+            margin-bottom: 32px;
+            cursor: pointer;
+        }
+        
+        .result-url {
+            font-size: 14px;
+            color: #202124;
+            line-height: 1.3;
+        }
+        
+        .result-title {
+            font-size: 20px;
+            color: #1a0dab;
+            font-weight: 400;
+            margin-top: 5px;
+            text-decoration: none;
+        }
+        
+        .result-title:hover {
+            text-decoration: underline;
+        }
+        
+        .result-snippet {
+            font-size: 14px;
+            color: #4d5156;
+            line-height: 1.58;
+            margin-top: 5px;
+        }
+        
+        /* Scene 2: Landing Page */
+        .landing-scene {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #dbeafe 100%);
+            overflow-y: auto;
+        }
+        
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid black;
+            color: black;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(236, 72, 153, 0.3);
+        }
+        
+        .hero-section {
+            padding: 80px 48px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .hero-title {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            color: #111827;
+        }
+        
+        .hero-subtitle {
+            font-size: 20px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        
+        .hero-cta {
+            padding: 16px 40px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .hero-cta:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.4);
+        }
+        
+        /* Scene 3: Sign Up */
+        .signup-scene {
+            background: linear-gradient(135deg, #fdf2f8, #f3e8ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .signup-card {
+            background: white;
+            padding: 48px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            width: 450px;
+        }
+        
+        .signup-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+        
+        .form-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+        
+        /* Scene 4: Onboarding */
+        .onboarding-scene {
+            background: linear-gradient(135deg, #fdf2f8, #f3e8ff);
+            padding: 40px;
+        }
+        
+        .onboarding-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 48px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ec4899, #a855f7);
+            transition: width 0.5s ease;
+        }
+        
+        .onboarding-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .onboarding-subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+        
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .option-card {
+            padding: 24px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .option-card:hover {
+            border-color: #ec4899;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.2);
+        }
+        
+        .option-card.selected {
+            border-color: #ec4899;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(168, 85, 247, 0.1));
+        }
+        
+        .option-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+        
+        .option-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .next-button {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            float: right;
+        }
+        
+        /* Scene 5: Dashboard */
+        .dashboard-scene {
+            background: #f9fafb;
+            overflow-y: auto;
+        }
+        
+        .dashboard-nav {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dashboard-content {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 32px;
+        }
+        
+        .dashboard-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .dashboard-subtitle {
+            font-size: 16px;
+            color: #6b7280;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .ceremony-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .ceremony-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid #ec4899;
+        }
+        
+        .ceremony-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .ceremony-date {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+        
+        .ceremony-progress {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        
+        .ceremony-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ec4899, #a855f7);
+        }
+        
+        /* Scene 6: End Frame */
+        .end-scene {
+            background: linear-gradient(135deg, #fdf2f8, #f3e8ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .end-logo {
+            font-size: 80px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+        }
+        
+        .end-tagline {
+            font-size: 24px;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .end-cta {
+            padding: 18px 48px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.4);
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .typing-text {
+            overflow: hidden;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out both;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <div class="cursor" id="cursor"></div>
+        
+        <!-- Scene 1: Google Search -->
+        <div class="scene google-scene" id="scene1">
+            <div class="google-logo">
+                <span class="g-letter-1">G</span><span class="g-letter-2">o</span><span class="g-letter-3">o</span><span class="g-letter-4">g</span><span class="g-letter-5">l</span><span class="g-letter-6">e</span>
+            </div>
+            <div class="search-box">
+                <span class="search-text" id="searchText"></span>
+            </div>
+            <div class="search-results" id="searchResults" style="opacity: 0;">
+                <div class="result-item" id="vivahaResult">
+                    <div class="result-url">vivaha.app</div>
+                    <div class="result-title">VivahaPlan - Modern Interfaith Wedding Planning</div>
+                    <div class="result-snippet">Vivaha helps you manage guests, budget, vendors and ceremony details — all in one beautiful dashboard. Perfect for interfaith and modern weddings.</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-url">weddingwire.com</div>
+                    <div class="result-title">Interfaith Wedding Planning Guide</div>
+                    <div class="result-snippet">Tips and advice for planning interfaith weddings with multiple ceremonies...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scene 2: Landing Page -->
+        <div class="scene landing-scene" id="scene2">
+            <div class="navbar">
+                <div class="logo">Vivaha</div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary">About</button>
+                    <button class="btn btn-secondary">Login</button>
+                    <button class="btn btn-primary" id="getStartedBtn">Get Started</button>
+                </div>
+            </div>
+            <div class="hero-section">
+                <h1 class="hero-title">Plan Your Perfect<br>Interfaith Wedding</h1>
+                <p class="hero-subtitle">Vivaha helps you manage guests, budget, vendors and ceremony details — all in one beautiful dashboard.</p>
+                <button class="hero-cta">Start Planning Free</button>
+            </div>
+        </div>
+        
+        <!-- Scene 3: Sign Up -->
+        <div class="scene signup-scene" id="scene3">
+            <div class="signup-card">
+                <h2 class="signup-title">Create Your Account</h2>
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" id="nameInput" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="emailInput" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="passwordInput" value="">
+                </div>
+                <button class="form-button">Create Account</button>
+            </div>
+        </div>
+        
+        <!-- Scene 4: Onboarding -->
+        <div class="scene onboarding-scene" id="scene4">
+            <div class="onboarding-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+                </div>
+                <h2 class="onboarding-title" id="onboardingTitle">What's your role?</h2>
+                <p class="onboarding-subtitle" id="onboardingSubtitle">This helps us personalize your experience</p>
+                <div class="option-grid" id="optionGrid">
+                    <div class="option-card">
+                        <div class="option-icon">💍</div>
+                        <div class="option-title">Bride</div>
+                    </div>
+                    <div class="option-card">
+                        <div class="option-icon">🤵</div>
+                        <div class="option-title">Groom</div>
+                    </div>
+                    <div class="option-card">
+                        <div class="option-icon">💑</div>
+                        <div class="option-title">Partner</div>
+                    </div>
+                    <div class="option-card">
+                        <div class="option-icon">👨‍👩‍👧‍👦</div>
+                        <div class="option-title">Family</div>
+                    </div>
+                </div>
+                <button class="next-button">Next</button>
+            </div>
+        </div>
+        
+        <!-- Scene 5: Dashboard -->
+        <div class="scene dashboard-scene" id="scene5">
+            <div class="dashboard-nav">
+                <div class="logo">Vivaha</div>
+                <div style="display: flex; gap: 24px;">
+                    <span style="font-weight: 600;">Dashboard</span>
+                    <span style="color: #6b7280;">Ceremonies</span>
+                    <span style="color: #6b7280;">Guests</span>
+                    <span style="color: #6b7280;">Vendors</span>
+                    <span style="color: #6b7280;">Budget</span>
+                </div>
+            </div>
+            <div class="dashboard-content">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">Welcome to Your Wedding Dashboard</h1>
+                    <p class="dashboard-subtitle">145 days until your wedding</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Guests</div>
+                        <div class="stat-value">250</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Budget Used</div>
+                        <div class="stat-value">$32k</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Vendors Booked</div>
+                        <div class="stat-value">8/12</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Tasks Complete</div>
+                        <div class="stat-value">67%</div>
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">Your Ceremonies</h3>
+                <div class="ceremony-cards">
+                    <div class="ceremony-card">
+                        <div class="ceremony-name">Hindu Ceremony</div>
+                        <div class="ceremony-date">June 15, 2026 • 10:00 AM</div>
+                        <div style="color: #6b7280; font-size: 14px;">Temple of San Ramon</div>
+                        <div class="ceremony-progress">
+                            <div class="ceremony-progress-fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                    <div class="ceremony-card" style="border-left-color: #a855f7;">
+                        <div class="ceremony-name">Christian Ceremony</div>
+                        <div class="ceremony-date">June 16, 2026 • 2:00 PM</div>
+                        <div style="color: #6b7280; font-size: 14px;">St. Mary's Cathedral</div>
+                        <div class="ceremony-progress">
+                            <div class="ceremony-progress-fill" style="width: 70%;"></div>
+                        </div>
+                    </div>
+                    <div class="ceremony-card" style="border-left-color: #3b82f6;">
+                        <div class="ceremony-name">Reception</div>
+                        <div class="ceremony-date">June 16, 2026 • 6:00 PM</div>
+                        <div style="color: #6b7280; font-size: 14px;">Napa Valley Estate</div>
+                        <div class="ceremony-progress">
+                            <div class="ceremony-progress-fill" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scene 6: End Frame -->
+        <div class="scene end-scene" id="scene6">
+            <div class="end-logo">Vivaha</div>
+            <div class="end-tagline">Plan your wedding, stress-free</div>
+            <button class="end-cta">Start Planning Today</button>
+        </div>
+    </div>
+    
+    <script>
+        const cursor = document.getElementById('cursor');
+        let currentScene = 1;
+        const totalScenes = 6;
+        
+        // Cursor movement helper
+        function moveCursor(x, y, duration = 1000) {
+            return new Promise(resolve => {
+                cursor.classList.add('visible');
+                cursor.style.transition = `left ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), top ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+                cursor.style.left = x + 'px';
+                cursor.style.top = y + 'px';
+                setTimeout(resolve, duration);
+            });
+        }
+        
+        function clickCursor() {
+            return new Promise(resolve => {
+                cursor.classList.add('clicking');
+                setTimeout(() => {
+                    cursor.classList.remove('clicking');
+                    resolve();
+                }, 200);
+            });
+        }
+        
+        function hideCursor() {
+            cursor.classList.remove('visible');
+        }
+        
+        function showScene(sceneNum) {
+            document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+            document.getElementById('scene' + sceneNum).classList.add('active');
+        }
+        
+        // Type text with natural timing
+        function typeText(element, text, speed = 100) {
+            return new Promise(resolve => {
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < text.length) {
+                        element.textContent = text.substring(0, i + 1);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+        
+        // Auto-fill form input
+        function fillInput(inputId, text, speed = 80) {
+            return new Promise(resolve => {
+                const input = document.getElementById(inputId);
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < text.length) {
+                        input.value = text.substring(0, i + 1);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+        
+        async function runDemo() {
+            // Scene 1: Google Search (0-6s)
+            showScene(1);
+            await new Promise(r => setTimeout(r, 500));
+            
+            // Move cursor to search box and type
+            await moveCursor(400, 250, 600);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 200));
+            await typeText(document.getElementById('searchText'), 'vivahaplan', 60);
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Show search results
+            document.getElementById('searchResults').style.opacity = '1';
+            document.getElementById('searchResults').style.transition = 'opacity 0.4s';
+            await new Promise(r => setTimeout(r, 600));
+            
+            // Click on VivahaPlan result
+            await moveCursor(300, 420, 500);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 300));
+            
+            // Scene 2: Landing Page (6-11s)
+            hideCursor();
+            showScene(2);
+            await new Promise(r => setTimeout(r, 800));
+            
+            // Scroll effect simulation
+            const landingScene = document.getElementById('scene2');
+            await new Promise(r => setTimeout(r, 1000));
+            
+            // Move to Get Started button
+            await moveCursor(1100, 85, 900);
+            await new Promise(r => setTimeout(r, 300));
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Scene 3: Sign Up (11-17s)
+            hideCursor();
+            showScene(3);
+            await new Promise(r => setTimeout(r, 600));
+            
+            // Fill form fields
+            await moveCursor(500, 320, 500);
+            await clickCursor();
+            await fillInput('nameInput', 'Sarah & James', 50);
+            await new Promise(r => setTimeout(r, 300));
+            
+            await moveCursor(500, 405, 300);
+            await clickCursor();
+            await fillInput('emailInput', 'sarah.james@email.com', 50);
+            await new Promise(r => setTimeout(r, 300));
+            
+            await moveCursor(500, 490, 300);
+            await clickCursor();
+            await fillInput('passwordInput', '••••••••', 50);
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Click Create Account
+            await moveCursor(500, 585, 400);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Scene 4: Onboarding (17-27s)
+            hideCursor();
+            showScene(4);
+            await new Promise(r => setTimeout(r, 600));
+            
+            // Step 1: Role Selection
+            const options = document.querySelectorAll('.option-card');
+            await moveCursor(450, 400, 600);
+            await clickCursor();
+            options[0].classList.add('selected');
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Click Next
+            await moveCursor(650, 550, 400);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 300));
+            
+            // Step 2: Wedding Date
+            document.getElementById('progressFill').style.width = '50%';
+            document.getElementById('onboardingTitle').textContent = 'When is your wedding?';
+            document.getElementById('onboardingSubtitle').textContent = "We'll help you stay on track";
+            options.forEach(o => o.classList.remove('selected'));
+            document.getElementById('optionGrid').innerHTML = `
+                <div style="grid-column: span 2;">
+                    <input type="date" class="form-input" value="2026-06-15" style="font-size: 18px; text-align: center;">
+                </div>
+            `;
+            await new Promise(r => setTimeout(r, 900));
+            
+            // Click Next
+            await moveCursor(650, 550, 350);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 300));
+            
+            // Step 3: Ceremony Types
+            document.getElementById('progressFill').style.width = '75%';
+            document.getElementById('onboardingTitle').textContent = 'What ceremonies are you planning?';
+            document.getElementById('onboardingSubtitle').textContent = 'Select all that apply';
+            document.getElementById('optionGrid').innerHTML = `
+                <div class="option-card"><div class="option-icon">🕉️</div><div class="option-title">Hindu</div></div>
+                <div class="option-card"><div class="option-icon">✝️</div><div class="option-title">Christian</div></div>
+                <div class="option-card"><div class="option-icon">🎉</div><div class="option-title">Reception</div></div>
+                <div class="option-card"><div class="option-icon">🎊</div><div class="option-title">Engagement</div></div>
+            `;
+            await new Promise(r => setTimeout(r, 600));
+            
+            // Select multiple ceremonies
+            const ceremonyCards = document.querySelectorAll('.option-card');
+            await moveCursor(450, 400, 500);
+            await clickCursor();
+            ceremonyCards[0].classList.add('selected');
+            await new Promise(r => setTimeout(r, 300));
+            
+            await moveCursor(650, 400, 250);
+            await clickCursor();
+            ceremonyCards[1].classList.add('selected');
+            await new Promise(r => setTimeout(r, 300));
+            
+            await moveCursor(450, 500, 250);
+            await clickCursor();
+            ceremonyCards[2].classList.add('selected');
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Click Next to dashboard
+            await moveCursor(650, 600, 400);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Scene 5: Dashboard (27-40s)
+            hideCursor();
+            showScene(5);
+            await new Promise(r => setTimeout(r, 800));
+            
+            // Scroll down to show ceremonies
+            const dashContent = document.querySelector('.dashboard-content');
+            await new Promise(r => setTimeout(r, 1500));
+            
+            // Hover over ceremony cards
+            await moveCursor(300, 520, 800);
+            await new Promise(r => setTimeout(r, 600));
+            await moveCursor(600, 520, 500);
+            await new Promise(r => setTimeout(r, 600));
+            await moveCursor(900, 520, 500);
+            await new Promise(r => setTimeout(r, 800));
+            
+            hideCursor();
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Scene 6: End Frame (40-45s)
+            showScene(6);
+            await new Promise(r => setTimeout(r, 3000));
+            
+            // Fade to black and restart
+            document.querySelector('.video-container').style.opacity = '0';
+            document.querySelector('.video-container').style.transition = 'opacity 1s';
+            await new Promise(r => setTimeout(r, 1500));
+            
+            // Restart
+            document.querySelector('.video-container').style.opacity = '1';
+            currentScene = 1;
+            runDemo();
+        }
+        
+        // Start demo after page load
+        window.addEventListener('load', () => {
+            setTimeout(runDemo, 500);
+        });
+    </script>
+</body>
+</html>

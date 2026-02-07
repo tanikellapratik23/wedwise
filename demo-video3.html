@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VivahaPlan Mobile Demo - Reels/Shorts</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: white;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Mobile container - 9:16 aspect ratio fullscreen */
+        .phone-container {
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Notch - hidden for clean look */
+        .notch {
+            display: none;
+        }
+        
+        .scene {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .scene.active { opacity: 1; }
+        
+        .cursor {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(236, 72, 153, 0.3);
+            border: 3px solid #ec4899;
+            position: absolute;
+            pointer-events: none;
+            z-index: 1500;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0;
+        }
+        
+        .cursor.visible { opacity: 1; }
+        .cursor.clicking { 
+            transform: scale(0.7);
+            background: rgba(236, 72, 153, 0.5);
+        }
+        
+        /* Scene 1: Google Search Mobile */
+        .google-scene {
+            background: white;
+            padding: 60px 20px 20px;
+        }
+        
+        .google-mobile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .google-logo-mobile {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .search-box-mobile {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 0 20px;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(32,33,36,0.1);
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            margin-bottom: 30px;
+        }
+        
+        .search-text-mobile {
+            flex: 1;
+            font-size: 15px;
+            color: #202124;
+        }
+        
+        .search-results-mobile {
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        
+        .result-item-mobile {
+            margin-bottom: 24px;
+            padding: 12px;
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+        
+        .result-item-mobile.highlight {
+            background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+            border: 2px solid #ec4899;
+        }
+        
+        .result-url-mobile {
+            font-size: 13px;
+            color: #5f6368;
+            margin-bottom: 4px;
+        }
+        
+        .result-title-mobile {
+            font-size: 18px;
+            color: #1a0dab;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        
+        .result-snippet-mobile {
+            font-size: 14px;
+            color: #4d5156;
+            line-height: 1.4;
+        }
+        
+        /* Scene 2: Landing Mobile */
+        .landing-mobile {
+            background: linear-gradient(180deg, #fdf2f8 0%, #fce7f3 50%, #dbeafe 100%);
+            overflow-y: auto;
+            padding-top: 40px;
+        }
+        
+        .nav-mobile {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo-mobile {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .menu-icon {
+            font-size: 24px;
+        }
+        
+        .hero-mobile {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .hero-title-mobile {
+            font-size: 36px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            color: #111827;
+        }
+        
+        .hero-subtitle-mobile {
+            font-size: 16px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 24px;
+            padding: 0 10px;
+        }
+        
+        .cta-button-mobile {
+            padding: 16px 36px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
+        }
+        
+        /* Scene 3: Signup Mobile */
+        .signup-mobile {
+            background: linear-gradient(135deg, #fdf2f8, #f3e8ff);
+            padding: 60px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .signup-title-mobile {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .form-group-mobile {
+            margin-bottom: 16px;
+        }
+        
+        .form-label-mobile {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .form-input-mobile {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+        
+        .form-input-mobile:focus {
+            outline: none;
+            border-color: #ec4899;
+        }
+        
+        .form-button-mobile {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+        
+        /* Scene 4: Onboarding Mobile */
+        .onboarding-mobile {
+            background: linear-gradient(135deg, #fdf2f8, #f3e8ff);
+            padding: 60px 20px 20px;
+        }
+        
+        .progress-bar-mobile {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .progress-fill-mobile {
+            height: 100%;
+            background: linear-gradient(90deg, #ec4899, #a855f7);
+            transition: width 0.5s ease;
+        }
+        
+        .onboarding-title-mobile {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .onboarding-subtitle-mobile {
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+        
+        .option-grid-mobile {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .option-card-mobile {
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            text-align: center;
+            background: white;
+            transition: all 0.2s;
+        }
+        
+        .option-card-mobile.selected {
+            border-color: #ec4899;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(168, 85, 247, 0.1));
+        }
+        
+        .option-icon-mobile {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .option-title-mobile {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .next-button-mobile {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            float: right;
+        }
+        
+        /* Scene 5: Dashboard Mobile */
+        .dashboard-mobile {
+            background: #f9fafb;
+            overflow-y: auto;
+            padding-top: 40px;
+        }
+        
+        .dash-nav-mobile {
+            background: white;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .dash-content-mobile {
+            padding: 20px;
+        }
+        
+        .dash-title-mobile {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .dash-subtitle-mobile {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid-mobile {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card-mobile {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .stat-label-mobile {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+        
+        .stat-value-mobile {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .ceremony-card-mobile {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 12px;
+            border-left: 4px solid #ec4899;
+        }
+        
+        .ceremony-name-mobile {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .ceremony-date-mobile {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+        
+        .ceremony-progress-mobile {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .ceremony-progress-fill-mobile {
+            height: 100%;
+            background: linear-gradient(90deg, #ec4899, #a855f7);
+        }
+        
+        /* Scene 6: End Frame Mobile */
+        .end-mobile {
+            background: linear-gradient(135deg, #fdf2f8, #f3e8ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .end-logo-mobile {
+            font-size: 64px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .end-tagline-mobile {
+            font-size: 20px;
+            color: #6b7280;
+            margin-bottom: 32px;
+            line-height: 1.4;
+        }
+        
+        .end-cta-mobile {
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="notch"></div>
+        <div class="cursor" id="cursor"></div>
+        
+        <!-- Scene 1: Google Search -->
+        <div class="scene google-scene active" id="scene1">
+            <div class="google-mobile-header">
+                <div class="google-logo-mobile">
+                    <span style="color: #4285F4;">G</span><span style="color: #EA4335;">o</span><span style="color: #FBBC05;">o</span><span style="color: #4285F4;">g</span><span style="color: #34A853;">l</span><span style="color: #EA4335;">e</span>
+                </div>
+            </div>
+            <div class="search-box-mobile">
+                <span class="search-text-mobile" id="searchText"></span>
+            </div>
+            <div class="search-results-mobile" id="searchResults">
+                <div class="result-item-mobile highlight" id="vivahaResult">
+                    <div class="result-url-mobile">vivaha.app</div>
+                    <div class="result-title-mobile">VivahaPlan - Wedding Planning</div>
+                    <div class="result-snippet-mobile">Manage guests, budget, vendors & ceremonies in one dashboard. Perfect for modern & interfaith weddings.</div>
+                </div>
+                <div class="result-item-mobile">
+                    <div class="result-url-mobile">weddingwire.com</div>
+                    <div class="result-title-mobile">Wedding Planning Guide</div>
+                    <div class="result-snippet-mobile">Tips for planning your wedding...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scene 2: Landing -->
+        <div class="scene landing-mobile" id="scene2">
+            <div class="nav-mobile">
+                <div class="logo-mobile">Vivaha</div>
+                <div class="menu-icon">☰</div>
+            </div>
+            <div class="hero-mobile">
+                <h1 class="hero-title-mobile">Plan Your Perfect Wedding</h1>
+                <p class="hero-subtitle-mobile">Manage guests, budget, vendors & ceremonies — all in one beautiful dashboard</p>
+                <button class="cta-button-mobile">Start Planning Free</button>
+            </div>
+        </div>
+        
+        <!-- Scene 3: Signup -->
+        <div class="scene signup-mobile" id="scene3">
+            <h2 class="signup-title-mobile">Create Account</h2>
+            <div class="form-group-mobile">
+                <label class="form-label-mobile">Name</label>
+                <input type="text" class="form-input-mobile" id="nameInput" value="">
+            </div>
+            <div class="form-group-mobile">
+                <label class="form-label-mobile">Email</label>
+                <input type="email" class="form-input-mobile" id="emailInput" value="">
+            </div>
+            <div class="form-group-mobile">
+                <label class="form-label-mobile">Password</label>
+                <input type="password" class="form-input-mobile" id="passwordInput" value="">
+            </div>
+            <button class="form-button-mobile">Create Account</button>
+        </div>
+        
+        <!-- Scene 4: Onboarding -->
+        <div class="scene onboarding-mobile" id="scene4">
+            <div class="progress-bar-mobile">
+                <div class="progress-fill-mobile" id="progressFill" style="width: 33%;"></div>
+            </div>
+            <h2 class="onboarding-title-mobile" id="onboardingTitle">What's your role?</h2>
+            <p class="onboarding-subtitle-mobile" id="onboardingSubtitle">Help us personalize your experience</p>
+            <div class="option-grid-mobile" id="optionGrid">
+                <div class="option-card-mobile">
+                    <div class="option-icon-mobile">💍</div>
+                    <div class="option-title-mobile">Bride</div>
+                </div>
+                <div class="option-card-mobile">
+                    <div class="option-icon-mobile">🤵</div>
+                    <div class="option-title-mobile">Groom</div>
+                </div>
+                <div class="option-card-mobile">
+                    <div class="option-icon-mobile">💑</div>
+                    <div class="option-title-mobile">Partner</div>
+                </div>
+                <div class="option-card-mobile">
+                    <div class="option-icon-mobile">👨‍👩‍👧‍👦</div>
+                    <div class="option-title-mobile">Family</div>
+                </div>
+            </div>
+            <button class="next-button-mobile">Next</button>
+        </div>
+        
+        <!-- Scene 5: Dashboard -->
+        <div class="scene dashboard-mobile" id="scene5">
+            <div class="dash-nav-mobile">
+                <div class="logo-mobile">Vivaha</div>
+            </div>
+            <div class="dash-content-mobile">
+                <h1 class="dash-title-mobile">Your Dashboard</h1>
+                <p class="dash-subtitle-mobile">145 days until your wedding</p>
+                
+                <div class="stats-grid-mobile">
+                    <div class="stat-card-mobile">
+                        <div class="stat-label-mobile">Total Guests</div>
+                        <div class="stat-value-mobile">250</div>
+                    </div>
+                    <div class="stat-card-mobile">
+                        <div class="stat-label-mobile">Budget</div>
+                        <div class="stat-value-mobile">$32k</div>
+                    </div>
+                    <div class="stat-card-mobile">
+                        <div class="stat-label-mobile">Vendors</div>
+                        <div class="stat-value-mobile">8/12</div>
+                    </div>
+                    <div class="stat-card-mobile">
+                        <div class="stat-label-mobile">Tasks</div>
+                        <div class="stat-value-mobile">67%</div>
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">Your Ceremonies</h3>
+                <div class="ceremony-card-mobile">
+                    <div class="ceremony-name-mobile">Hindu Ceremony</div>
+                    <div class="ceremony-date-mobile">June 15, 2026 • 10:00 AM</div>
+                    <div class="ceremony-progress-mobile">
+                        <div class="ceremony-progress-fill-mobile" style="width: 85%;"></div>
+                    </div>
+                </div>
+                <div class="ceremony-card-mobile" style="border-left-color: #a855f7;">
+                    <div class="ceremony-name-mobile">Christian Ceremony</div>
+                    <div class="ceremony-date-mobile">June 16, 2026 • 2:00 PM</div>
+                    <div class="ceremony-progress-mobile">
+                        <div class="ceremony-progress-fill-mobile" style="width: 70%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scene 6: End Frame -->
+        <div class="scene end-mobile" id="scene6">
+            <div class="end-logo-mobile">Vivaha</div>
+            <div class="end-tagline-mobile">Plan your wedding,<br>stress-free</div>
+            <button class="end-cta-mobile">Start Planning Today</button>
+        </div>
+    </div>
+    
+    <script>
+        const cursor = document.getElementById('cursor');
+        let currentScene = 1;
+        
+        function moveCursor(x, y, duration = 800) {
+            return new Promise(resolve => {
+                cursor.classList.add('visible');
+                cursor.style.transition = `left ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), top ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+                cursor.style.left = x + 'px';
+                cursor.style.top = y + 'px';
+                setTimeout(resolve, duration);
+            });
+        }
+        
+        function clickCursor() {
+            return new Promise(resolve => {
+                cursor.classList.add('clicking');
+                setTimeout(() => {
+                    cursor.classList.remove('clicking');
+                    resolve();
+                }, 200);
+            });
+        }
+        
+        function hideCursor() {
+            cursor.classList.remove('visible');
+        }
+        
+        function showScene(sceneNum) {
+            document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+            document.getElementById('scene' + sceneNum).classList.add('active');
+        }
+        
+        function typeText(element, text, speed = 80) {
+            return new Promise(resolve => {
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < text.length) {
+                        element.textContent = text.substring(0, i + 1);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+        
+        function fillInput(inputId, text, speed = 60) {
+            return new Promise(resolve => {
+                const input = document.getElementById(inputId);
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < text.length) {
+                        input.value = text.substring(0, i + 1);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+        
+        async function runDemo() {
+            // Scene 1: Google Search (0-5s)
+            showScene(1);
+            await new Promise(r => setTimeout(r, 500));
+            
+            await moveCursor(200, 180, 500);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 200));
+            await typeText(document.getElementById('searchText'), 'vivahaplan', 70);
+            await new Promise(r => setTimeout(r, 400));
+            
+            document.getElementById('searchResults').style.opacity = '1';
+            await new Promise(r => setTimeout(r, 600));
+            
+            await moveCursor(200, 320, 400);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 300));
+            
+            // Scene 2: Landing (5-9s)
+            hideCursor();
+            showScene(2);
+            await new Promise(r => setTimeout(r, 1200));
+            
+            await moveCursor(200, 450, 800);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Scene 3: Signup (9-14s)
+            hideCursor();
+            showScene(3);
+            await new Promise(r => setTimeout(r, 600));
+            
+            await moveCursor(200, 210, 400);
+            await clickCursor();
+            await fillInput('nameInput', 'Sarah & James', 60);
+            await new Promise(r => setTimeout(r, 300));
+            
+            await moveCursor(200, 280, 300);
+            await clickCursor();
+            await fillInput('emailInput', 'sarah@email.com', 60);
+            await new Promise(r => setTimeout(r, 300));
+            
+            await moveCursor(200, 350, 300);
+            await clickCursor();
+            await fillInput('passwordInput', '••••••••', 60);
+            await new Promise(r => setTimeout(r, 400));
+            
+            await moveCursor(200, 435, 400);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Scene 4: Onboarding (14-22s)
+            hideCursor();
+            showScene(4);
+            await new Promise(r => setTimeout(r, 600));
+            
+            const options = document.querySelectorAll('.option-card-mobile');
+            await moveCursor(130, 280, 500);
+            await clickCursor();
+            options[0].classList.add('selected');
+            await new Promise(r => setTimeout(r, 400));
+            
+            await moveCursor(320, 470, 400);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 300));
+            
+            // Step 2
+            document.getElementById('progressFill').style.width = '66%';
+            document.getElementById('onboardingTitle').textContent = 'When is your wedding?';
+            document.getElementById('onboardingSubtitle').textContent = "We'll help you stay on track";
+            options.forEach(o => o.classList.remove('selected'));
+            document.getElementById('optionGrid').innerHTML = `
+                <div style="grid-column: span 2; padding: 20px;">
+                    <input type="date" class="form-input-mobile" value="2026-06-15" style="text-align: center; font-size: 16px;">
+                </div>
+            `;
+            await new Promise(r => setTimeout(r, 800));
+            
+            await moveCursor(320, 470, 300);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 300));
+            
+            // Step 3
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('onboardingTitle').textContent = 'Select ceremonies';
+            document.getElementById('onboardingSubtitle').textContent = 'Choose all that apply';
+            document.getElementById('optionGrid').innerHTML = `
+                <div class="option-card-mobile"><div class="option-icon-mobile">🕉️</div><div class="option-title-mobile">Hindu</div></div>
+                <div class="option-card-mobile"><div class="option-icon-mobile">✝️</div><div class="option-title-mobile">Christian</div></div>
+                <div class="option-card-mobile"><div class="option-icon-mobile">🎉</div><div class="option-title-mobile">Reception</div></div>
+                <div class="option-card-mobile"><div class="option-icon-mobile">🎊</div><div class="option-title-mobile">Other</div></div>
+            `;
+            await new Promise(r => setTimeout(r, 600));
+            
+            const ceremonyCards = document.querySelectorAll('.option-card-mobile');
+            await moveCursor(130, 280, 400);
+            await clickCursor();
+            ceremonyCards[0].classList.add('selected');
+            await new Promise(r => setTimeout(r, 300));
+            
+            await moveCursor(280, 280, 250);
+            await clickCursor();
+            ceremonyCards[1].classList.add('selected');
+            await new Promise(r => setTimeout(r, 300));
+            
+            await moveCursor(320, 490, 350);
+            await clickCursor();
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Scene 5: Dashboard (22-35s)
+            hideCursor();
+            showScene(5);
+            await new Promise(r => setTimeout(r, 2000));
+            
+            await moveCursor(200, 400, 800);
+            await new Promise(r => setTimeout(r, 1500));
+            
+            hideCursor();
+            await new Promise(r => setTimeout(r, 400));
+            
+            // Scene 6: End (35-40s)
+            showScene(6);
+            await new Promise(r => setTimeout(r, 3000));
+            
+            // Fade and restart
+            document.querySelector('.phone-container').style.opacity = '0';
+            document.querySelector('.phone-container').style.transition = 'opacity 1s';
+            await new Promise(r => setTimeout(r, 1500));
+            
+            document.querySelector('.phone-container').style.opacity = '1';
+            currentScene = 1;
+            runDemo();
+        }
+        
+        window.addEventListener('load', () => {
+            setTimeout(runDemo, 500);
+        });
+    </script>
+</body>
+</html>

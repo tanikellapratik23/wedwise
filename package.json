@@ -11,6 +11,7 @@
     "server": "cd server && npm run dev"
   },
   "dependencies": {
+    "puppeteer": "^24.37.2",
     "resend": "^6.9.1",
     "xlsx": "^0.18.5"
   },

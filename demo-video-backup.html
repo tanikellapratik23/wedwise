@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vivaha Demo Video - 20 Seconds v2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', 'Lato', system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            min-height: 600px;
+        }
+
+        .video-container {
+            width: 85vw;
+            height: calc(85vw * 9 / 16);
+            max-width: 1400px;
+            max-height: 787px;
+            position: relative;
+            overflow: visible;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            background: white;
+        }
+
+        .scene {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            padding: 25px;
+            overflow: hidden;
+        }
+
+        .scene.active {
+            opacity: 1;
+        }
+
+        .gradient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Scene-specific backgrounds */
+        .scene-1 .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+        }
+
+        .scene-2 .gradient-bg {
+            background: #FFFFFF;
+        }
+
+        .scene-3 .gradient-bg {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 50%, #ff6b9d 100%);
+        }
+
+        .scene-4 .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 100%);
+        }
+
+        .scene-5 .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+        }
+
+        .scene-6 .gradient-bg {
+            background: linear-gradient(135deg, #f3e8ff 0%, #dbeafe 100%);
+        }
+
+        .scene-7 .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 50%, #dbeafe 100%);
+        }
+
+        /* Logo and brand */
+        .logo {
+            font-size: 80px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ec4899 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoGlow 0.8s ease-in-out;
+            text-shadow: 0 0 40px rgba(236, 72, 153, 0.4);
+            letter-spacing: 2px;
+        }
+
+        @keyframes logoGlow {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+                filter: blur(10px);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        .tagline {
+            font-size: 24px;
+            color: #6B7280;
+            text-align: center;
+            margin-top: 30px;
+            font-weight: 400;
+            animation: fadeIn 0.6s ease;
+            animation-delay: 0.4s;
+            animation-fill-mode: both;
+            letter-spacing: 0.5px;
+        }
+
+        /* Scene 2 - Dashboard */
+        .dashboard-preview {
+            width: 85%;
+            max-width: 1000px;
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 20px;
+            animation: slideFromLeft 0.6s ease;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            color: white;
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
+            animation: fadeIn 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .heart-icon {
+            font-size: 28px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .dashboard-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard-subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        .dashboard-countdown {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+            animation: popIn 0.5s ease;
+            animation-delay: 0.3s;
+            animation-fill-mode: both;
+        }
+
+        .countdown-number {
+            font-size: 38px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f472b6 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .countdown-label {
+            font-size: 13px;
+            color: #6B7280;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .action-button {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: popIn 0.4s ease;
+            animation-fill-mode: both;
+            cursor: pointer;
+        }
+
+        .action-button:nth-child(1) {
+            animation-delay: 0.5s;
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            color: white;
+        }
+
+        .action-button:nth-child(2) {
+            animation-delay: 0.6s;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+        }
+
+        .action-button:nth-child(3) {
+            animation-delay: 0.7s;
+            background: linear-gradient(135deg, #a855f7 0%, #9333EA 100%);
+            color: white;
+        }
+
+        .action-button:nth-child(4) {
+            animation-delay: 0.8s;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: white;
+        }
+
+        .action-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .action-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .overlay-text {
+            font-size: 26px;
+            color: #ec4899;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+            animation: fadeIn 0.5s ease;
+            animation-delay: 1s;
+            animation-fill-mode: both;
+        }
+
+        /* Scene 3 - Bachelor Party Miami */
+        .bachelor-container {
+            width: 85%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .bachelor-header {
+            text-align: center;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .bachelor-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 8px;
+        }
+
+        .bachelor-subtitle {
+            font-size: 18px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 500;
+        }
+
+        .miami-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .miami-card {
+            background: white;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.4s ease;
+            animation-fill-mode: both;
+        }
+
+        .miami-card:nth-child(1) { animation-delay: 0.3s; }
+        .miami-card:nth-child(2) { animation-delay: 0.5s; }
+        .miami-card:nth-child(3) { animation-delay: 0.7s; }
+
+        .miami-icon {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .miami-label {
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .miami-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .miami-overlay {
+            font-size: 32px;
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.5s ease;
+            animation-delay: 1s;
+            animation-fill-mode: both;
+        }
+
+        /* Scene 4 - VivahaSplit */
+        .vivahasplit-container {
+            width: 85%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .split-header {
+            text-align: center;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .split-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .split-subtitle {
+            font-size: 14px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .split-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+
+        .split-side {
+            text-align: center;
+            animation: slideInFromSide 0.6s ease;
+            animation-fill-mode: both;
+        }
+
+        .split-side:first-child {
+            animation-delay: 0.3s;
+        }
+
+        .split-side:last-child {
+            animation-delay: 0.5s;
+        }
+
+        .split-label {
+            font-size: 20px;
+            color: #6B7280;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .split-amount {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ec4899;
+        }
+
+        .split-divider {
+            font-size: 42px;
+            color: #a855f7;
+            font-weight: 300;
+        }
+
+        .split-overlay {
+            font-size: 22px;
+            color: #a855f7;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            animation: fadeIn 0.5s ease;
+            animation-delay: 1s;
+            animation-fill-mode: both;
+        }
+
+        /* Scene 5 - RSVP & Guests */
+        .rsvp-container {
+            width: 85%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .rsvp-header {
+            text-align: center;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .rsvp-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .rsvp-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .rsvp-stat {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            border: 2px solid #ec4899;
+            animation: popIn 0.4s ease;
+            animation-fill-mode: both;
+        }
+
+        .rsvp-stat:nth-child(1) { animation-delay: 0.3s; }
+        .rsvp-stat:nth-child(2) { animation-delay: 0.5s; }
+        .rsvp-stat:nth-child(3) { animation-delay: 0.7s; }
+
+        .rsvp-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ec4899;
+        }
+
+        .rsvp-stat-label {
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .guest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            animation: fadeIn 0.5s ease;
+            animation-delay: 0.9s;
+            animation-fill-mode: both;
+        }
+
+        .guest-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9fafb;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .guest-name {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .guest-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        /* Scene 6 - Shareable Dashboard */
+        .share-container {
+            width: 85%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .share-icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+            animation: popIn 0.5s ease;
+        }
+
+        .share-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 12px;
+            animation: fadeIn 0.5s ease;
+            animation-delay: 0.2s;
+            animation-fill-mode: both;
+        }
+
+        .share-description {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            animation: fadeIn 0.5s ease;
+            animation-delay: 0.4s;
+            animation-fill-mode: both;
+        }
+
+        .share-link-demo {
+            background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 100%);
+            border: 2px solid #a855f7;
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 13px;
+            color: #6B7280;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            animation: popIn 0.5s ease;
+            animation-delay: 0.6s;
+            animation-fill-mode: both;
+        }
+
+        .share-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .share-feature {
+            background: #f9fafb;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            animation: fadeIn 0.4s ease;
+            animation-fill-mode: both;
+        }
+
+        .share-feature:nth-child(1) { animation-delay: 0.8s; }
+        .share-feature:nth-child(2) { animation-delay: 0.9s; }
+
+        /* Scene 7 - CTA */
+        .cta-container {
+            text-align: center;
+            position: relative;
+        }
+
+        .cta-button {
+            font-size: 32px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #a855f7 100%);
+            padding: 22px 45px;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(168, 85, 247, 0.4);
+            animation: buttonBounce 0.8s ease;
+            animation-delay: 0.3s;
+            animation-fill-mode: both;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 3px solid #9333EA;
+        }
+
+        .cta-subtitle {
+            font-size: 28px;
+            color: #6B7280;
+            margin-top: 25px;
+            font-weight: 400;
+            animation: fadeIn 0.6s ease;
+            animation-delay: 0.8s;
+            animation-fill-mode: both;
+        }
+
+        .cta-tagline {
+            font-size: 22px;
+            color: #9CA3AF;
+            margin-top: 20px;
+            font-style: italic;
+            animation: fadeIn 0.6s ease;
+            animation-delay: 1.2s;
+            animation-fill-mode: both;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInFromSide {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            70% {
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes buttonBounce {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(30px);
+            }
+            60% {
+                transform: scale(1.08) translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <!-- Scene 1: Intro / Splash (3s) -->
+        <div class="scene scene-1 active">
+            <div class="gradient-bg"></div>
+            <div class="logo">Vivaha</div>
+            <div class="tagline">Plan your interfaith wedding, stress-free</div>
+        </div>
+
+        <!-- Scene 2: Dashboard Overview (3s) -->
+        <div class="scene scene-2">
+            <div class="gradient-bg"></div>
+            <div class="dashboard-preview">
+                <div class="dashboard-header">
+                    <div class="heart-icon">❤️</div>
+                    <div>
+                        <div class="dashboard-title">Priya & Michael's Wedding</div>
+                        <div class="dashboard-subtitle">📍 San Francisco, CA • June 15, 2026</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-countdown">
+                    <div class="countdown-number">129</div>
+                    <div class="countdown-label">days until your wedding</div>
+                </div>
+
+                <div class="quick-actions">
+                    <div class="action-button">
+                        <div class="action-icon">👥</div>
+                        <div class="action-label">Add Guest</div>
+                    </div>
+                    <div class="action-button">
+                        <div class="action-icon">💰</div>
+                        <div class="action-label">Add Expense</div>
+                    </div>
+                    <div class="action-button">
+                        <div class="action-icon">✓</div>
+                        <div class="action-label">New Task</div>
+                    </div>
+                    <div class="action-button">
+                        <div class="action-icon">💼</div>
+                        <div class="action-label">Add Vendor</div>
+                    </div>
+                </div>
+            </div>
+            <div class="overlay-text">All your planning in one place</div>
+        </div>
+
+        <!-- Scene 3: Bachelor Party Miami (3s) -->
+        <div class="scene scene-3">
+            <div class="gradient-bg"></div>
+            <div class="bachelor-header">
+                <div class="bachelor-title">🎉 Bachelor Party Planner</div>
+                <div class="bachelor-subtitle">Miami, Florida</div>
+            </div>
+            <div class="bachelor-container">
+                <div class="miami-details">
+                    <div class="miami-card">
+                        <div class="miami-icon">✈️</div>
+                        <div class="miami-label">FLIGHTS</div>
+                        <div class="miami-value">$289/person</div>
+                    </div>
+                    <div class="miami-card">
+                        <div class="miami-icon">🏨</div>
+                        <div class="miami-label">LODGING</div>
+                        <div class="miami-value">Ocean View Villa</div>
+                    </div>
+                    <div class="miami-card">
+                        <div class="miami-icon">🎊</div>
+                        <div class="miami-label">ACTIVITIES</div>
+                        <div class="miami-value">Beach • Clubs</div>
+                    </div>
+                </div>
+            </div>
+            <div class="miami-overlay">🌴 AI-powered trip planning for your crew</div>
+        </div>
+
+        <!-- Scene 4: VivahaSplit Budget (3s) -->
+        <div class="scene scene-4">
+            <div class="gradient-bg"></div>
+            <div class="vivahasplit-container">
+                <div class="split-header">
+                    <div class="split-title">VivahaSplit™</div>
+                    <div class="split-subtitle">Smart Cost Sharing Between Families</div>
+                </div>
+                <div class="split-display">
+                    <div class="split-side">
+                        <div class="split-label">Family A</div>
+                        <div class="split-amount">$25K</div>
+                    </div>
+                    <div class="split-divider">/</div>
+                    <div class="split-side">
+                        <div class="split-label">Family B</div>
+                        <div class="split-amount">$25K</div>
+                    </div>
+                </div>
+                <div class="split-overlay">✨ Track who pays what, automatically</div>
+            </div>
+        </div>
+
+        <!-- Scene 5: RSVP & Guest Management (3s) -->
+        <div class="scene scene-5">
+            <div class="gradient-bg"></div>
+            <div class="rsvp-container">
+                <div class="rsvp-header">
+                    <div class="rsvp-title">📋 Guest & RSVP Tracking</div>
+                </div>
+                <div class="rsvp-stats">
+                    <div class="rsvp-stat">
+                        <div class="rsvp-stat-value">150</div>
+                        <div class="rsvp-stat-label">Total Invited</div>
+                    </div>
+                    <div class="rsvp-stat">
+                        <div class="rsvp-stat-value">127</div>
+                        <div class="rsvp-stat-label">Confirmed</div>
+                    </div>
+                    <div class="rsvp-stat">
+                        <div class="rsvp-stat-value">23</div>
+                        <div class="rsvp-stat-label">Pending</div>
+                    </div>
+                </div>
+                <div class="guest-list">
+                    <div class="guest-item">
+                        <div class="guest-name">Sarah Johnson + 1</div>
+                        <div class="guest-status status-confirmed">✓ Confirmed</div>
+                    </div>
+                    <div class="guest-item">
+                        <div class="guest-name">Michael Chen</div>
+                        <div class="guest-status status-confirmed">✓ Confirmed</div>
+                    </div>
+                    <div class="guest-item">
+                        <div class="guest-name">Emily Rodriguez</div>
+                        <div class="guest-status status-pending">⏳ Pending</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 6: Shareable Dashboard (3s) -->
+        <div class="scene scene-6">
+            <div class="gradient-bg"></div>
+            <div class="share-container">
+                <div class="share-icon">🔗</div>
+                <div class="share-title">One Shareable Link</div>
+                <div class="share-description">
+                    Share your wedding dashboard with family & guests.<br>
+                    They see real-time updates automatically.
+                </div>
+                <div class="share-link-demo">
+                    vivahaplan.com/shared/priya-michael-wedding
+                </div>
+                <div class="share-features">
+                    <div class="share-feature">✓ Auto-updates in real-time</div>
+                    <div class="share-feature">✓ No login required</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 7: Closing / CTA (2s) -->
+        <div class="scene scene-7">
+            <div class="gradient-bg"></div>
+            <div class="cta-container">
+                <div class="cta-button">Start Planning Today</div>
+                <div class="cta-subtitle">vivahaplan.com</div>
+                <div class="cta-tagline">Vivaha — Weddings, united</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Scene durations in seconds: [Scene1, Scene2, Scene3, Scene4, Scene5, Scene6, Scene7]
+        const sceneDurations = [3, 3, 3, 3, 3, 3, 2]; // Total: 20 seconds
+        const scenes = document.querySelectorAll('.scene');
+        let currentScene = 0;
+
+        function showScene(index) {
+            scenes.forEach((scene, i) => {
+                if (i === index) {
+                    scene.classList.add('active');
+                } else {
+                    scene.classList.remove('active');
+                }
+            });
+        }
+
+        function nextScene() {
+            currentScene = (currentScene + 1) % scenes.length;
+            showScene(currentScene);
+            
+            // Schedule next transition based on current scene duration
+            setTimeout(nextScene, sceneDurations[currentScene] * 1000);
+        }
+
+        // Start the video loop
+        showScene(0);
+        setTimeout(nextScene, sceneDurations[0] * 1000);
+    </script>
+</body>
+</html>
+
+        .scene {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            padding: 80px;
+        }
+
+        .scene.active {
+            opacity: 1;
+        }
+
+        .gradient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Scene-specific backgrounds - Vivaha brand colors */
+        .scene-1 .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+        }
+
+        .scene-2 .gradient-bg {
+            background: #FFFFFF;
+        }
+
+        .scene-3 .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 100%);
+        }
+
+        .scene-4 .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #f3e8ff 100%);
+        }
+
+        .scene-5 .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #FFFFFF 100%);
+        }
+
+        .scene-6 .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 50%, #dbeafe 100%);
+        }
+
+        /* Logo and brand */
+        .logo {
+            font-size: 140px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ec4899 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoGlow 0.8s ease-in-out;
+            text-shadow: 0 0 40px rgba(236, 72, 153, 0.4);
+            letter-spacing: 2px;
+        }
+
+        @keyframes logoGlow {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+                filter: blur(10px);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        .tagline {
+            font-size: 48px;
+            color: #6B7280;
+            text-align: center;
+            margin-top: 40px;
+            font-weight: 400;
+            animation: fadeIn 0.6s ease;
+            animation-delay: 0.4s;
+            animation-fill-mode: both;
+            letter-spacing: 0.5px;
+        }
+
+        /* Scene 2 - Dashboard */
+        .dashboard-preview {
+            width: 90%;
+            max-width: 1400px;
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 40px;
+            animation: slideFromLeft 0.6s ease;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .dashboard-header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .heart-icon {
+            font-size: 48px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        .dashboard-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard-subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 400;
+        }
+
+        .dashboard-countdown {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            animation: popIn 0.5s ease;
+            animation-delay: 0.3s;
+            animation-fill-mode: both;
+        }
+
+        .countdown-number {
+            font-size: 72px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f472b6 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .countdown-label {
+            font-size: 24px;
+            color: #6B7280;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .action-button {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: popIn 0.4s ease;
+            animation-fill-mode: both;
+            cursor: pointer;
+        }
+
+        .action-button:nth-child(1) {
+            animation-delay: 0.5s;
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            color: white;
+        }
+
+        .action-button:nth-child(2) {
+            animation-delay: 0.6s;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+        }
+
+        .action-button:nth-child(3) {
+            animation-delay: 0.7s;
+            background: linear-gradient(135deg, #a855f7 0%, #9333EA 100%);
+            color: white;
+        }
+
+        .action-button:nth-child(4) {
+            animation-delay: 0.8s;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: white;
+        }
+
+        .action-icon {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .action-label {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .overlay-text {
+            font-size: 56px;
+            color: #ec4899;
+            text-align: center;
+            margin-top: 40px;
+            font-weight: 500;
+            animation: fadeIn 0.5s ease;
+            animation-delay: 0.8s;
+            animation-fill-mode: both;
+        }
+
+        /* Scene 3 - Budget Split */
+        .budget-container {
+            width: 80%;
+            max-width: 1100px;
+            background: white;
+            border-radius: 24px;
+            padding: 70px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border: 3px solid #a855f7;
+        }
+
+        .budget-title {
+            font-size: 68px;
+            font-weight: 600;
+            color: #2D2D2D;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .split-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 60px 0;
+        }
+
+        .split-side {
+            text-align: center;
+            animation: slideInFromSide 0.6s ease;
+            animation-fill-mode: both;
+        }
+
+        .split-side:first-child {
+            animation-delay: 0.3s;
+        }
+
+        .split-side:last-child {
+            animation-delay: 0.5s;
+        }
+
+        .split-label {
+            font-size: 42px;
+            color: #6B6B6B;
+            margin-bottom: 20px;
+        }
+
+        .split-amount {
+            font-size: 88px;
+            font-weight: 700;
+            color: #ec4899;
+        }
+
+        .split-divider {
+            font-size: 80px;
+            color: #a855f7;
+            font-weight: 300;
+        }
+
+        .budget-subtitle {
+            font-size: 48px;
+            color: #ec4899;
+            text-align: center;
+            margin-top: 40px;
+            font-weight: 500;
+            animation: fadeIn 0.5s ease;
+            animation-delay: 1s;
+            animation-fill-mode: both;
+        }
+
+        /* Scene 4 - Cultural Traditions */
+        .tradition-container {
+            width: 80%;
+            max-width: 1100px;
+            background: white;
+            border-radius: 24px;
+            padding: 70px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border: 3px solid #a855f7;
+        }
+
+        .tradition-title {
+            font-size: 68px;
+            font-weight: 600;
+            color: #2D2D2D;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .traditions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 50px;
+        }
+
+        .tradition-column {
+            animation: slideInFromSide 0.6s ease;
+            animation-fill-mode: both;
+        }
+
+        .tradition-column:first-child {
+            animation-delay: 0.2s;
+        }
+
+        .tradition-column:last-child {
+            animation-delay: 0.4s;
+        }
+
+        .tradition-header {
+            font-size: 48px;
+            font-weight: 600;
+            color: #a855f7;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .tradition-item {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 100%);
+            border-radius: 12px;
+            animation: checkmarkPop 0.4s ease;
+            animation-fill-mode: both;
+        }
+
+        .tradition-item:nth-child(2) { animation-delay: 0.6s; }
+        .tradition-item:nth-child(3) { animation-delay: 0.8s; }
+        .tradition-item:nth-child(4) { animation-delay: 1s; }
+
+        .checkmark {
+            font-size: 40px;
+            color: #a855f7;
+            margin-right: 20px;
+            filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.6));
+        }
+
+        .tradition-text {
+            font-size: 32px;
+            color: #2D2D2D;
+        }
+
+        /* Scene 5 - VivahaPost */
+        .vivahapost-container {
+            width: 85%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 24px;
+            padding: 60px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border: 3px solid #ec4899;
+            overflow: hidden;
+        }
+
+        .vivahapost-title {
+            font-size: 68px;
+            font-weight: 600;
+            color: #2D2D2D;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .post-feed {
+            animation: scrollFeed 3s linear infinite;
+        }
+
+        .post-item {
+            background: linear-gradient(135deg, #fdf2f8 0%, #FFFFFF 100%);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 2px solid #fce7f3;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .post-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            margin-right: 20px;
+        }
+
+        .post-author {
+            font-size: 36px;
+            font-weight: 600;
+            color: #2D2D2D;
+        }
+
+        .post-content {
+            font-size: 30px;
+            color: #6B6B6B;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .post-tags {
+            display: flex;
+            gap: 15px;
+        }
+
+        .post-tag {
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .vivahapost-subtitle {
+            font-size: 48px;
+            color: #ec4899;
+            text-align: center;
+            margin-top: 40px;
+            font-weight: 500;
+        }
+
+        /* Scene 6 - CTA */
+        .cta-container {
+            text-align: center;
+            position: relative;
+        }
+
+        .cta-button {
+            font-size: 68px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #a855f7 100%);
+            padding: 45px 90px;
+            border-radius: 60px;
+            box-shadow: 0 20px 50px rgba(168, 85, 247, 0.4);
+            animation: buttonBounce 0.8s ease;
+            animation-delay: 0.3s;
+            animation-fill-mode: both;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 3px solid #9333EA;
+        }
+
+        .cta-subtitle {
+            font-size: 56px;
+            color: #6B7280;
+            margin-top: 50px;
+            font-weight: 400;
+            animation: fadeIn 0.6s ease;
+            animation-delay: 0.8s;
+            animation-fill-mode: both;
+        }
+
+        .cta-tagline {
+            font-size: 42px;
+            color: #9CA3AF;
+            margin-top: 30px;
+            font-style: italic;
+            animation: fadeIn 0.6s ease;
+            animation-delay: 1.2s;
+            animation-fill-mode: both;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInFromSide {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            70% {
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes checkmarkPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotate(-10deg);
+            }
+            60% {
+                transform: scale(1.1) rotate(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes buttonBounce {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(30px);
+            }
+            60% {
+                transform: scale(1.08) translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes scrollFeed {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-30px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <!-- Scene 1: Intro / Splash (3s) -->
+        <div class="scene scene-1 active">
+            <div class="gradient-bg"></div>
+            <div class="logo">Vivaha</div>
+            <div class="tagline">Plan your interfaith wedding, stress-free</div>
+        </div>
+
+        <!-- Scene 2: Dashboard Overview (4s) -->
+        <div class="scene scene-2">
+            <div class="gradient-bg"></div>
+            <div class="dashboard-preview">
+                <div class="dashboard-header">
+                    <div class="dashboard-header-content">
+                        <div class="heart-icon">❤️</div>
+                        <div>
+                            <div class="dashboard-title">Priya & Michael's Wedding</div>
+                            <div class="dashboard-subtitle">📍 San Francisco, CA • June 15, 2026</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-countdown">
+                    <div class="countdown-number">129</div>
+                    <div class="countdown-label">days until your wedding</div>
+                </div>
+
+                <div class="quick-actions">
+                    <div class="action-button">
+                        <div class="action-icon">👥</div>
+                        <div class="action-label">Add Guest</div>
+                    </div>
+                    <div class="action-button">
+                        <div class="action-icon">💰</div>
+                        <div class="action-label">Add Expense</div>
+                    </div>
+                    <div class="action-button">
+                        <div class="action-icon">✓</div>
+                        <div class="action-label">New Task</div>
+                    </div>
+                    <div class="action-button">
+                        <div class="action-icon">💼</div>
+                        <div class="action-label">Add Vendor</div>
+                    </div>
+                </div>
+            </div>
+            <div class="overlay-text">All your planning in one place</div>
+        </div>
+
+        <!-- Scene 3: Budget & Cost Splitting (3s) -->
+        <div class="scene scene-3">
+            <div class="gradient-bg"></div>
+            <div class="budget-container">
+                <div class="budget-title">Smart Cost Management</div>
+                <div class="split-display">
+                    <div class="split-side">
+                        <div class="split-label">Family A</div>
+                        <div class="split-amount">$25K</div>
+                    </div>
+                    <div class="split-divider">/</div>
+                    <div class="split-side">
+                        <div class="split-label">Family B</div>
+                        <div class="split-amount">$25K</div>
+                    </div>
+                </div>
+                <div class="budget-subtitle">Easily manage costs together</div>
+            </div>
+        </div>
+
+        <!-- Scene 4: Cultural / Tradition Planning (3s) -->
+        <div class="scene scene-4">
+            <div class="gradient-bg"></div>
+            <div class="tradition-container">
+                <div class="tradition-title">Honor Both Traditions</div>
+                <div class="traditions-grid">
+                    <div class="tradition-column">
+                        <div class="tradition-header">Hindu Rituals</div>
+                        <div class="tradition-item">
+                            <span class="checkmark">✓</span>
+                            <span class="tradition-text">Sangeet Night</span>
+                        </div>
+                        <div class="tradition-item">
+                            <span class="checkmark">✓</span>
+                            <span class="tradition-text">Mehendi Ceremony</span>
+                        </div>
+                        <div class="tradition-item">
+                            <span class="checkmark">✓</span>
+                            <span class="tradition-text">Baraat Procession</span>
+                        </div>
+                    </div>
+                    <div class="tradition-column">
+                        <div class="tradition-header">Christian Rituals</div>
+                        <div class="tradition-item">
+                            <span class="checkmark">✓</span>
+                            <span class="tradition-text">Church Ceremony</span>
+                        </div>
+                        <div class="tradition-item">
+                            <span class="checkmark">✓</span>
+                            <span class="tradition-text">Unity Candle</span>
+                        </div>
+                        <div class="tradition-item">
+                            <span class="checkmark">✓</span>
+                            <span class="tradition-text">Vows Exchange</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 5: VivahaPost / Community (4s) -->
+        <div class="scene scene-5">
+            <div class="gradient-bg"></div>
+            <div class="vivahapost-container">
+                <div class="vivahapost-title">VivahaPost Community</div>
+                <div class="post-feed">
+                    <div class="post-item">
+                        <div class="post-header">
+                            <div class="post-avatar"></div>
+                            <div class="post-author">Priya & Michael</div>
+                        </div>
+                        <div class="post-content">
+                            "Vivaha made our Hindu-Christian wedding seamless! Loved the cultural planning tools."
+                        </div>
+                        <div class="post-tags">
+                            <span class="post-tag">#WeddingRave</span>
+                            <span class="post-tag">#Interfaith</span>
+                        </div>
+                    </div>
+                    <div class="post-item">
+                        <div class="post-header">
+                            <div class="post-avatar"></div>
+                            <div class="post-author">Aisha & David</div>
+                        </div>
+                        <div class="post-content">
+                            "The budget splitting feature saved us so much stress. Highly recommend!"
+                        </div>
+                        <div class="post-tags">
+                            <span class="post-tag">#AppFeedback</span>
+                            <span class="post-tag">#BudgetWin</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="vivahapost-subtitle">Share experiences, connect with others</div>
+            </div>
+        </div>
+
+        <!-- Scene 6: Closing / CTA (3s) -->
+        <div class="scene scene-6">
+            <div class="gradient-bg"></div>
+            <div class="cta-container">
+                <div class="cta-button">Start Planning Your Wedding Today</div>
+                <div class="cta-subtitle">vivahaplan.com</div>
+                <div class="cta-tagline">Vivaha — Weddings, united</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Scene durations in seconds: [Scene1, Scene2, Scene3, Scene4, Scene5, Scene6]
+        const sceneDurations = [3, 4, 3, 3, 4, 3]; // Total: 20 seconds
+        const scenes = document.querySelectorAll('.scene');
+        let currentScene = 0;
+
+        function showScene(index) {
+            scenes.forEach((scene, i) => {
+                if (i === index) {
+                    scene.classList.add('active');
+                } else {
+                    scene.classList.remove('active');
+                }
+            });
+        }
+
+        function nextScene() {
+            currentScene = (currentScene + 1) % scenes.length;
+            showScene(currentScene);
+            
+            // Schedule next transition based on current scene duration
+            setTimeout(nextScene, sceneDurations[currentScene] * 1000);
+        }
+
+        // Start the video loop
+        showScene(0);
+        setTimeout(nextScene, sceneDurations[0] * 1000);
+    </script>
+</body>
+</html>

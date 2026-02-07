@@ -178,11 +178,6 @@ export default function Register({ setIsAuthenticated }: RegisterProps) {
               </div>
             </div>
 
-            <div className="pt-2">
-              <label className="block text-xs text-gray-500 mb-1">Or restore a local backup</label>
-              <input ref={fileRef} onChange={handleUpload} accept="application/json" type="file" className="text-sm" />
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email
