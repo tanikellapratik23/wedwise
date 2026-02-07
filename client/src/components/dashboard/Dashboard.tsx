@@ -387,13 +387,39 @@ export default function Dashboard({ isAdmin: propIsAdmin = false }: DashboardPro
                 {/* Edit Button */}
                 <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-200">
                   {!isEditingNav ? (
-                    <button
-                      onClick={() => setIsEditingNav(true)}
-                      className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                      Edit Nav
-                    </button>
+                    <div className="flex gap-2 w-full">
+                      <button
+                        onClick={() => setIsEditingNav(true)}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                        Edit Nav
+                      </button>
+                      {hiddenNavItems.length > 0 && (
+                        <button
+                          onClick={async () => {
+                            setHiddenNavItems([]);
+                            try {
+                              const token = authStorage.getToken();
+                              if (!token) return;
+                              await axios.post(`${API_URL}/api/navigation/preferences`, {
+                                order: customNavOrder,
+                                hidden: [],
+                              }, {
+                                headers: { Authorization: `Bearer ${token}` },
+                              });
+                            } catch (err) {
+                              console.error('Failed to save navigation preferences:', err);
+                            }
+                          }}
+                          className="flex items-center gap-1 px-2 py-2 text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-all"
+                          title="Show all hidden items"
+                        >
+                          <Eye className="w-3 h-3" />
+                          Show All
+                        </button>
+                      )}
+                    </div>
                   ) : (
                     <div className="flex items-center gap-2 w-full">
                       <button

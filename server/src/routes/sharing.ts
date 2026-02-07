@@ -102,11 +102,14 @@ router.get('/access/:token', async (req, res) => {
       return res.status(403).json({ error: 'Share link has expired' });
     }
 
+    // Get the user's name for the dashboard title
+    const userName = user.name || user.onboardingData?.role || 'Wedding';
+    
     res.json({
       success: true,
       accessLevel: sharedLink.accessLevel,
       userData: user.onboardingData,
-      coupleName: user.onboardingData?.role || 'Couple',
+      coupleName: userName,
     });
   } catch (error) {
     console.error('Access shared link error:', error);
