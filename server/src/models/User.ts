@@ -29,6 +29,28 @@ export interface IUser extends Document {
       officiantType?: string;
     };
   };
+  weddingPageData?: {
+    coupleName1?: string;
+    coupleName2?: string;
+    headerImage?: string;
+    theme?: 'elegant' | 'modern' | 'rustic' | 'floral';
+    weddingDate?: Date;
+    weddingTime?: string;
+    venueAddress?: string;
+    venueName?: string;
+    weddingCity?: string;
+    weddingState?: string;
+    guestCount?: number;
+    dressCode?: string;
+    contactName?: string;
+    contactPhone?: string;
+    contactEmail?: string;
+    ceremonySchedule?: Array<{
+      time: string;
+      event: string;
+      description?: string;
+    }>;
+  };
   sharedLinks?: Array<{
     token: string;
     accessLevel: 'view' | 'edit';
@@ -73,6 +95,28 @@ const UserSchema = new Schema<IUser>(
       ceremonyDetails: {
         officiantType: String,
       },
+    },
+    weddingPageData: {
+      coupleName1: String,
+      coupleName2: String,
+      headerImage: String,
+      theme: { type: String, enum: ['elegant', 'modern', 'rustic', 'floral'], default: 'elegant' },
+      weddingDate: Date,
+      weddingTime: String,
+      venueAddress: String,
+      venueName: String,
+      weddingCity: String,
+      weddingState: String,
+      guestCount: Number,
+      dressCode: String,
+      contactName: String,
+      contactPhone: String,
+      contactEmail: String,
+      ceremonySchedule: [{
+        time: String,
+        event: String,
+        description: String,
+      }],
     },
     sharedLinks: [
       {

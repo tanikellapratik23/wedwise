@@ -17,6 +17,7 @@ import emailRoutes from './routes/email';
 import adminRoutes from './routes/admin';
 import navigationRoutes from './routes/navigation';
 import postsRoutes from './routes/posts';
+import weddingPageRoutes from './routes/weddingPage';
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use('/api/sharing', sharingRoutes);
 app.use('/api/bachelor-trip', bachelorTripRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/navigation', navigationRoutes);
+app.use('/api/wedding-page', weddingPageRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api', emailRoutes);
 
