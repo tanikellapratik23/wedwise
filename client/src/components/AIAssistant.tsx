@@ -26,7 +26,17 @@ Always be respectful of both traditions, consider dietary restrictions, and prov
 // Example prompts for quick access
 const EXAMPLE_PROMPTS = [
   {
-    label: '🕉️✝️ Hindu-Christian Ceremony',
+    label: '� Add Guest',
+    prompt: 'add pratik as a guest no plus one',
+    type: 'guest'
+  },
+  {
+    label: '💰 Budget Command',
+    prompt: 'add 200000 to budget for venue',
+    type: 'budget'
+  },
+  {
+    label: '�🕉️✝️ Hindu-Christian Ceremony',
     prompt: 'Generate a 3-hour Hindu-Christian ceremony schedule with key rituals from both traditions. Include timing for each ritual.',
     type: 'ceremony'
   },
@@ -50,7 +60,7 @@ export default function AIAssistant() {
   const [editableResponse, setEditableResponse] = useState<CeremonyResponse | null>(null);
 
   // Parse and execute budget commands (e.g., "add 200000 to budget for venue")
-  const executeBudgetCommand = (prompt: string): boolean => {
+  const executeBudgetCommand = (prompt: string): { executed: boolean; message?: string } => {
     const lowerPrompt = prompt.toLowerCase();
     
     // Match patterns like "add 200000 to venue" or "set catering to 5000"
@@ -67,7 +77,7 @@ export default function AIAssistant() {
       categoryName = setMatch[1];
       amount = parseFloat(setMatch[2].replace(/,/g, ''));
     } else {
-      return false; // Not a budget command
+      return { executed: false }; // Not a budget command
     }
     
     // Get current budget and add/update category
@@ -99,11 +109,78 @@ export default function AIAssistant() {
       });
       window.dispatchEvent(event);
       
-      return true;
+      return { 
+        executed: true, 
+        message: `✅ Budget updated! I've added/updated ${categoryName} to ₹${amount.toLocaleString()}.` 
+      };
     } catch (error) {
       console.error('Failed to execute budget command:', error);
-      return false;
+      return { executed: false };
     }
+  };
+
+  // Parse and execute guest commands (e.g., "add pratik as a guest no plus one")
+  const executeGuestCommand = (prompt: string): { executed: boolean; message?: string; navigateTo?: string } => {
+    const lowerPrompt = prompt.toLowerCase();
+    
+    // Match patterns like:
+    // "add pratik as a guest" / "add pratik as guest"
+    // "add pratik as a guest no plus one" / "add pratik as guest with no plus one"
+    // "add pratik and smita as guests"
+    const guestMatch = lowerPrompt.match(/add\s+([\w\s]+?)\s+(?:as\s+)?(?:a\s+)?guest(?:s)?(?:\s+(no\s+)?plus\s+one)?/i);
+    
+    if (!guestMatch) return { executed: false };
+    
+    const guestNames = guestMatch[1].split(/\s+(?:and|,)\s+/);
+    const hasPlusOne = !lowerPrompt.includes('no plus one');
+    
+    try {
+      const cached = localStorage.getItem('guests');
+      const guests = cached ? JSON.parse(cached) : [];
+      
+      const newGuests: any[] = [];
+      guestNames.forEach((name) => {
+        const trimmedName = name.trim();
+        if (trimmedName) {
+          newGuests.push({
+            id: `local-${Date.now()}-${Math.random()}`,
+            name: trimmedName.charAt(0).toUpperCase() + trimmedName.slice(1),
+            email: '',
+            phone: '',
+            rsvpStatus: 'pending',
+            mealPreference: '',
+            plusOne: hasPlusOne,
+            group: '',
+          });
+        }
+      });
+      
+      const updatedGuests = [...guests, ...newGuests];
+      localStorage.setItem('guests', JSON.stringify(updatedGuests));
+      
+      // Dispatch event to notify GuestList component
+      const event = new CustomEvent('guestsChanged', {
+        detail: { guests: updatedGuests }
+      });
+      window.dispatchEvent(event);
+      
+      const guestText = newGuests.length === 1 ? '1 guest' : `${newGuests.length} guests`;
+      const plusOneText = hasPlusOne ? 'with plus one' : 'no plus one';
+      
+      return {
+        executed: true,
+        message: `✅ Added ${guestText}! ${newGuests.map(g => g.name).join(', ')} (${plusOneText}). Taking you to the guest list...`,
+        navigateTo: '/dashboard/guests'
+      };
+    } catch (error) {
+      console.error('Failed to execute guest command:', error);
+      return { executed: false };
+    }
+  };
+
+  // Navigate to dashboard pages
+  const navigateToPage = (path: string) => {
+    window.location.hash = `#${path}`;
   };
   const callAIAPI = async (prompt: string): Promise<{ reply: string; structured?: any }> => {
     try {
@@ -147,46 +224,66 @@ export default function AIAssistant() {
 
     try {
       // Check if this is a budget command
-      const isBudgetCommand = executeBudgetCommand(prompt);
+      const budgetResult = executeBudgetCommand(prompt);
       
-      if (isBudgetCommand) {
+      if (budgetResult.executed) {
         // For budget commands, add a confirmation message
         setMessages(prev => [...prev, {
           role: 'assistant',
-          content: '✅ Budget updated! I\'ve added/updated the amount in your budget. The changes have been saved automatically.',
+          content: budgetResult.message || '✅ Budget updated! Changes saved automatically.',
           type: 'text'
         }]);
       } else {
-        // Otherwise, call AI for regular responses
-        const aiResult = await callAIAPI(prompt);
-        const responseText = aiResult.reply || '';
-        let responseType = 'text';
-
-        // If server provided structured payload, prefer that for ceremony editing
-        if (aiResult.structured && aiResult.structured.ceremony && Array.isArray(aiResult.structured.ceremony)) {
-          responseType = 'ceremony';
-          setEditableResponse(aiResult.structured as CeremonyResponse);
-        } else {
-          // Try to parse plain text as JSON (legacy behavior)
-          try {
-            const parsed = JSON.parse(responseText);
-            if (parsed.ceremony && Array.isArray(parsed.ceremony)) {
-              responseType = 'ceremony';
-              setEditableResponse(parsed);
-            }
-          } catch {
-            // not JSON
+        // Check if this is a guest command
+        const guestResult = executeGuestCommand(prompt);
+        
+        if (guestResult.executed) {
+          // For guest commands, add a confirmation message and navigate
+          setMessages(prev => [...prev, {
+            role: 'assistant',
+            content: guestResult.message || '✅ Guest added successfully!',
+            type: 'text'
+          }]);
+          
+          // Navigate to guest list page after a brief delay
+          if (guestResult.navigateTo) {
+            setTimeout(() => {
+              navigateToPage(guestResult.navigateTo!);
+              setIsOpen(false); // Close the chatbot
+            }, 1000);
           }
+        } else {
+          // Otherwise, call AI for regular responses
+          const aiResult = await callAIAPI(prompt);
+          const responseText = aiResult.reply || '';
+          let responseType = 'text';
+
+          // If server provided structured payload, prefer that for ceremony editing
+          if (aiResult.structured && aiResult.structured.ceremony && Array.isArray(aiResult.structured.ceremony)) {
+            responseType = 'ceremony';
+            setEditableResponse(aiResult.structured as CeremonyResponse);
+          } else {
+            // Try to parse plain text as JSON (legacy behavior)
+            try {
+              const parsed = JSON.parse(responseText);
+              if (parsed.ceremony && Array.isArray(parsed.ceremony)) {
+                responseType = 'ceremony';
+                setEditableResponse(parsed);
+              }
+            } catch {
+              // not JSON
+            }
+          }
+
+          // Ensure assistant messages are plain text only
+          const cleaned = String(responseText).replace(/```[\s\S]*?```/g, '').replace(/`+/g, '').trim();
+
+          setMessages(prev => [...prev, { 
+            role: 'assistant', 
+            content: cleaned,
+            type: responseType
+          }]);
         }
-
-        // Ensure assistant messages are plain text only
-        const cleaned = String(responseText).replace(/```[\s\S]*?```/g, '').replace(/`+/g, '').trim();
-
-        setMessages(prev => [...prev, { 
-          role: 'assistant', 
-          content: cleaned,
-          type: responseType
-        }]);
       }
     } catch (error) {
       setMessages(prev => [...prev, {
