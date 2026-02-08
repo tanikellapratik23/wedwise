@@ -169,7 +169,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Total Users */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-3">
@@ -183,11 +183,21 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         {/* Completed Onboarding */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-gray-700 font-semibold">Completed Onboarding</h3>
+            <h3 className="text-gray-700 font-semibold">Completed</h3>
             <TrendingUp className="w-5 h-5 text-green-600" />
           </div>
           <p className="text-3xl font-bold text-gray-900">{stats.completedOnboarding}</p>
-          <p className="text-xs text-gray-500 mt-2">Users who finished setup</p>
+          <p className="text-xs text-gray-500 mt-2">Onboarding done</p>
+        </div>
+
+        {/* Pending Onboarding */}
+        <div className="bg-white rounded-xl shadow-sm border border-yellow-200 p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-gray-700 font-semibold">Pending</h3>
+            <Calendar className="w-5 h-5 text-yellow-600" />
+          </div>
+          <p className="text-3xl font-bold text-yellow-600">{stats.pendingOnboarding}</p>
+          <p className="text-xs text-gray-500 mt-2">Need to complete</p>
         </div>
 
         {/* New Users (30 days) */}
@@ -203,11 +213,11 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         {/* Weddings Planned */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-gray-700 font-semibold">Weddings Planned</h3>
+            <h3 className="text-gray-700 font-semibold">Weddings</h3>
             <BarChart3 className="w-5 h-5 text-orange-600" />
           </div>
           <p className="text-3xl font-bold text-gray-900">{stats.weddingsPlanned}</p>
-          <p className="text-xs text-gray-500 mt-2">Active wedding plans</p>
+          <p className="text-xs text-gray-500 mt-2">Active plans</p>
         </div>
       </div>
 
