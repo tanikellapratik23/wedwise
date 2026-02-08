@@ -98,10 +98,10 @@ router.get('/users', authMiddleware, async (req: AuthRequest, res: Response) => 
       name: user.name || 'Unnamed User',
       email: user.email,
       role: user.role || 'user',
-      type: user.role === 'bride' ? 'Bride' : user.role === 'groom' ? 'Groom' : user.role === 'family' ? 'Family Member' : 'Guest',
+      type: user.role === 'bride' ? 'Bride' : user.role === 'groom' ? 'Groom' : user.role === 'parent' ? 'Parent' : user.role === 'friend' ? 'Friend' : user.role === 'planner' ? 'Planner' : 'Other',
       onboardingCompleted: user.onboardingCompleted || false,
       createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
-      weddingDate: user.weddingDate || 'Not set',
+      weddingDate: user.onboardingData?.weddingDate ? new Date(user.onboardingData.weddingDate).toLocaleDateString() : 'Not set',
     }));
 
     const totalPages = Math.ceil(totalUsers / limit);
@@ -121,6 +121,21 @@ router.get('/users', authMiddleware, async (req: AuthRequest, res: Response) => 
   } catch (error) {
     console.error('❌ Failed to fetch users:', error);
     res.status(500).json({ error: 'Failed to fetch users', details: (error as Error).message });
+  }
+});
+
+// Check if user is admin (debug endpoint)
+router.get('/verify', authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    console.log('🔍 Admin verify - userId:', req.userId, 'isAdmin:', req.isAdmin);
+    res.json({
+      userId: req.userId,
+      isAdmin: req.isAdmin,
+      message: req.isAdmin ? 'You are admin' : 'You are not admin'
+    });
+  } catch (error) {
+    console.error('❌ Verify error:', error);
+    res.status(500).json({ error: 'Failed to verify' });
   }
 });
 
