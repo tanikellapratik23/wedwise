@@ -3,13 +3,10 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import axios from 'axios';
-import { Resend } from 'resend';
 import nodemailer from 'nodemailer';
+import { sendPasswordResetEmail, sendEmail } from '../utils/email';
 
 const router = Router();
-
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 // Gmail transporter (free & unlimited)
 const gmailTransporter = nodemailer.createTransport({
@@ -22,17 +19,23 @@ const gmailTransporter = nodemailer.createTransport({
 
 // Send welcome email to new user
 const sendWelcomeEmail = async (user: any) => {
-  if (!resend) {
-    console.warn('⚠️ Resend API not configured - welcome emails disabled');
-    return;
-  }
-
   try {
-    const result = await resend.emails.send({
-      from: 'Vivaha <hello@vivahaplan.com>',
+    const html = generateWelcomeEmailHTML(user.name);
+    await sendEmail({
       to: user.email,
       subject: 'Welcome to Vivaha – Start Planning Your Dream Wedding! 💕',
-      html: `
+      html,
+    });
+    console.log('✅ Welcome email sent to:', user.email);
+  } catch (error) {
+    console.error('❌ Failed to send welcome email:', error);
+    // Don't throw - email failures shouldn't block user signup
+  }
+};
+
+// Helper function to generate welcome email HTML
+function generateWelcomeEmailHTML(userName: string): string {
+  return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,7 +58,7 @@ const sendWelcomeEmail = async (user: any) => {
         </tr>
         <tr>
             <td style="padding: 40px 30px; color: #333;">
-                <div style="font-size: 22px; font-weight: bold; color: #EC4899; margin-bottom: 20px;">Welcome, ${user.name}! 🎉</div>
+                <div style="font-size: 22px; font-weight: bold; color: #EC4899; margin-bottom: 20px;">Welcome, ${userName}! 🎉</div>
                 
                 <p style="font-size: 15px; line-height: 1.6; color: #555; margin-bottom: 20px;">
                     We're thrilled you've joined Vivaha! Whether you're planning an intimate ceremony or a grand celebration, we're here to make your wedding journey seamless and joyful.
@@ -95,44 +98,33 @@ const sendWelcomeEmail = async (user: any) => {
         </tr>
         <tr>
             <td style="background-color: #f8f5f0; padding: 30px; text-align: center; font-size: 12px; color: #888;">
-                <div style="margin-bottom: 15px;">
-                    <a href="https://instagram.com/vivaha?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #EC4899; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">f</a>
-                    <a href="https://instagram.com/vivaha?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #EC4899; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">📷</a>
-                    <a href="https://twitter.com/vivaha?utm_source=email&utm_campaign=welcome" style="display: inline-block; width: 36px; height: 36px; background-color: #EC4899; border-radius: 50%; line-height: 36px; text-align: center; margin: 0 5px; color: white; text-decoration: none; font-size: 16px;">𝕏</a>
-                </div>
-                
-                <div style="margin: 10px 0;">
-                    <a href="https://vivahaplan.com?utm_source=email&utm_campaign=welcome" style="color: #EC4899; text-decoration: none; margin: 0 10px;">Website</a>
-                    <a href="https://vivahaplan.com/contact?utm_source=email&utm_campaign=welcome" style="color: #EC4899; text-decoration: none; margin: 0 10px;">Contact Us</a>
-                    <a href="https://vivahaplan.com/privacy?utm_source=email&utm_campaign=welcome" style="color: #EC4899; text-decoration: none; margin: 0 10px;">Privacy</a>
-                </div>
-
                 <div style="margin: 10px 0;">
                     <strong>Vivaha Team</strong><br>
-                    Making wedding planning joyful since 2024<br>
-                    <a href="mailto:support@vivahaplan.com" style="color: #EC4899; text-decoration: none;">support@vivahaplan.com</a>
+                    <a href="https://vivahaplan.com" style="color: #EC4899; text-decoration: none;">vivahaplan.com</a>
                 </div>
-
-                <div style="margin-top: 20px; font-size: 11px; color: #aaa;">
-                    © ${new Date().getFullYear()} Vivaha. All rights reserved.<br>
-                    You're receiving this because you signed up for Vivaha.
+                <div style="margin-top: 15px; font-size: 11px;">
+                    © ${new Date().getFullYear()} Vivaha. All rights reserved.
                 </div>
             </td>
         </tr>
     </table>
 </body>
 </html>
-      `,
+  `;
+}
+
+// Send welcome email using the email helper
+const sendWelcomeEmailHelper = async (user: any) => {
+  try {
+    const html = generateWelcomeEmailHTML(user.name);
+    await sendEmail({
+      to: user.email,
+      subject: 'Welcome to Vivaha – Start Planning Your Dream Wedding! 💕',
+      html,
     });
-
-    if (result.error) {
-      console.error('Failed to send welcome email:', result.error);
-      return;
-    }
-
     console.log('✅ Welcome email sent to:', user.email);
   } catch (error) {
-    console.error('Failed to send welcome email:', error);
+    console.error('❌ Failed to send welcome email:', error);
     // Don't throw - email failure shouldn't block registration
   }
 };
@@ -169,7 +161,7 @@ router.post('/register', async (req, res) => {
     console.log('User created successfully:', user._id);
 
     // Send welcome email in background (don't await)
-    sendWelcomeEmail(user).catch(err => console.error('Email error:', err));
+    sendWelcomeEmailHelper(user).catch(err => console.error('Email error:', err));
 
     // Generate token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'fallback-secret', {
@@ -290,124 +282,50 @@ router.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Find user
-    const user = await User.findOne({ email });
-    if (!user) {
-      // Don't reveal if email exists
-      return res.json({ message: 'If email exists, reset link has been sent' });
+    // Validate email input
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
     }
 
-    // Generate reset token (valid for 1 hour)
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Don't reveal if email exists (security best practice)
+      return res.json({ message: 'If email exists, a reset link has been sent' });
+    }
+
+    // Generate secure reset token (valid for 1 hour)
     const resetToken = jwt.sign(
       { userId: user._id, type: 'password-reset' },
       process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production',
       { expiresIn: '1h' }
     );
 
-    // Save reset token to user
+    // Save reset token to user document
     user.resetToken = resetToken;
     user.resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     await user.save();
 
-    // Use Resend (works reliably)
+    // Build reset URL
     const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
-    
+
+    // Send password reset email using Resend
     try {
-      if (resend) {
-        await resend.emails.send({
-          from: 'Vivaha <onboarding@resend.dev>',
-          to: user.email,
-          subject: '🔐 Reset Your Vivaha Password',
-          html: generateResetPasswordEmail(user.name, resetUrl)
-        });
-        console.log('✅ Password reset email sent via Resend');
-      } else {
-        console.warn('⚠️ Resend not configured - email not sent');
-        throw new Error('Email service not configured');
-      }
+      await sendPasswordResetEmail(user.email, user.name, resetUrl);
+      console.log(`✅ Password reset email sent to ${user.email}`);
     } catch (emailError) {
-      console.error('❌ Failed to send reset email:', emailError);
-      throw emailError; // Throw error so frontend knows it failed
+      console.error(`❌ Failed to send reset email to ${user.email}:`, emailError);
+      // Still return success to frontend to avoid user enumeration
+      return res.json({ message: 'If email exists, a reset link has been sent' });
     }
 
-    res.json({ message: 'If email exists, reset link has been sent' });
+    // Return success message (don't reveal if email was found)
+    res.json({ message: 'If email exists, a reset link has been sent' });
   } catch (error) {
     console.error('Forgot password error:', error);
-    res.status(500).json({ error: 'Failed to process request' });
+    res.status(500).json({ error: 'Failed to process password reset request' });
   }
 });
-
-// Helper function to generate reset password email HTML
-function generateResetPasswordEmail(userName: string, resetUrl: string) {
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Your Password</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8f5f0;">
-    <table style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-collapse: collapse;">
-        <tr>
-            <td style="background: linear-gradient(135deg, #EC4899 0%, #F97316 100%); padding: 40px 20px; text-align: center; color: white;">
-                <p style="font-size: 28px; font-weight: bold; letter-spacing: 1px; margin: 0;">💕 Vivaha</p>
-                <p style="font-size: 14px; margin-top: 8px; opacity: 0.9;">Your Wedding Planning Companion</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="background-color: #FEF3F2; padding: 40px 20px; text-align: center; font-size: 48px;">
-                🔐
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 40px 30px; color: #333;">
-                <div style="font-size: 22px; font-weight: bold; color: #EC4899; margin-bottom: 20px;">Reset Your Password</div>
-                
-                <p style="font-size: 15px; line-height: 1.6; color: #555; margin-bottom: 20px;">
-                    Hi ${userName},
-                </p>
-
-                <p style="font-size: 15px; line-height: 1.6; color: #555; margin-bottom: 20px;">
-                    We received a request to reset your password. Click the button below to create a new password.
-                </p>
-
-                <p style="text-align: center; margin: 30px 0;">
-                    <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #EC4899 0%, #F97316 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Reset My Password</a>
-                </p>
-
-                <div style="background-color: #FFF7ED; border-left: 4px solid #F97316; padding: 20px; margin: 30px 0; border-radius: 4px;">
-                    <p style="font-size: 14px; color: #555; margin: 0;">
-                        <strong>🕐 Quick note:</strong> This link expires in <strong>1 hour</strong>.
-                    </p>
-                </div>
-
-                <p style="font-size: 13px; color: #888; line-height: 1.6;">
-                    Or copy this link:<br>
-                    <a href="${resetUrl}" style="color: #EC4899; word-break: break-all;">${resetUrl}</a>
-                </p>
-
-                <p style="font-size: 13px; color: #888; line-height: 1.6; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB;">
-                    <strong>Didn't request this?</strong> Ignore this email.
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td style="background-color: #f8f5f0; padding: 30px; text-align: center; font-size: 12px; color: #888;">
-                <div style="margin: 10px 0;">
-                    <strong>Vivaha Team</strong><br>
-                    <a href="mailto:support@vivahaplan.com" style="color: #EC4899; text-decoration: none;">support@vivahaplan.com</a>
-                </div>
-                <div style="margin-top: 20px; font-size: 11px; color: #aaa;">
-                    © ${new Date().getFullYear()} Vivaha. All rights reserved.
-                </div>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
-`;
-}
 
 // Reset password - validate token and update password
 router.post('/reset-password', async (req, res) => {
