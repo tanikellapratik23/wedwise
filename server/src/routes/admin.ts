@@ -14,29 +14,34 @@ router.get('/stats', authMiddleware, async (req: AuthRequest, res: Response) => 
 
     console.log('📊 Admin stats requested - fetching from database...');
 
-    // Get total users count
-    const totalUsers = await User.countDocuments();
+    // Get total users count (excluding admin)
+    const totalUsers = await User.countDocuments({ role: { $ne: 'admin' } });
     console.log(`Total users in database: ${totalUsers}`);
 
-    // Get users with completed onboarding
-    const completedOnboarding = await User.countDocuments({ onboardingCompleted: true });
+    // Get users with completed onboarding (excluding admin)
+    const completedOnboarding = await User.countDocuments({ 
+      onboardingCompleted: true,
+      role: { $ne: 'admin' }
+    });
     console.log(`Users with completed onboarding: ${completedOnboarding}`);
     
-    // Get users by role
+    // Get users by role (excluding admin)
     const usersByRole = await User.aggregate([
+      { $match: { role: { $ne: 'admin' } } },
       { $group: { _id: '$role', count: { $sum: 1 } } }
     ]);
     console.log(`Users by role:`, usersByRole);
     
-    // Users created in last 30 days
+    // Users created in last 30 days (excluding admin)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const newUsersLast30Days = await User.countDocuments({
-      createdAt: { $gte: thirtyDaysAgo }
+      createdAt: { $gte: thirtyDaysAgo },
+      role: { $ne: 'admin' }
     });
     console.log(`New users in last 30 days: ${newUsersLast30Days}`);
 
-    // Get all bride and groom users for counting weddings
+    // Get all bride and groom users for counting weddings (excluding admin)
     const brideGroom = await User.countDocuments({
       onboardingCompleted: true,
       role: { $in: ['bride', 'groom'] }
@@ -54,31 +59,68 @@ router.get('/stats', authMiddleware, async (req: AuthRequest, res: Response) => 
       venueSearches: Math.ceil(completedOnboarding * 2),
     };
 
-    // Get all users sorted by creation date (most recent first)
-    const allUsers = await User.find({})
-      .select('name email role createdAt onboardingCompleted')
-      .limit(100)
-      .sort({ createdAt: -1 });
-
-    console.log(`Retrieved ${allUsers.length} users from database`);
-
-    const loggedInUsers = allUsers.map(user => ({
-      id: user._id.toString(),
-      name: user.name || 'Unknown User',
-      email: user.email,
-      role: user.role || 'user',
-      onboardingCompleted: user.onboardingCompleted || false,
-      lastActive: user.createdAt?.toISOString() || new Date().toISOString(),
-    }));
-
     console.log('✅ Admin stats successfully generated');
     res.json({
       stats,
-      loggedInUsers,
     });
   } catch (error) {
     console.error('❌ Admin stats error:', error);
     res.status(500).json({ error: 'Failed to fetch admin stats', details: (error as Error).message });
+  }
+});
+
+// Get paginated users list
+router.get('/users', authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    // Only admins can access this
+    if (!req.isAdmin) {
+      return res.status(403).json({ error: 'Unauthorized. Admin access required.' });
+    }
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
+    console.log(`📋 Fetching users page ${page} with limit ${limit}...`);
+
+    // Get total count excluding admin
+    const totalUsers = await User.countDocuments({ role: { $ne: 'admin' } });
+
+    // Get paginated users (excluding admin)
+    const users = await User.find({ role: { $ne: 'admin' } })
+      .select('name email role createdAt onboardingCompleted weddingDate')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const formattedUsers = users.map(user => ({
+      id: user._id.toString(),
+      name: user.name || 'Unnamed User',
+      email: user.email,
+      role: user.role || 'user',
+      type: user.role === 'bride' ? 'Bride' : user.role === 'groom' ? 'Groom' : user.role === 'family' ? 'Family Member' : 'Guest',
+      onboardingCompleted: user.onboardingCompleted || false,
+      createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
+      weddingDate: user.weddingDate || 'Not set',
+    }));
+
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    console.log(`✅ Retrieved ${users.length} users for page ${page}`);
+    res.json({
+      users: formattedUsers,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalUsers,
+        usersPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      }
+    });
+  } catch (error) {
+    console.error('❌ Failed to fetch users:', error);
+    res.status(500).json({ error: 'Failed to fetch users', details: (error as Error).message });
   }
 });
 

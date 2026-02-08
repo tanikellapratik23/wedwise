@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, BarChart3, Calendar, TrendingUp, LogOut } from 'lucide-react';
+import { Users, BarChart3, Calendar, TrendingUp, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -15,13 +15,27 @@ interface AdminStats {
   usersByRole?: Array<{ _id: string; count: number }>;
 }
 
-interface LoggedInUser {
+interface DashboardUser {
   id: string;
   name: string;
   email: string;
   role: string;
+  type: string;
   onboardingCompleted: boolean;
-  lastActive: string;
+  createdAt: string;
+  weddingDate: string;
+}
+
+interface PaginationData {
+  users: DashboardUser[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalUsers: number;
+    usersPerPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
 }
 
 export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
@@ -34,16 +48,22 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     weddingsPlanned: 0,
     venueSearches: 0,
   });
-  const [loggedInUsers, setLoggedInUsers] = useState<LoggedInUser[]>([]);
+  const [paginationData, setPaginationData] = useState<PaginationData | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [usersLoading, setUsersLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAdminStats();
+    fetchUsers(1);
     
     // Refresh stats every 30 seconds for real-time updates
-    const interval = setInterval(fetchAdminStats, 30000);
+    const interval = setInterval(() => {
+      fetchAdminStats();
+      fetchUsers(currentPage);
+    }, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -61,7 +81,6 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       if (response.data.stats) {
         setStats(response.data.stats);
-        setLoggedInUsers(response.data.loggedInUsers || []);
         setLastUpdated(new Date());
         console.log('✅ Admin stats loaded successfully');
       }
@@ -70,6 +89,40 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       setError(`Failed to fetch stats: ${(error as any).message || 'Unknown error'}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUsers = async (page: number) => {
+    try {
+      setUsersLoading(true);
+      const token = localStorage.getItem('token');
+      console.log(`📋 Fetching users page ${page}...`);
+      
+      const response = await axios.get(`${API_URL}/api/admin/users?page=${page}&limit=20`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log('Users response:', response.data);
+      setPaginationData(response.data);
+      setCurrentPage(page);
+      console.log('✅ Users loaded successfully');
+    } catch (error) {
+      console.error('❌ Failed to fetch users:', error);
+      setError(`Failed to fetch users: ${(error as any).message || 'Unknown error'}`);
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (paginationData?.pagination.hasPrevPage) {
+      fetchUsers(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (paginationData?.pagination.hasNextPage) {
+      fetchUsers(currentPage + 1);
     }
   };
 
@@ -162,31 +215,69 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
           <Users className="w-5 h-5 text-blue-600" />
-          Recent Users
+          Real Users ({paginationData?.pagination.totalUsers || 0})
         </h2>
 
-        {loggedInUsers.length > 0 ? (
-          <div className="space-y-3">
-            {loggedInUsers.map((user) => (
-              <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div>
-                  <p className="font-semibold text-gray-900">{user.name}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
-                  <p className="text-xs text-gray-400 mt-1">Role: {user.role}</p>
+        {paginationData && paginationData.users.length > 0 ? (
+          <>
+            <div className="space-y-3 mb-6">
+              {paginationData.users.map((user) => (
+                <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900">{user.name}</p>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                    <div className="flex gap-2 mt-2">
+                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">{user.type}</span>
+                      <span className={`text-xs px-2 py-1 rounded-full ${user.onboardingCompleted ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        {user.onboardingCompleted ? 'Completed' : 'Pending'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-600">
+                      Joined: {new Date(user.createdAt).toLocaleDateString()}
+                    </p>
+                    {user.weddingDate && user.weddingDate !== 'Not set' && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Wedding: {user.weddingDate}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-gray-600">
-                    Registered: {new Date(user.lastActive).toLocaleDateString()}
-                  </p>
-                  <span className={`inline-block mt-1 px-2 py-1 text-xs rounded-full ${user.onboardingCompleted ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                    {user.onboardingCompleted ? 'Completed' : 'Pending'}
-                  </span>
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {paginationData.pagination.totalPages > 1 && (
+              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Page {paginationData.pagination.currentPage} of {paginationData.pagination.totalPages} 
+                  {' • '}
+                  Showing {((paginationData.pagination.currentPage - 1) * paginationData.pagination.usersPerPage) + 1}-{Math.min(paginationData.pagination.currentPage * paginationData.pagination.usersPerPage, paginationData.pagination.totalUsers)} of {paginationData.pagination.totalUsers}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={!paginationData.pagination.hasPrevPage || usersLoading}
+                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded-lg font-medium transition flex items-center gap-2 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={!paginationData.pagination.hasNextPage || usersLoading}
+                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded-lg font-medium transition flex items-center gap-2 disabled:cursor-not-allowed"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         ) : (
-          <p className="text-gray-500 text-center py-8">No users yet</p>
+          <p className="text-gray-500 text-center py-8">{usersLoading ? 'Loading users...' : 'No users yet'}</p>
         )}
       </div>
 
