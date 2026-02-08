@@ -50,7 +50,22 @@ export default function GuestList() {
     }
     
     fetchGuests();
-  }, []);
+
+    // Save guests before page unload
+    const handleBeforeUnload = () => {
+      if (guests.length > 0) {
+        try {
+          localStorage.setItem('guests', JSON.stringify(guests));
+          console.log('✅ Guests saved before unload');
+        } catch (e) {
+          console.error('Failed to save guests before unload:', e);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [guests]);
 
   // Save to localStorage immediately whenever guests change
   useEffect(() => {

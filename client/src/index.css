@@ -39,7 +39,47 @@
   a {
     @apply transition-colors duration-200;
   }
+
+  /* Ensure all form inputs have white backgrounds with visible text */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="tel"],
+  input[type="url"],
+  select,
+  textarea {
+    @apply !bg-white !text-gray-900 !border !border-gray-300;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply !bg-white !border !border-gray-300 !accent-pink-500;
+  }
+
+  /* Ensure placeholder text is visible */
+  input::placeholder,
+  textarea::placeholder {
+    @apply !text-gray-500 !opacity-100;
+  }
+
+  /* Ensure focus states have good contrast */
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply !outline-none !ring-2 !ring-pink-500 !border-pink-500;
+  }
+
+  /* All form elements must be white background */
+  .form-input,
+  .form-select,
+  .form-textarea {
+    @apply !bg-white !text-gray-900 !border-gray-300;
+  }
 }
+
 
 :root {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
