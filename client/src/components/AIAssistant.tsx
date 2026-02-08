@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MessageCircle, X, Sparkles, Send, Plus } from 'lucide-react';
+import { userDataStorage } from '../utils/userDataStorage';
 
 interface CeremonyStep {
   time: string;
@@ -47,21 +48,21 @@ export default function AIAssistant() {
   const [loading, setLoading] = useState(false);
   const [editableResponse, setEditableResponse] = useState<CeremonyResponse | null>(null);
 
-  // Load chat history from localStorage on mount
+  // Load chat history from user-specific storage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('chat_history');
+    const saved = userDataStorage.getData('aiChatHistory');
     if (saved) {
       try {
-        setChatHistory(JSON.parse(saved));
+        setChatHistory(Array.isArray(saved) ? saved : []);
       } catch (e) {
         console.error('Failed to load chat history', e);
       }
     }
   }, []);
 
-  // Save chat history to localStorage
+  // Save chat history to user-specific storage
   const saveChatHistory = (sessions: ChatSession[]) => {
-    localStorage.setItem('chat_history', JSON.stringify(sessions));
+    userDataStorage.setData('aiChatHistory', sessions);
     setChatHistory(sessions);
   };
 
