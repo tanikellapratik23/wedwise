@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { isAutoSaveEnabled, setWithTTL } from '../../utils/autosave';
+import { userDataStorage } from '../../utils/userDataStorage';
 import { Plus, CheckCircle, Circle, Calendar, AlertCircle, Trash2, Save, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import axios from 'axios';
@@ -51,7 +52,7 @@ export default function TodoList() {
         setTodos(next);
         // persist locally
         const serial = next.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
-        localStorage.setItem('todos', JSON.stringify(serial));
+        userDataStorage.setData('todos', serial);
         return;
       }
 
@@ -123,13 +124,13 @@ export default function TodoList() {
   };
 
   useEffect(() => {
-    // Load from localStorage immediately for instant display
+    // Load from user-specific localStorage immediately for instant display
     try {
-      const cached = localStorage.getItem('todos');
+      const cached = userDataStorage.getData('todos');
       if (cached) {
-        const parsed = JSON.parse(cached) as any[];
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const items = parsed.map((t) => ({ ...t, dueDate: t.dueDate ? new Date(t.dueDate) : undefined }));
+        const parsed = Array.isArray(cached) ? cached : [];
+        if (parsed.length > 0) {
+          const items = parsed.map((t: any) => ({ ...t, dueDate: t.dueDate ? new Date(t.dueDate) : undefined }));
           setTodos(items);
         }
       }
@@ -140,12 +141,12 @@ export default function TodoList() {
     fetchTodos();
   }, []);
 
-  // Save to localStorage immediately whenever todos change
+  // Save to user-specific localStorage immediately whenever todos change
   useEffect(() => {
     if (todos.length > 0) {
       try {
         const serial = todos.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
-        localStorage.setItem('todos', JSON.stringify(serial));
+        userDataStorage.setData('todos', serial);
         if (isAutoSaveEnabled()) {
           setWithTTL('todos', serial, 24 * 60 * 60 * 1000);
         }
@@ -176,7 +177,7 @@ export default function TodoList() {
         setTodos(next);
         // persist
         const serial = next.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
-        localStorage.setItem('todos', JSON.stringify(serial));
+        userDataStorage.setData('todos', serial);
         setShowAddModal(false);
         setNewTodo({ title: '', description: '', dueDate: undefined, priority: 'medium', category: 'General' });
         return;
@@ -213,7 +214,7 @@ export default function TodoList() {
         const next = (Array.isArray(todos) ? todos : []).filter(t => t._id !== id && t.id !== id);
         setTodos(next);
         const serial = next.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
-        localStorage.setItem('todos', JSON.stringify(serial));
+        userDataStorage.setData('todos', serial);
         return;
       }
 

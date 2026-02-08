@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, DollarSign, TrendingDown, TrendingUp, MapPin, Sparkles, Info, Trash2, Download, Upload, Save } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { userDataStorage } from '../../utils/userDataStorage';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import { getCityData, getBudgetOptimizationSuggestions } from '../../utils/cityData';
@@ -62,8 +63,8 @@ export default function BudgetTracker() {
       clearTimeout(autoSaveTimeoutRef.current);
     }
 
-    // Save to localStorage immediately
-    localStorage.setItem('budget', JSON.stringify(categories));
+    // Save to user-specific localStorage immediately
+    userDataStorage.setData('budget', categories);
     setAutoSaveStatus('saving');
 
     // Debounce server save by 2 seconds

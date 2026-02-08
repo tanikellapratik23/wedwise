@@ -38,14 +38,11 @@ export default function GuestList() {
 
   // Initialize on mount and set up unload handler
   useEffect(() => {
-    // Load from localStorage immediately for instant display
+    // Load from user-specific localStorage immediately for instant display
     try {
-      const cached = localStorage.getItem('guests');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setGuests(parsed);
-        }
+      const cached = userDataStorage.getData('guests');
+      if (cached && Array.isArray(cached) && cached.length > 0) {
+        setGuests(cached);
       }
     } catch (e) {
       console.error('Failed to load cached guests:', e);
@@ -56,10 +53,10 @@ export default function GuestList() {
     // Save guests before page unload - only set up once on mount
     const handleBeforeUnload = () => {
       try {
-        // Get latest guests from state
-        const guestData = JSON.parse(localStorage.getItem('guests') || '[]');
+        // Get latest guests from storage
+        const guestData = userDataStorage.getData('guests') || [];
         if (Array.isArray(guestData) && guestData.length > 0) {
-          localStorage.setItem('guests', JSON.stringify(guestData));
+          userDataStorage.setData('guests', guestData);
           console.log('✅ Guests saved before unload');
         }
       } catch (e) {
@@ -71,11 +68,11 @@ export default function GuestList() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []); // Only run on mount
 
-  // Save to localStorage immediately whenever guests change
+  // Save to user-specific localStorage immediately whenever guests change
   useEffect(() => {
     if (guests.length > 0) {
       try {
-        localStorage.setItem('guests', JSON.stringify(guests));
+        userDataStorage.setData('guests', guests);
         if (isAutoSaveEnabled()) {
           setWithTTL('guests', guests, 24 * 60 * 60 * 1000);
         }
@@ -111,8 +108,8 @@ export default function GuestList() {
       if (response.data.success) {
         console.log('✅ Fetched', response.data.data.length, 'guests from server');
         setGuests(response.data.data);
-        // Update localStorage with server data
-        localStorage.setItem('guests', JSON.stringify(response.data.data));
+        // Update user-specific localStorage with server data
+        userDataStorage.setData('guests', response.data.data);
       }
     } catch (error) {
       console.error('❌ Failed to fetch guests from server:', error);
@@ -147,7 +144,7 @@ export default function GuestList() {
           if (response.data.success) {
             const updatedGuests = [...guests, response.data.data];
             setGuests(updatedGuests);
-            localStorage.setItem('guests', JSON.stringify(updatedGuests));
+            userDataStorage.setData('guests', updatedGuests);
             console.log('✅ Guest added and saved to server');
             setShowAddModal(false);
             setNewGuest({
@@ -180,7 +177,7 @@ export default function GuestList() {
       
       const next = [...guests, guest];
       setGuests(next);
-      localStorage.setItem('guests', JSON.stringify(next));
+      userDataStorage.setData('guests', next);
       console.log('💾 Guest saved locally');
       
       setShowAddModal(false);
@@ -209,7 +206,7 @@ export default function GuestList() {
       if (offlineMode) {
         const next = (Array.isArray(guests) ? guests : []).filter(g => g.id !== id && g._id !== id);
         setGuests(next);
-        localStorage.setItem('guests', JSON.stringify(next));
+        userDataStorage.setData('guests', next);
         return;
       }
 
@@ -235,7 +232,7 @@ export default function GuestList() {
         const guestArray = Array.isArray(guests) ? guests : [];
         const next = guestArray.map(g => (g.id === id || g._id === id) ? { ...g, rsvpStatus: status } : g);
         setGuests(next);
-        localStorage.setItem('guests', JSON.stringify(next));
+        userDataStorage.setData('guests', next);
         return;
       }
 
@@ -266,7 +263,7 @@ export default function GuestList() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       
       if (offlineMode) {
-        localStorage.setItem('guests', JSON.stringify(guests));
+        userDataStorage.setData('guests', guests);
         alert('Guest list saved locally');
         return;
       }
