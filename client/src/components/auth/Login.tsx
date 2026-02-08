@@ -20,7 +20,6 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent, retryCount: number = 0) => {
     e.preventDefault();
@@ -44,14 +43,11 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
       }
       clearTimeout(timer);
       console.log('Login successful:', response.data);
-      authStorage.setToken(response.data.token, keepSignedIn);
-      authStorage.setUser(response.data.user, keepSignedIn);
+      authStorage.setToken(response.data.token);
+      authStorage.setUser(response.data.user);
       
       // Always mark onboarding as complete for authenticated users
       sessionStorage.setItem('onboardingCompleted', 'true');
-      if (keepSignedIn) {
-        localStorage.setItem('onboardingCompleted', 'true');
-      }
       
       setIsAuthenticated(true);
 
@@ -214,16 +210,7 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-              <div className="flex items-center justify-between mt-3">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={keepSignedIn}
-                    onChange={(e) => setKeepSignedIn(e.target.checked)}
-                    className="w-4 h-4 text-primary-500 border border-gray-300 rounded cursor-pointer focus:ring-2 focus:ring-primary-500"
-                  />
-                  <span className="text-sm text-gray-700 font-medium">Keep me signed in</span>
-                </label>
+              <div className="flex justify-end mt-3">
                 <button
                   type="button"
                   onClick={() => navigate('/forgot-password')}
