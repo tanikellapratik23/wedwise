@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivaha Demo</title>
+    <title>Vivaha AI Chatbot Demo</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -56,18 +56,45 @@
             to { transform: translateY(0); opacity: 1; }
         }
         
-        @keyframes typeWriter {
-            from { width: 0; }
-            to { width: 100%; }
+        /* Scene 1 - Dashboard with AI Button */
+        .s1 { background: linear-gradient(135deg, #f0f9ff, #e0f2fe, #f3e8ff); }
+        .dashboard-mock {
+            width: 95%;
+            max-width: 650px;
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            position: relative;
+            overflow: hidden;
         }
-        
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 15px;
         }
-        
+        .dashboard-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111;
+        }
+        .dashboard-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .dashboard-stat {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #10B981;
+            font-size: 13px;
+            color: #374151;
+        }
         /* Scene 1 - Intro */
-        .s1 { background: linear-gradient(135deg, #fdf2f8, #fce7f3); }
         .logo { 
             font-size: 64px; 
             font-weight: 800; 
@@ -83,398 +110,248 @@
             animation: slideUp 0.6s ease-out 0.3s both;
         }
         
-        /* Scene 2 - Dashboard */
-        .s2 { background: white; }
-        .dash { 
-            width: 90%; 
-            max-width: 750px; 
-            background: #f9fafb; 
-            border-radius: 10px; 
-            padding: 15px;
+        .ai-button-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            animation: slideUp 0.6s ease-out 0.8s both;
         }
-        .dash-header { 
-            background: linear-gradient(135deg, #ec4899, #a855f7); 
-            color: white; 
-            padding: 10px; 
-            border-radius: 8px; 
-            margin-bottom: 10px; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px;
-        }
-        .graphs { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; width: 220px; }
-        .graph { display:flex; align-items:center; gap:8px; background: #ffffff; padding:8px; border-radius:8px; border:1px solid #f3f4f6; }
-        .graph-label { font-size: 11px; color: #6B7280; width: 70px; font-weight:700; }
-        .graph-bar-bg { background:#f3f4f6; height:10px; border-radius:6px; flex:1; overflow:hidden; }
-        .graph-bar { height:100%; width:0%; background: linear-gradient(90deg, #3B82F6, #a855f7); border-radius:6px; transition: width 900ms cubic-bezier(.2,.9,.2,1); }
-        .action { 
-            padding: 8px 6px; 
-            border-radius: 6px; 
-            text-align: center; 
-            color: white; 
-            font-size: 9px; 
-            font-weight: 600;
-        }
-        .action-icon { font-size: 16px; margin-bottom: 4px; }
-        .a1 { background: linear-gradient(135deg, #3B82F6, #2563EB); }
-        .a2 { background: linear-gradient(135deg, #10B981, #059669); }
-        .a3 { background: linear-gradient(135deg, #a855f7, #9333EA); }
-        .a4 { background: linear-gradient(135deg, #ec4899, #db2777); }
-        .overlay { font-size: 16px; color: #ec4899; text-align: center; margin-top: 10px; font-weight: 600; }
-        .dash-title { font-size: 16px; font-weight: 700; }
-        .dash-sub { font-size: 9px; opacity: 0.9; margin-top: 2px; }
-        .countdown { background: white; border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 10px; }
-        .countdown-num { font-size: 28px; font-weight: 900; background: linear-gradient(135deg, #f472b6, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .countdown-label { font-size: 10px; color: #6B7280; margin-top: 3px; }
-        .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        
-        /* Scene 2.5 - What Makes Different (Title Only) */
-        .s2_5 { 
-            background: linear-gradient(135deg, #fdf2f8, #f3e8ff); 
+        .ai-button {
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            padding: 14px 16px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 8px 20px rgba(168,85,247,0.4);
+            font-size: 22px;
+            animation: zoomPulse 0.8s ease-out 1.2s both;
         }
-        .different-title-only {
-            font-size: 48px; 
-            font-weight: 700; 
+        
+        /* Scene 2 - AI Chatbot Intro */
+        .s2 { background: linear-gradient(135deg, #fdf2f8, #fce7f3); }
+        .chatbot-scene {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
             text-align: center;
+        }
+        .chat-title {
+            font-size: 32px;
+            font-weight: 700;
             background: linear-gradient(135deg, #ec4899, #a855f7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: zoomPulse 0.8s ease-out;
+            animation: slideUp 0.6s ease-out 0.2s both;
+        }
+        .chat-subtitle {
+            font-size: 14px;
+            color: #6B7280;
+            animation: slideUp 0.6s ease-out 0.3s both;
+        }
+        .chat-bubble {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            animation: slideUp 0.5s ease-out 0.4s both;
+        }
+        .chat-bubble.bot-message {
+            border-left: 4px solid #a855f7;
+            background: linear-gradient(135deg, #f3e8ff, #fce7f3);
+        }
+        .chat-bubble.user-message {
+            border-left: 4px solid #3B82F6;
+            background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+            margin-left: auto;
+        }
+        .chat-text {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.5;
         }
         
-        /* Scene 2.6 - Ceremony Features */
-        .s2_6 { 
-            background: linear-gradient(135deg, #dbeafe, #e0f2fe); 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .ceremony { 
-            width: 90%; 
-            max-width: 750px; 
-            background: white; 
-            border-radius: 10px; 
+        /* Chat Demo Scenes */
+        .chatbot-demo {
+            width: 90%;
+            max-width: 700px;
+            background: white;
+            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(59,130,246,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
-        .ceremony-title { 
-            font-size: 28px; 
-            font-weight: 700; 
-            text-align: center; 
-            margin-bottom: 20px;
-            color: #111;
-        }
-        .ceremony-features { 
+        .chat-window {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
+            margin-bottom: 15px;
         }
-        .ceremony-feature { 
-            background: linear-gradient(135deg, #dbeafe, #f0f9ff); 
-            padding: 18px; 
-            border-radius: 10px; 
-            border-left: 5px solid #3B82F6;
-        }
-        .ceremony-feature-title { 
-            font-size: 16px; 
-            font-weight: 700; 
-            color: #3B82F6; 
-            margin-bottom: 8px;
-        }
-        .ceremony-feature-text { 
-            font-size: 13px; 
-            color: #374151;
-            line-height: 1.6;
+        .feature-label {
+            font-size: 12px;
+            color: #6B7280;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 10px;
         }
         
-        /* Scene 3 - Bachelor Party */
-        .s3 { 
-            background: linear-gradient(135deg, #e0f2fe, #dbeafe);
-            padding: 15px;
+        /* Vendor Results */
+        .vendor-results {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .bach { 
-            width: 90%; 
-            max-width: 750px; 
-            background: rgba(255,255,255,0.95); 
-            border-radius: 10px; 
+        .vendor-card {
+            background: linear-gradient(135deg, #fdf2f8, #f3e8ff);
+            border-left: 4px solid #a855f7;
             padding: 12px;
-        }
-        .bach-title { 
-            font-size: 16px; 
-            font-weight: 700; 
-            color: #111; 
-            text-align: center; 
-            margin-bottom: 8px;
-        }
-        .typing-form {
-            background: white;
-            padding: 10px;
             border-radius: 8px;
-            margin-bottom: 10px;
+            animation: slideUp 0.4s ease-out;
         }
-        .form-label {
-            font-size: 9px;
-            color: #6B7280;
-            margin-bottom: 3px;
-        }
-        .typing-input {
-            background: #f9fafb;
-            border: 2px solid #ec4899;
-            border-radius: 6px;
-            padding: 8px;
+        .vendor-name {
             font-size: 13px;
             font-weight: 600;
             color: #111;
+            margin-bottom: 4px;
         }
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 6px;
+        .vendor-details {
+            font-size: 11px;
+            color: #6B7280;
         }
-        .form-field {
+        
+        /* Task List */
+        .task-list {
             display: flex;
             flex-direction: column;
-        }
-        .submit-btn {
-            background: linear-gradient(135deg, #ec4899, #a855f7);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 12px;
-            margin-top: 8px;
-            cursor: pointer;
-            animation: slideUp 0.5s ease-out 0.5s both, zoomPulse 0.5s ease-in-out 1s;
-        }
-        .miami { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 8px; 
-            margin-top: 10px;
-            opacity: 0;
-            animation: slideUp 0.5s ease-out 1.3s both;
-        }
-        .miami-card { 
-            background: white; 
-            padding: 8px; 
-            border-radius: 6px; 
-            text-align: center;
-            animation: zoomPulse 0.6s ease-out;
-        }
-        .miami-card:nth-child(1) { animation-delay: 1.5s; }
-        .miami-card:nth-child(2) { animation-delay: 1.7s; }
-        .miami-card:nth-child(3) { animation-delay: 1.9s; }
-        .miami-video {
-            width: 100%;
-            height: 140px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            margin-top: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        .miami-video::before {
-            content: 'Miami Beach';
-            position: absolute;
-            font-size: 28px;
-            color: white;
-        }
-        .miami-icon { font-size: 20px; margin-bottom: 5px; }
-        .miami-label { font-size: 8px; color: #6B7280; }
-        .miami-value { font-size: 11px; font-weight: 700; color: #111; }
-        
-        /* Scene 4 - VivahaSplit */
-        .s4 { background: linear-gradient(135deg, #fdf2f8, #f3e8ff); }
-        .split { 
-            width: 90%; 
-            max-width: 750px; 
-            background: white; 
-            border-radius: 10px; 
-            padding: 15px;
-            animation: slideUp 0.5s ease-out;
-        }
-        .split-title { 
-            font-size: 22px; 
-            font-weight: 700; 
-            background: linear-gradient(135deg, #a855f7, #ec4899); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            text-align: center; 
-            margin-bottom: 10px;
-            animation: zoomPulse 1.5s ease-in-out;
-        }
-        .split-sub { font-size: 11px; color: #6B7280; text-align: center; margin-bottom: 15px; }
-        .split-display { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-around; 
-            margin: 15px 0;
-            animation: slideUp 0.6s ease-out 0.3s both;
-        }
-        .split-side { text-align: center; }
-        .split-label { font-size: 13px; color: #6B7280; margin-bottom: 8px; }
-        .split-amount { 
-            font-size: 30px; 
-            font-weight: 700; 
-            color: #ec4899;
-            animation: zoomPulse 1.2s ease-in-out 0.5s;
-        }
-        .split-divider { font-size: 32px; color: #a855f7; }
-        .split-text { font-size: 16px; color: #a855f7; text-align: center; font-weight: 600; }
-        
-        /* Scene 5 - RSVP */
-        .s5 { background: linear-gradient(135deg, #fdf2f8, #fce7f3); }
-        .rsvp { 
-            width: 90%; 
-            max-width: 750px; 
-            background: white; 
-            border-radius: 10px; 
-            padding: 15px;
-            animation: slideUp 0.5s ease-out;
-        }
-        .rsvp-title { 
-            font-size: 22px; 
-            font-weight: 700; 
-            text-align: center; 
-            margin-bottom: 12px;
-            animation: slideUp 0.5s ease-out 0.2s both;
-        }
-        .rsvp-stats { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 10px; 
-            margin-bottom: 12px;
-        }
-        .rsvp-stat { 
-            background: linear-gradient(135deg, #fdf2f8, #fce7f3); 
-            border: 2px solid #ec4899; 
-            border-radius: 8px; 
-            padding: 10px; 
-            text-align: center;
-            animation: zoomPulse 0.6s ease-out;
-        }
-        .rsvp-stat:nth-child(1) { animation-delay: 0.3s; }
-        .rsvp-stat:nth-child(2) { animation-delay: 0.5s; }
-        .rsvp-stat:nth-child(3) { animation-delay: 0.7s; }
-        .rsvp-val { font-size: 22px; font-weight: 700; color: #ec4899; }
-        .rsvp-label { font-size: 10px; color: #6B7280; margin-top: 4px; }
-        .guests { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 6px;
-            animation: slideUp 0.6s ease-out 0.9s both;
-        }
-        .guest { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: #f9fafb; 
-            padding: 8px 12px; 
-            border-radius: 6px; 
-            font-size: 10px;
+            gap: 8px;
+            margin-top: 12px;
             animation: slideUp 0.4s ease-out;
         }
-        .guest:nth-child(1) { animation-delay: 1.1s; }
-        .guest:nth-child(2) { animation-delay: 1.3s; }
-        .guest:nth-child(3) { animation-delay: 1.5s; }
-        .guest-name { font-weight: 600; }
-        .guest-badge { padding: 3px 8px; border-radius: 4px; font-size: 8px; font-weight: 600; }
-        .confirmed { background: #D1FAE5; color: #065F46; }
-        .pending { background: #FEF3C7; color: #92400E; }
+        .task-item {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 4px solid #10B981;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #374151;
+            font-weight: 500;
+        }
         
-        /* Scene 6 - Share */
-        .s6 { background: linear-gradient(135deg, #f3e8ff, #dbeafe); }
-        .share { 
-            width: 90%; 
-            max-width: 750px; 
-            background: white; 
-            border-radius: 10px; 
-            padding: 20px; 
-            text-align: center;
-            animation: slideUp 0.5s ease-out;
+        /* Timeline */
+        .timeline-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 12px;
         }
-        .share-icon { 
-            font-size: 32px; 
-            margin-bottom: 12px;
-            animation: zoomPulse 1s ease-in-out 0.3s;
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+            border-left: 4px solid #3B82F6;
+            padding: 12px;
+            border-radius: 8px;
+            animation: slideUp 0.4s ease-out;
         }
-        .share-title { 
-            font-size: 22px; 
-            font-weight: 700; 
-            margin-bottom: 8px;
-            animation: slideUp 0.5s ease-out 0.5s both;
+        .timeline-marker {
+            font-size: 18px;
+            flex-shrink: 0;
         }
-        .share-desc { font-size: 11px; color: #6B7280; margin-bottom: 12px; line-height: 1.6; }
-        .share-link { 
-            background: linear-gradient(135deg, #f3e8ff, #fce7f3); 
-            border: 2px solid #a855f7; 
-            border-radius: 8px; 
-            padding: 10px; 
-            font-size: 10px; 
-            color: #6B7280; 
-            font-family: monospace; 
-            margin-bottom: 12px;
-            animation: slideUp 0.5s ease-out 0.9s both, zoomPulse 0.8s ease-in-out 1.4s;
+        .timeline-text {
+            font-size: 12px;
+            color: #374151;
+            line-height: 1.5;
         }
-        .share-features { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 8px;
-            animation: slideUp 0.5s ease-out 1.2s both;
-        }
-        .share-feature { background: #f9fafb; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: 600; }
         
-        /* Scene 7 - All in One */
-        .s7 { 
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe, #dbeafe); 
+        /* Scene 5 - Features Grid */
+        .s5 {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe, #dbeafe);
         }
-        .allinone { 
-            width: 90%; 
-            max-width: 750px; 
-            background: white; 
-            border-radius: 10px; 
-            padding: 25px; 
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 90%;
+            max-width: 700px;
+            margin-bottom: 20px;
+        }
+        .feature-card {
+            background: white;
+            padding: 16px;
+            border-radius: 10px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(59,130,246,0.3);
+            font-weight: 600;
+            font-size: 13px;
+            color: #374151;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            animation: slideUp 0.4s ease-out;
         }
-        .allinone-title { 
-            font-size: 42px; 
-            font-weight: 700; 
-            margin-bottom: 12px;
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+        .feature-tagline {
+            font-size: 18px;
+            font-weight: 700;
             background: linear-gradient(135deg, #3B82F6, #a855f7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             animation: zoomPulse 0.8s ease-out;
         }
-        .allinone-subtitle { 
-            font-size: 16px; 
-            color: #6B7280; 
-            margin-bottom: 20px;
-            font-weight: 500;
+        
+        /* Scene 6 - Simple Message */
+        .s6 { background: linear-gradient(135deg, #fdf2f8, #f3e8ff); }
+        .simple-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            text-align: center;
         }
-        .allinone-features { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 10px;
+        .big-title {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideUp 0.6s ease-out 0.2s both;
         }
-        .allinone-feature { 
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe); 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-size: 11px; 
-            font-weight: 600;
-            color: #374151;
-            border: 2px solid #3B82F6;
+        .big-subtitle {
+            font-size: 16px;
+            color: #6B7280;
+            animation: slideUp 0.6s ease-out 0.3s both;
+        }
+        
+        /* Scene 7 - Final Message */
+        .s7 { 
+            background: linear-gradient(135deg, #dbeafe, #e0f2fe, #f0f9ff); 
+        }
+        .final-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .final-title {
+            font-size: 40px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3B82F6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: zoomPulse 0.8s ease-out;
+        }
+        .final-subtitle {
+            font-size: 18px;
+            color: #6B7280;
+            animation: slideUp 0.6s ease-out 0.3s both;
         }
         
         /* Scene 8 - CTA */
@@ -507,205 +384,173 @@
 </head>
 <body>
     <div class="container">
-        <!-- Scene 1: Intro -->
+        <!-- Scene 1: Intro with Vivaha Title -->
         <div class="scene s1 active">
             <div class="logo">Vivaha</div>
             <div class="tagline">Plan your wedding, stress-free</div>
         </div>
         
-        <!-- Scene 2: Dashboard -->
+        <!-- Scene 2: Dashboard with AI Button Click -->
         <div class="scene s2">
-            <div class="dash">
-                <div class="dash-header">
-                    <div>
-                        <div class="dash-title">Priya & Michael's Wedding</div>
-                        <div class="dash-sub">San Francisco, CA • June 15, 2026</div>
-                    </div>
+            <div class="dashboard-mock">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">Sarah & Michael's Wedding</div>
                 </div>
-                <div class="graphs" aria-hidden="true">
-                    <div class="graph"><div class="graph-label">Catering</div><div class="graph-bar-bg"><div class="graph-bar" data-percent="72"></div></div></div>
-                    <div class="graph"><div class="graph-label">Venue</div><div class="graph-bar-bg"><div class="graph-bar" data-percent="55"></div></div></div>
-                    <div class="graph"><div class="graph-label">Decor</div><div class="graph-bar-bg"><div class="graph-bar" data-percent="40"></div></div></div>
+                <div class="dashboard-content">
+                    <div class="dashboard-stat">📅 142 days until wedding</div>
+                    <div class="dashboard-stat">👥 150 guests invited</div>
+                    <div class="dashboard-stat">💰 Budget: $45,000</div>
                 </div>
-                <div class="countdown">
-                    <div class="countdown-num">129</div>
-                    <div class="countdown-label">days until your wedding</div>
-                </div>
-                <div class="actions">
-                    <div class="action a1">Add Guest</div>
-                    <div class="action a2">Add Expense</div>
-                    <div class="action a3">New Task</div>
-                    <div class="action a4">Add Vendor</div>
-                </div>
-            </div>
-            <div class="overlay">All your planning in one place</div>
-        </div>
-        
-        <!-- Scene 2.5: What Makes Vivaha Different (Title) -->
-        <div class="scene s2_5">
-            <div class="different-title-only">What makes Vivaha different?</div>
-        </div>
-        
-        <!-- Scene 2.6: Ceremony Features -->
-        <div class="scene s2_6">
-            <div class="ceremony">
-                <div class="ceremony-features">
-                    <div class="ceremony-feature">
-                        <div class="ceremony-feature-title">Multi-Day Schedules</div>
-                        <div class="ceremony-feature-text">Hindu (4 days), Jewish (3 days), Christian (2 days), Muslim (3 days), Buddhist (2 days) + fully customizable</div>
-                    </div>
-                    <div class="ceremony-feature">
-                        <div class="ceremony-feature-title">Ritual Library</div>
-                        <div class="ceremony-feature-text">Pre-loaded traditions, rituals, and customs for each religion with descriptions and timing</div>
-                    </div>
-                    <div class="ceremony-feature">
-                        <div class="ceremony-feature-title">Interfaith Blending</div>
-                        <div class="ceremony-feature-text">Seamlessly combine two religions with suggested ceremony order, timing, and integrated rituals</div>
-                    </div>
+                <div class="ai-button-container">
+                    <div class="ai-button">💬</div>
+
                 </div>
             </div>
         </div>
         
-        <!-- Scene 3: Bachelor Party -->
+        <!-- Scene 3: AI Chatbot Intro -->
         <div class="scene s3">
-            <div class="bach">
-                <div class="bach-title">Bachelor Party Planner</div>
-                <div class="typing-form">
-                    <div class="form-label">Where do you want to go?</div>
-                    <div class="typing-input">Miami, FL</div>
-                    
-                    <div class="form-row">
-                        <div class="form-field">
-                            <div class="form-label">Dates</div>
-                            <div class="typing-input">May 15-18, 2026</div>
-                        </div>
-                        <div class="form-field">
-                            <div class="form-label">Duration</div>
-                            <div class="typing-input">3 nights</div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-field">
-                            <div class="form-label">Budget per person</div>
-                            <div class="typing-input">$800</div>
-                        </div>
-                        <div class="form-field">
-                            <div class="form-label">Group size</div>
-                            <div class="typing-input">8 people</div>
-                        </div>
-                    </div>
-                    
-                    <div class="submit-btn">Find Flights & Hotels</div>
-                </div>
-                <div class="miami-video"></div>
-                <div class="miami">
-                    <div class="miami-card">
-                        <div class="miami-label">FLIGHTS</div>
-                        <div class="miami-value">$289/person</div>
-                    </div>
-                    <div class="miami-card">
-                        <div class="miami-label">LODGING</div>
-                        <div class="miami-value">Ocean View Villa</div>
-                    </div>
-                    <div class="miami-card">
-                        <div class="miami-label">ACTIVITIES</div>
-                        <div class="miami-value">Beach • Clubs</div>
-                    </div>
+            <div class="chatbot-scene">
+                <div class="chat-title">Meet Your AI Assistant</div>
+                <div class="chat-subtitle">Your personal wedding planning buddy</div>
+                <div class="chat-bubble bot-message">
+                    <span class="chat-text">Hi! I'm here to help with your wedding planning. Just ask me anything!</span>
                 </div>
             </div>
         </div>
         
-        <!-- Scene 4: VivahaSplit -->
+        <!-- Scene 4: AI Chat Example - Budget -->
         <div class="scene s4">
-            <div class="split">
-                <div class="split-title">VivahaSplit™</div>
-                <div class="split-sub">Smart Cost Sharing Between Families</div>
-                <div class="split-display">
-                    <div class="split-side">
-                        <div class="split-label">Family A</div>
-                        <div class="split-amount">$25K</div>
+            <div class="chatbot-demo">
+                <div class="chat-window">
+                    <div class="chat-bubble user-message">
+                        <span class="chat-text">What's my catering budget?</span>
                     </div>
-                    <div class="split-divider">/</div>
-                    <div class="split-side">
-                        <div class="split-label">Family B</div>
-                        <div class="split-amount">$25K</div>
+                    <div class="chat-bubble bot-message" style="animation-delay: 0.5s;">
+                        <span class="chat-text">Your catering budget is set to $8,500. You've spent $6,200 so far. That leaves you $2,300 remaining!</span>
+                    </div>
+                    <div class="chat-bubble user-message" style="animation-delay: 1s;">
+                        <span class="chat-text">Add $1,000 to decor</span>
+                    </div>
+                    <div class="chat-bubble bot-message" style="animation-delay: 1.5s;">
+                        <span class="chat-text">✅ Done! Decor budget updated to $4,500</span>
                     </div>
                 </div>
-                <div class="split-text">Track who pays what, automatically</div>
+                <div class="feature-label">AI-Powered Budget Chat</div>
             </div>
         </div>
         
-        <!-- Scene 5: RSVP -->
+        <!-- Scene 5: AI Chat Example - Task Suggestions -->
         <div class="scene s5">
-            <div class="rsvp">
-                <div class="rsvp-title">Guest & RSVP Tracking</div>
-                <div class="rsvp-stats">
-                    <div class="rsvp-stat">
-                        <div class="rsvp-val">150</div>
-                        <div class="rsvp-label">Total Invited</div>
+            <div class="chatbot-demo">
+                <div class="chat-window">
+                    <div class="chat-bubble bot-message">
+                        <span class="chat-text">📋 Based on your timeline, here's what you should tackle this week:</span>
                     </div>
-                    <div class="rsvp-stat">
-                        <div class="rsvp-val">127</div>
-                        <div class="rsvp-label">Confirmed</div>
-                    </div>
-                    <div class="rsvp-stat">
-                        <div class="rsvp-val">23</div>
-                        <div class="rsvp-label">Pending</div>
+                    <div class="task-list" style="animation-delay: 0.5s;">
+                        <div class="task-item">✓ Finalize guest list</div>
+                        <div class="task-item">✓ Send save-the-dates</div>
+                        <div class="task-item">✓ Contact venue for booking</div>
+                        <div class="task-item">✓ Schedule vendor meetings</div>
                     </div>
                 </div>
-                <div class="guests">
-                    <div class="guest">
-                        <div class="guest-name">Sarah Johnson + 1</div>
-                        <div class="guest-badge confirmed">Confirmed</div>
-                    </div>
-                    <div class="guest">
-                        <div class="guest-name">Michael Chen</div>
-                        <div class="guest-badge confirmed">Confirmed</div>
-                    </div>
-                    <div class="guest">
-                        <div class="guest-name">Emily Rodriguez</div>
-                        <div class="guest-badge pending">Pending</div>
-                    </div>
-                </div>
+                <div class="feature-label">Smart Task Recommendations</div>
             </div>
         </div>
         
-        <!-- Scene 6: Share -->
+        <!-- Scene 6: AI Chat Example - Vendor Matching -->
         <div class="scene s6">
-            <div class="share">
-                <div class="share-icon">Link</div>
-                <div class="share-title">One Shareable Link</div>
-                <div class="share-desc">Share your wedding dashboard with family & guests.<br>They see real-time updates automatically.</div>
-                <div class="share-link">vivahaplan.com/shared/priya-michael-wedding</div>
-                <div class="share-features">
-                    <div class="share-feature">Auto-updates in real-time</div>
-                    <div class="share-feature">No login required</div>
+            <div class="chatbot-demo">
+                <div class="chat-window">
+                    <div class="chat-bubble user-message">
+                        <span class="chat-text">Find me a photographer in San Francisco, budget $2000</span>
+                    </div>
+                    <div class="vendor-results">
+                        <div class="vendor-card" style="animation-delay: 0.5s;">
+                            <div class="vendor-name">📸 Golden Moments Photography</div>
+                            <div class="vendor-details">$1,800 • 4.9★ • 50+ weddings</div>
+                        </div>
+                        <div class="vendor-card" style="animation-delay: 0.7s;">
+                            <div class="vendor-name">📸 Capture Every Moment</div>
+                            <div class="vendor-details">$1,950 • 4.8★ • 35+ weddings</div>
+                        </div>
+                        <div class="vendor-card" style="animation-delay: 0.9s;">
+                            <div class="vendor-name">📸 Vivid Weddings Co</div>
+                            <div class="vendor-details">$1,600 • 4.7★ • 28+ weddings</div>
+                        </div>
+                    </div>
                 </div>
+                <div class="feature-label">AI Vendor Matching</div>
             </div>
         </div>
         
-        <!-- Scene 7: All in One -->
+        <!-- Scene 7: AI Chat Example - Timeline Help -->
         <div class="scene s7">
-            <div class="allinone">
-                <div class="allinone-title">All in one</div>
-                <div class="allinone-subtitle">Everything you need in one app</div>
-                <div class="allinone-features">
-                    <div class="allinone-feature">Guest Lists</div>
-                    <div class="allinone-feature">Budget Tracking</div>
-                    <div class="allinone-feature">Vendor Search</div>
-                    <div class="allinone-feature">Ceremony Planning</div>
-                    <div class="allinone-feature">Bachelor Parties</div>
-                    <div class="allinone-feature">RSVP Tracking</div>
-                    <div class="allinone-feature">VivahaSplit</div>
-                    <div class="allinone-feature">Shared Dashboard</div>
-                    <div class="allinone-feature">To-Do Lists</div>
+            <div class="chatbot-demo">
+                <div class="chat-window">
+                    <div class="chat-bubble user-message">
+                        <span class="chat-text">My wedding is in 60 days. What should I do now?</span>
+                    </div>
+                    <div class="timeline-list">
+                        <div class="timeline-item" style="animation-delay: 0.5s;">
+                            <div class="timeline-marker">📅</div>
+                            <div class="timeline-text"><strong>This week:</strong> Finalize venue & catering</div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.7s;">
+                            <div class="timeline-marker">👥</div>
+                            <div class="timeline-text"><strong>Next 2 weeks:</strong> Confirm all vendors</div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.9s;">
+                            <div class="timeline-marker">📨</div>
+                            <div class="timeline-text"><strong>Week 4-5:</strong> Send final RSVPs reminder</div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 1.1s;">
+                            <div class="timeline-marker">🎉</div>
+                            <div class="timeline-text"><strong>Week 8:</strong> Final walkthrough & rehearsal</div>
+                        </div>
+                    </div>
                 </div>
+                <div class="feature-label">AI Timeline Planning</div>
             </div>
         </div>
         
-        <!-- Scene 8: CTA -->
+        <!-- Scene 8: AI What It Can Do -->
         <div class="scene s8">
+            <div class="features-grid">
+                <div class="feature-card">💰 Budget Analysis</div>
+                <div class="feature-card">📋 Task Management</div>
+                <div class="feature-card">👥 Vendor Matching</div>
+                <div class="feature-card">📅 Timeline Planning</div>
+                <div class="feature-card">💬 Quick Answers</div>
+                <div class="feature-card">✨ Smart Suggestions</div>
+            </div>
+            <div class="feature-tagline">Your AI does it all</div>
+        </div>
+        
+        <!-- Scene 9: Simple CTA -->
+        <div class="scene s9">
+            <div class="simple-message">
+                <div class="big-title">Say goodbye to stress</div>
+                <div class="big-subtitle">Your AI assistant is ready to help</div>
+            </div>
+        </div>
+        
+        <!-- Scene 10: Final Message -->
+        <div class="scene s10">
+            <div class="final-message">
+                <div class="final-title">Plan smarter, not harder</div>
+                <div class="final-subtitle">With Vivaha AI Assistant</div>
+            </div>
+        </div>
+        
+        <!-- Scene 11: Closing with Vivaha Title -->
+        <div class="scene s11">
+            <div class="logo">Vivaha</div>
+            <div class="tagline">Plan your wedding, stress-free</div>
+        </div>
+        
+        <!-- Scene 12: CTA -->
+        <div class="scene s12">
             <div class="cta-btn">Start Planning Today</div>
             <div class="cta-sub">vivahaplan.com</div>
             <div class="cta-tag">Vivaha — Weddings, united</div>
@@ -714,30 +559,11 @@
     
     <script>
         const scenes = document.querySelectorAll('.scene');
-        const durations = [2.5, 2.5, 2, 3.5, 4, 2.5, 2.5, 2.5, 3, 2]; // Intro, Dashboard, Different Title, Features, Bachelor, Split, RSVP, Share, All in One, CTA
+        const durations = [2.5, 2.5, 2.5, 2.5, 3, 2.5, 2.5, 2, 2, 3, 2.5, 3]; // Duration for each scene in seconds
         let current = 0;
-        
-        function animateGraphs() {
-            document.querySelectorAll('.graph-bar').forEach(bar => {
-                const p = bar.getAttribute('data-percent') || '0';
-                // slight stagger
-                const delay = Math.random() * 200;
-                setTimeout(() => { bar.style.width = p + '%'; }, delay);
-            });
-        }
-
-        function resetGraphs() {
-            document.querySelectorAll('.graph-bar').forEach(bar => { bar.style.width = '0%'; });
-        }
 
         function show(i) {
             scenes.forEach((s, idx) => s.classList.toggle('active', idx === i));
-            if (i === 1) {
-                // Dashboard: animate left graphs shortly after it appears
-                setTimeout(animateGraphs, 300);
-            } else {
-                resetGraphs();
-            }
         }
 
         function next() {
@@ -746,14 +572,9 @@
             setTimeout(next, durations[current] * 1000);
         }
 
-        // Intro behaviour: briefly show 'Done' then proceed to the next scene which will animate graphs
+        // Auto-start: begin advancing after first scene
         setTimeout(() => {
-            const tagline = document.querySelector('.tagline');
-            if (tagline) tagline.textContent = 'Done';
-            setTimeout(() => {
-                if (tagline) tagline.textContent = 'Plan your wedding, stress-free';
-                next();
-            }, 800);
+            next();
         }, durations[0] * 1000);
     </script>
 </body>

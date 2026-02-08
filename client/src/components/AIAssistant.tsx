@@ -167,7 +167,7 @@ export default function AIAssistant() {
       
       return { 
         executed: true, 
-        message: `Budget updated! Added ${categoryName} to ${amount.toLocaleString()}.` 
+        message: `Budget updated! Added ${amount.toLocaleString()} for ${categoryName}.` 
       };
     } catch (error) {
       console.error('Failed to execute budget command:', error);
