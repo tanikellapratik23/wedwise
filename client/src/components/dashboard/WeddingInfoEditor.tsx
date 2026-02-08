@@ -24,6 +24,7 @@ export default function WeddingInfoEditor() {
     contactPhone: '',
     contactEmail: '',
     dressCode: '',
+    additionalInfo: '',
   });
 
   const [originalData, setOriginalData] = useState(formData);
@@ -54,6 +55,7 @@ export default function WeddingInfoEditor() {
           contactPhone: response.data.weddingPageData?.contactPhone || '',
           contactEmail: response.data.weddingPageData?.contactEmail || '',
           dressCode: response.data.weddingPageData?.dressCode || '',
+          additionalInfo: response.data.weddingPageData?.additionalInfo || '',
         };
         setFormData(data);
         setOriginalData(data);
@@ -88,6 +90,7 @@ export default function WeddingInfoEditor() {
           contactPhone: formData.contactPhone,
           contactEmail: formData.contactEmail,
           dressCode: formData.dressCode,
+          additionalInfo: formData.additionalInfo,
         },
         weddingCity: formData.weddingCity,
         weddingState: formData.weddingState,
@@ -344,6 +347,25 @@ export default function WeddingInfoEditor() {
             </div>
           </div>
 
+          {/* Additional Information */}
+          <div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Mail className="w-6 h-6 text-indigo-500" />
+              Additional Information
+            </h3>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Special Notes (optional)</label>
+              <textarea
+                value={formData.additionalInfo}
+                onChange={(e) => handleInputChange('additionalInfo', e.target.value)}
+                placeholder="Add any extra details for your guests - registry links, hotel recommendations, dietary preferences, traditions to honor, special requests, etc."
+                rows={6}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+              />
+              <p className="text-xs text-gray-500 mt-2">Share anything else you'd like your guests to know!</p>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           <div className="flex gap-3 pt-6 border-t">
             <button
@@ -454,6 +476,17 @@ export default function WeddingInfoEditor() {
                   </p>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Additional Information Card */}
+          {formData.additionalInfo && (
+            <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-indigo-500">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Mail className="w-5 h-5 text-indigo-500" />
+                Additional Information
+              </h3>
+              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{formData.additionalInfo}</p>
             </div>
           )}
 
