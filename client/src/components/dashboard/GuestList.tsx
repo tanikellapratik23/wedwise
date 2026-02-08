@@ -199,8 +199,6 @@ export default function GuestList() {
       setLoading(false);
     }
   };
-    }
-  };
 
   const deleteGuest = async (id: string) => {
     if (!confirm('Delete this guest?')) return;
