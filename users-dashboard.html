@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vivaha Users Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .pulse-soft {
+            animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .scroll-table {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-gray-100">
+    <div class="min-h-screen p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-4xl font-bold text-white mb-2">💕 Vivaha Users Dashboard</h1>
+                    <p class="text-gray-400">Real-time user registration monitoring system</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-400 mb-2">Last Updated:</div>
+                    <div id="lastUpdated" class="text-lg font-mono text-pink-400">Loading...</div>
+                    <div class="text-xs text-gray-500 mt-2">Auto-refresh: Every 60 min</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <!-- Total Users -->
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm font-semibold mb-1">Total Users</p>
+                        <p id="totalUsers" class="text-3xl font-bold text-white">21</p>
+                    </div>
+                    <div class="text-4xl opacity-20">👥</div>
+                </div>
+            </div>
+
+            <!-- Onboarding Complete -->
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm font-semibold mb-1">Onboarding Complete</p>
+                        <p id="completeCount" class="text-3xl font-bold text-white">20</p>
+                    </div>
+                    <div class="text-4xl opacity-20">✅</div>
+                </div>
+            </div>
+
+            <!-- Onboarding Incomplete -->
+            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm font-semibold mb-1">Incomplete</p>
+                        <p id="incompleteCount" class="text-3xl font-bold text-white">1</p>
+                    </div>
+                    <div class="text-4xl opacity-20">⏳</div>
+                </div>
+            </div>
+
+            <!-- Admin Users -->
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100 text-sm font-semibold mb-1">Admins</p>
+                        <p id="adminCount" class="text-3xl font-bold text-white">1</p>
+                    </div>
+                    <div class="text-4xl opacity-20">🔐</div>
+                </div>
+            </div>
+
+            <!-- Completion Rate -->
+            <div class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-pink-100 text-sm font-semibold mb-1">Completion %</p>
+                        <p id="completionRate" class="text-3xl font-bold text-white">95%</p>
+                    </div>
+                    <div class="text-4xl opacity-20">📈</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Onboarding Status Pie Chart -->
+            <div class="bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-700">
+                <h2 class="text-xl font-bold text-white mb-4">Onboarding Status</h2>
+                <canvas id="onboardingChart" class="mx-auto" style="max-width: 300px;"></canvas>
+            </div>
+
+            <!-- Role Distribution -->
+            <div class="bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-700">
+                <h2 class="text-xl font-bold text-white mb-4">Role Distribution</h2>
+                <canvas id="roleChart" class="mx-auto" style="max-width: 300px;"></canvas>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-slate-800 rounded-lg shadow-lg border border-slate-700 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-700">
+                <h2 class="text-xl font-bold text-white">All Registered Users</h2>
+            </div>
+            <div class="scroll-table">
+                <table class="w-full">
+                    <thead class="bg-slate-700 sticky top-0">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-300">#</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-300">Email</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-300">Role</th>
+                            <th class="px-6 py-3 text-center text-sm font-semibold text-gray-300">Admin</th>
+                            <th class="px-6 py-3 text-center text-sm font-semibold text-gray-300">Onboarding</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-300">Created Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody" class="divide-y divide-slate-700">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-gray-500 text-sm">
+            <p>Dashboard auto-refreshes every 60 minutes • Last refresh: <span id="refreshCounter">60:00</span></p>
+        </div>
+    </div>
+
+    <script>
+        const USERS_DATA = [
+            { name: "Alex Chen", email: "alex@test.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "2/1/2026, 1:15:50 PM" },
+            { name: "Emma Williams", email: "emma@test.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "2/1/2026, 1:15:50 PM" },
+            { name: "Priya Patel", email: "priya@test.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "2/1/2026, 1:15:50 PM" },
+            { name: "Marcus Johnson", email: "marcus@test.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "2/1/2026, 1:15:50 PM" },
+            { name: "Sarah Anderson", email: "sarah@test.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "2/1/2026, 1:15:50 PM" },
+            { name: "pratik", email: "hellopratik@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 6:19:50 PM" },
+            { name: "hello66", email: "hello33@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 5:40:08 PM" },
+            { name: "ansh battula", email: "anshbattula2@hotmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 5:32:57 PM" },
+            { name: "Ansh Battula", email: "anshbattula@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 5:30:12 PM" },
+            { name: "pratik tanikella", email: "pratiktanikella22@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 5:18:04 PM" },
+            { name: "pratik tanikella", email: "newemailpratik@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 4:51:28 PM" },
+            { name: "pradham tanikella", email: "pradhamtanikella@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 4:43:47 PM" },
+            { name: "pratik tanikella", email: "chintutanikella@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 4:41:52 PM" },
+            { name: "Rohan Mehta", email: "rohan.mehta92@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 4:35:54 PM" },
+            { name: "man", email: "man23@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 4:26:57 PM" },
+            { name: "Aarav Patel", email: "aarav.patel.dev@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 4:23:31 PM" },
+            { name: "sarada tanikella", email: "hellogmail@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: false, createdAt: "1/31/2026, 4:14:25 PM" },
+            { name: "hello Tanikella", email: "hello@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 4:11:15 PM" },
+            { name: "preetam", email: "preetamtanikella@gmail.com", role: "bride", isAdmin: false, onboardingCompleted: true, createdAt: "1/31/2026, 3:59:16 PM" },
+            { name: "Pratik Tanikella", email: "pratiktanikella@gmail.com", role: "admin", isAdmin: true, onboardingCompleted: true, createdAt: "1/31/2026, 3:56:25 PM" },
+            { name: "Test User", email: "test@wedwise.com", role: "user", isAdmin: false, onboardingCompleted: true, createdAt: "2/8/2026, 6:05:37 PM" }
+        ];
+
+        function updateDashboard() {
+            // Update timestamp
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleString();
+
+            // Calculate stats
+            const total = USERS_DATA.length;
+            const complete = USERS_DATA.filter(u => u.onboardingCompleted).length;
+            const incomplete = total - complete;
+            const admins = USERS_DATA.filter(u => u.isAdmin).length;
+            const completionRate = Math.round((complete / total) * 100);
+
+            // Update stat cards
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('completeCount').textContent = complete;
+            document.getElementById('incompleteCount').textContent = incomplete;
+            document.getElementById('adminCount').textContent = admins;
+            document.getElementById('completionRate').textContent = completionRate + '%';
+
+            // Update users table
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = USERS_DATA.map((user, index) => `
+                <tr class="hover:bg-slate-700 transition-colors">
+                    <td class="px-6 py-4 text-sm text-gray-400">${index + 1}</td>
+                    <td class="px-6 py-4 text-sm font-medium text-white">${user.name}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300">${user.email}</td>
+                    <td class="px-6 py-4 text-sm">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-purple-900 text-purple-200' : user.role === 'bride' ? 'bg-pink-900 text-pink-200' : 'bg-blue-900 text-blue-200'}">
+                            ${user.role}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-center">
+                        ${user.isAdmin ? '<span class="text-yellow-400">👑 YES</span>' : '<span class="text-gray-500">—</span>'}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-center">
+                        ${user.onboardingCompleted ? '<span class="text-green-400">✅ Yes</span>' : '<span class="text-orange-400">⏳ No</span>'}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-400">${user.createdAt}</td>
+                </tr>
+            `).join('');
+
+            // Update charts
+            updateCharts();
+        }
+
+        function updateCharts() {
+            // Onboarding Chart
+            const complete = USERS_DATA.filter(u => u.onboardingCompleted).length;
+            const incomplete = USERS_DATA.length - complete;
+
+            const onboardingCtx = document.getElementById('onboardingChart').getContext('2d');
+            new Chart(onboardingCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Complete', 'Incomplete'],
+                    datasets: [{
+                        data: [complete, incomplete],
+                        backgroundColor: ['#10b981', '#f97316'],
+                        borderColor: ['#064e3b', '#7c2d12'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e5e7eb', font: { size: 14 } }
+                        }
+                    }
+                }
+            });
+
+            // Role Distribution Chart
+            const brides = USERS_DATA.filter(u => u.role === 'bride').length;
+            const admins = USERS_DATA.filter(u => u.role === 'admin').length;
+            const others = USERS_DATA.filter(u => u.role !== 'bride' && u.role !== 'admin').length;
+
+            const roleCtx = document.getElementById('roleChart').getContext('2d');
+            new Chart(roleCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bride', 'Admin', 'Other'],
+                    datasets: [{
+                        data: [brides, admins, others],
+                        backgroundColor: ['#ec4899', '#a855f7', '#3b82f6'],
+                        borderColor: ['#831843', '#6b21a8', '#1e3a8a'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e5e7eb', font: { size: 14 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        let refreshCountdown = 3600; // 60 minutes in seconds
+
+        function updateRefreshCounter() {
+            const minutes = Math.floor(refreshCountdown / 60);
+            const seconds = refreshCountdown % 60;
+            document.getElementById('refreshCounter').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            refreshCountdown--;
+            
+            if (refreshCountdown < 0) {
+                refreshCountdown = 3600;
+                updateDashboard();
+            }
+        }
+
+        // Initial load
+        updateDashboard();
+
+        // Update counter every second
+        setInterval(updateRefreshCounter, 1000);
+
+        // Refresh dashboard every hour (3600000 ms)
+        setInterval(updateDashboard, 3600000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+[
+  {
+    "_id": "697f985672501390b4a40bb9",
+    "name": "Alex Chen",
+    "email": "alex@test.com",
+    "role": "bride",
+    "isAdmin": false,
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "topPriority": [
+        "Outdoor Venue",
+        "Catering",
+        "Photography"
+      ],
+      "estimatedBudget": 50000,
+      "guestCount": 80,
+      "wantsBachelorParty": true
+    },
+    "sharedLinks": [],
+    "createdAt": "2026-02-01T18:15:50.766Z",
+    "updatedAt": "2026-02-01T18:15:50.766Z",
+    "__v": 0
+  },
+  {
+    "_id": "697f985672501390b4a40bb6",
+    "name": "Emma Williams",
+    "email": "emma@test.com",
+    "role": "bride",
+    "isAdmin": false,
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "topPriority": [
+        "Church",
+        "Reception Venue",
+        "Flowers"
+      ],
+      "estimatedBudget": 60000,
+      "guestCount": 100,
+      "wantsBachelorParty": false
+    },
+    "sharedLinks": [],
+    "createdAt": "2026-02-01T18:15:50.714Z",
+    "updatedAt": "2026-02-01T18:15:50.714Z",
+    "__v": 0
+  },
+  {
+    "_id": "697f985672501390b4a40bb3",
+    "name": "Priya Patel",
+    "email": "priya@test.com",
+    "role": "bride",
+    "isAdmin": false,
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "topPriority": [
+        "Photographer",
+        "Decorator",
+        "Caterer"
+      ],
+      "estimatedBudget": 100000,
+      "guestCount": 120,
+      "wantsBachelorParty": true
+    },
+    "sharedLinks": [],
+    "createdAt": "2026-02-01T18:15:50.662Z",
+    "updatedAt": "2026-02-01T18:15:50.662Z",
+    "__v": 0
+  },
+  {
+    "_id": "697f985672501390b4a40bb0",
+    "name": "Marcus Johnson",
+    "email": "marcus@test.com",
+    "role": "bride",
+    "isAdmin": false,
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "topPriority": [
+        "Venue",
+        "Catering",
+        "Music"
+      ],
+      "estimatedBudget": 150000,
+      "guestCount": 200,
+      "wantsBachelorParty": true
+    },
+    "sharedLinks": [],
+    "createdAt": "2026-02-01T18:15:50.610Z",
+    "updatedAt": "2026-02-01T18:15:50.610Z",
+    "__v": 0
+  },
+  {
+    "_id": "697f985672501390b4a40bad",
+    "name": "Sarah Anderson",
+    "email": "sarah@test.com",
+    "role": "bride",
+    "isAdmin": false,
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "topPriority": [
+        "Photography",
+        "Venue",
+        "Catering"
+      ],
+      "estimatedBudget": 75000,
+      "guestCount": 150,
+      "wantsBachelorParty": true
+    },
+    "sharedLinks": [],
+    "createdAt": "2026-02-01T18:15:50.547Z",
+    "updatedAt": "2026-02-01T18:15:50.547Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e8e160ca30d050fced082",
+    "name": "pratik",
+    "email": "hellopratik@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "self",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Budget Management"
+      ],
+      "goals": "Stay organized and on track, Collaborate with family, Plan the timeline",
+      "estimatedBudget": 250000,
+      "guestCount": 250,
+      "preferredColorTheme": ""
+    },
+    "sharedLinks": [
+      {
+        "token": "a56eb3e45e84b6295991744547c2e174fa205dd34557402765465748487d392d",
+        "accessLevel": "view",
+        "createdAt": "2026-01-31T23:24:02.155Z",
+        "expiresAt": "2026-05-01T23:24:02.155Z",
+        "_id": "697e8f120ca30d050fced09d"
+      }
+    ],
+    "createdAt": "2026-01-31T23:19:50.527Z",
+    "updatedAt": "2026-02-01T03:57:47.824Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e84c80ca30d050fced07b",
+    "name": "hello66",
+    "email": "hello33@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "parent",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Budget Management"
+      ],
+      "goals": "Stay organized and on track, Collaborate with family, Plan the timeline",
+      "estimatedBudget": 250000,
+      "guestCount": 250,
+      "preferredColorTheme": "Romantic Pink"
+    },
+    "sharedLinks": [],
+    "createdAt": "2026-01-31T22:40:08.988Z",
+    "updatedAt": "2026-01-31T22:41:22.203Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e83190ca30d050fced03b",
+    "name": "ansh battula",
+    "email": "anshbattula2@hotmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "friend",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Budget Management"
+      ],
+      "goals": "Stay organized and on track, Collaborate with family, Plan the timeline",
+      "estimatedBudget": 175000,
+      "guestCount": 150,
+      "preferredColorTheme": ""
+    },
+    "sharedLinks": [
+      {
+        "token": "1def684466777fe63c2b4f62e687b47ed06e38025bf50d62a9341785d79d20b0",
+        "accessLevel": "edit",
+        "createdAt": "2026-01-31T22:35:00.819Z",
+        "expiresAt": "2026-05-01T22:35:00.819Z",
+        "_id": "697e83940ca30d050fced04b"
+      }
+    ],
+    "createdAt": "2026-01-31T22:32:57.779Z",
+    "updatedAt": "2026-01-31T22:35:49.671Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e82740ca30d050fced032",
+    "name": "Ansh Battula",
+    "email": "anshbattula@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "self",
+      "weddingStyle": "Modern",
+      "topPriority": [
+        "Timeline/Schedule",
+        "Decorations",
+        "Photography",
+        "Vendor Management",
+        "Guest Experience",
+        "Music/Entertainment",
+        "Budget Management"
+      ],
+      "goals": "Stay organized and on track, Find and manage vendors, Track expenses and budget, Reduce stress and overwhelm",
+      "estimatedBudget": 150000,
+      "guestCount": 150,
+      "preferredColorTheme": ""
+    },
+    "sharedLinks": [],
+    "createdAt": "2026-01-31T22:30:12.598Z",
+    "updatedAt": "2026-01-31T22:31:29.889Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e7f9c0ca30d050fced00c",
+    "name": "pratik tanikella",
+    "email": "pratiktanikella22@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "parent",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Decorations",
+        "Timeline/Schedule",
+        "Budget Management",
+        "Vendor Management"
+      ],
+      "goals": "Stay organized and on track, Find and manage vendors, Track expenses and budget, Manage guest list and RSVPs, Plan the timeline",
+      "estimatedBudget": 250000,
+      "guestCount": 250,
+      "preferredColorTheme": ""
+    },
+    "sharedLinks": [],
+    "createdAt": "2026-01-31T22:18:04.923Z",
+    "updatedAt": "2026-01-31T22:20:07.075Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e79606c39f9052ecf4cfa",
+    "name": "pratik tanikella",
+    "email": "newemailpratik@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "friend",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Decorations"
+      ],
+      "goals": "Track expenses and budget, Manage guest list and RSVPs, Plan the timeline",
+      "estimatedBudget": 190000,
+      "guestCount": 200,
+      "preferredColorTheme": ""
+    },
+    "sharedLinks": [
+      {
+        "token": "75cdeb572dfeffaac66d9fe4406b6bd6ac108225cd4fbfb0e1888365cbb93f99",
+        "accessLevel": "view",
+        "createdAt": "2026-01-31T21:53:27.374Z",
+        "expiresAt": "2026-05-01T21:53:27.374Z",
+        "_id": "697e79d76c39f9052ecf4d13"
+      }
+    ],
+    "createdAt": "2026-01-31T21:51:28.199Z",
+    "updatedAt": "2026-01-31T21:53:27.374Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e77934f46ec7bf7e686a8",
+    "name": "pradham tanikella",
+    "email": "pradhamtanikella@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "self",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Guest Experience"
+      ],
+      "goals": "Collaborate with family, Manage guest list and RSVPs, Stay organized and on track, Find and manage vendors",
+      "estimatedBudget": 250000,
+      "guestCount": 200,
+      "preferredColorTheme": ""
+    },
+    "createdAt": "2026-01-31T21:43:47.118Z",
+    "updatedAt": "2026-01-31T21:45:02.814Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e77204f46ec7bf7e6869a",
+    "name": "pratik tanikella",
+    "email": "chintutanikella@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "self",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Guest Experience"
+      ],
+      "goals": "Stay organized and on track, Track expenses and budget, Manage guest list and RSVPs",
+      "estimatedBudget": 250000,
+      "guestCount": 200,
+      "preferredColorTheme": "Elegant Gold"
+    },
+    "createdAt": "2026-01-31T21:41:52.663Z",
+    "updatedAt": "2026-01-31T21:42:36.434Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e75ba4f46ec7bf7e6868d",
+    "name": "Rohan Mehta",
+    "email": "rohan.mehta92@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "friend",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Guest Experience",
+        "Budget Management",
+        "Timeline/Schedule",
+        "Decorations",
+        "Music/Entertainment",
+        "Catering",
+        "Photography"
+      ],
+      "goals": "Stay organized and on track, Track expenses and budget, Collaborate with family",
+      "estimatedBudget": 230000,
+      "guestCount": 200,
+      "preferredColorTheme": ""
+    },
+    "createdAt": "2026-01-31T21:35:54.326Z",
+    "updatedAt": "2026-01-31T21:36:36.532Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e73a14f46ec7bf7e68684",
+    "name": "man",
+    "email": "man23@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "friend",
+      "weddingStyle": "Garden/Outdoor",
+      "topPriority": [
+        "Decorations"
+      ],
+      "goals": "Track expenses and budget",
+      "preferredColorTheme": ""
+    },
+    "createdAt": "2026-01-31T21:26:57.958Z",
+    "updatedAt": "2026-01-31T21:27:14.051Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e72d34f46ec7bf7e6866f",
+    "name": "Aarav Patel",
+    "email": "aarav.patel.dev@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "self",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Guest Experience"
+      ],
+      "goals": "Stay organized and on track, Track expenses and budget, Manage guest list and RSVPs, Plan the timeline",
+      "estimatedBudget": 200000,
+      "guestCount": 200,
+      "preferredColorTheme": ""
+    },
+    "createdAt": "2026-01-31T21:23:31.296Z",
+    "updatedAt": "2026-01-31T21:24:47.971Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e70b14f46ec7bf7e6866c",
+    "name": "sarada tanikella",
+    "email": "hellogmail@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": false,
+    "onboardingData": {
+      "topPriority": []
+    },
+    "createdAt": "2026-01-31T21:14:25.631Z",
+    "updatedAt": "2026-01-31T21:14:25.631Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e6ff34f46ec7bf7e68668",
+    "name": "hello Tanikella",
+    "email": "hello@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "self",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Budget Management",
+        "Timeline/Schedule"
+      ],
+      "goals": "Stay organized and on track, Track expenses and budget",
+      "estimatedBudget": 250000,
+      "guestCount": 250,
+      "preferredColorTheme": "Elegant Gold"
+    },
+    "createdAt": "2026-01-31T21:11:15.644Z",
+    "updatedAt": "2026-01-31T21:12:45.985Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e6d244f46ec7bf7e68663",
+    "name": "preetam",
+    "email": "preetamtanikella@gmail.com",
+    "role": "bride",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "self",
+      "weddingStyle": "Casual",
+      "topPriority": [
+        "Decorations",
+        "Vendor Management"
+      ],
+      "goals": "Track expenses and budget, Manage guest list and RSVPs",
+      "estimatedBudget": 100000,
+      "preferredColorTheme": ""
+    },
+    "createdAt": "2026-01-31T20:59:16.882Z",
+    "updatedAt": "2026-01-31T20:59:39.740Z",
+    "__v": 0
+  },
+  {
+    "_id": "697e6c794f46ec7bf7e6865f",
+    "name": "Pratik Tanikella",
+    "email": "pratiktanikella@gmail.com",
+    "role": "admin",
+    "onboardingCompleted": true,
+    "onboardingData": {
+      "role": "self",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Budget Management",
+        "Timeline/Schedule",
+        "Decorations"
+      ],
+      "goals": "Stay organized and on track, Find and manage vendors, Plan the timeline, Manage guest list and RSVPs",
+      "estimatedBudget": 200000,
+      "guestCount": 200,
+      "preferredColorTheme": "Romantic Pink",
+      "religions": []
+    },
+    "createdAt": "2026-01-31T20:56:25.820Z",
+    "updatedAt": "2026-02-07T17:56:20.252Z",
+    "__v": 1,
+    "isAdmin": true,
+    "navigationPreferences": {
+      "hidden": [],
+      "order": []
+    },
+    "resetToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTdlNmM3OTRmNDZlYzdiZjdlNjg2NWYiLCJ0eXBlIjoicGFzc3dvcmQtcmVzZXQiLCJpYXQiOjE3NzA0ODY5ODAsImV4cCI6MTc3MDQ5MDU4MH0.kJ--lGcbGEU9ZOokyIX9qEHPp0oVqUoYraPOrHMreVI",
+    "resetTokenExpires": "2026-02-07T18:56:20.251Z",
+    "sharedLinks": [],
+    "weddingPageData": {
+      "ceremonySchedule": [],
+      "theme": "elegant"
+    }
+  },
+  {
+    "_id": "697e7c757901342180a93c0e",
+    "name": "Test User",
+    "email": "test@wedwise.com",
+    "onboardingCompleted": true,
+    "religions": [],
+    "preferences": {
+      "style": [],
+      "colors": []
+    },
+    "goals": [],
+    "__v": 0,
+    "onboardingData": {
+      "role": "parent",
+      "weddingStyle": "Formal/Traditional",
+      "topPriority": [
+        "Timeline/Schedule",
+        "Decorations",
+        "Guest Experience"
+      ],
+      "goals": "Stay organized and on track, Collaborate with family, Manage guest list and RSVPs",
+      "estimatedBudget": 150000,
+      "guestCount": 200,
+      "preferredColorTheme": ""
+    },
+    "updatedAt": "2026-01-31T22:14:07.560Z",
+    "sharedLinks": [
+      {
+        "token": "c6d27f5cf57679744e5d2b0c4e270d80e3ac1cf481ccc1388d8c25282d070cab",
+        "accessLevel": "edit",
+        "createdAt": "2026-01-31T22:07:40.173Z",
+        "expiresAt": "2026-05-01T22:07:40.173Z",
+        "_id": "697e7d2c0ca30d050fcecfd9"
+      }
+    ],
+    "createdAt": "2026-02-08T23:05:37.033Z"
+  }
+]
