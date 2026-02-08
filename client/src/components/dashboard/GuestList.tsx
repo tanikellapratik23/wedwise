@@ -35,6 +35,7 @@ export default function GuestList() {
     group: '',
   });
 
+  // Initialize on mount and set up unload handler
   useEffect(() => {
     // Load from localStorage immediately for instant display
     try {
@@ -51,21 +52,23 @@ export default function GuestList() {
     
     fetchGuests();
 
-    // Save guests before page unload
+    // Save guests before page unload - only set up once on mount
     const handleBeforeUnload = () => {
-      if (guests.length > 0) {
-        try {
-          localStorage.setItem('guests', JSON.stringify(guests));
+      try {
+        // Get latest guests from state
+        const guestData = JSON.parse(localStorage.getItem('guests') || '[]');
+        if (Array.isArray(guestData) && guestData.length > 0) {
+          localStorage.setItem('guests', JSON.stringify(guestData));
           console.log('✅ Guests saved before unload');
-        } catch (e) {
-          console.error('Failed to save guests before unload:', e);
         }
+      } catch (e) {
+        console.error('Failed to save guests before unload:', e);
       }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [guests]);
+  }, []); // Only run on mount
 
   // Save to localStorage immediately whenever guests change
   useEffect(() => {
