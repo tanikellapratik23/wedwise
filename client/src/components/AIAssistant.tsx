@@ -323,8 +323,18 @@ export default function AIAssistant() {
             }
           }
 
-          const cleaned = String(responseText).replace(/```[\s\S]*?```/g, '').replace(/`+/g, '').trim();
-          const finalMessages = [...updatedMessages, { role: 'assistant' as const, content: cleaned, type: responseType }];
+          // Aggressive cleaning to remove all JSON-like content
+          const cleaned = String(responseText)
+            .replace(/```[\s\S]*?```/g, '')  // Remove code fences
+            .replace(/`+/g, '')              // Remove backticks
+            .replace(/\{[\s\S]*?\}/g, '')    // Remove JSON objects
+            .replace(/\[[\s\S]*?\]/g, '')    // Remove JSON arrays
+            .replace(/["']/g, '')            // Remove quotes
+            .replace(/,\s*$/gm, '')          // Remove trailing commas
+            .replace(/\n\n+/g, '\n')         // Clean up multiple newlines
+            .trim();
+          
+          const finalMessages = [...updatedMessages, { role: 'assistant' as const, content: cleaned || 'I thought about that - let me help you with your wedding planning in another way. What else can I assist with?', type: responseType }];
           const finalSession = { ...newSession, messages: finalMessages };
           setCurrentSession(finalSession);
           

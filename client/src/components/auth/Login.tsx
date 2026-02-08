@@ -26,21 +26,19 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
     e.preventDefault();
     setError('');
     setLoading(true);
-    // Wait up to 5 seconds for the API; if it doesn't respond, automatically
-    // fallback to offline mode and continue to onboarding.
+    // Wait up to 8 seconds for the API to respond
     let didFallback = false;
     const timer = window.setTimeout(() => {
       didFallback = true;
-      setError('Server did not respond — continuing offline.');
-      continueOffline();
+      setError('Server did not respond. Please try again.');
       setLoading(false);
-    }, 5000);
+    }, 8000);
 
     try {
       console.log(`Attempting login with: ${formData.email}${retryCount > 0 ? ` (retry ${retryCount})` : ''}`);
       const response = await axios.post(`${API_URL}/api/auth/login`, formData, { timeout: 30000 });
       if (didFallback) {
-        // already continued offline, ignore late response
+        // already timed out, ignore late response
         clearTimeout(timer);
         return;
       }
@@ -49,12 +47,8 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
       authStorage.setToken(response.data.token, keepSignedIn);
       authStorage.setUser(response.data.user);
       
-      // For admins, mark onboarding as complete so they skip it
-      if (response.data.user.isAdmin) {
-        sessionStorage.setItem('onboardingCompleted', 'true');
-      } else {
-        sessionStorage.setItem('onboardingCompleted', 'true');
-      }
+      // Always mark onboarding as complete for authenticated users
+      sessionStorage.setItem('onboardingCompleted', 'true');
       
       setIsAuthenticated(true);
 
@@ -78,7 +72,7 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
       // Auto-retry once on connection errors (don't retry on auth errors)
       if (retryCount === 0 && (!err.response || err.code === 'ECONNABORTED' || err.message?.toLowerCase().includes('timeout'))) {
         console.log('⚠️ Connection error, retrying login...');
-        setError('Retrying connection...');
+        setError('Connection unstable, retrying...');
         setLoading(false);
         // Wait 1 second before retrying
         setTimeout(() => {
@@ -88,31 +82,27 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
       }
       
       if (err.code === 'ECONNABORTED' || err.message?.toLowerCase().includes('timeout')) {
-        setError('Login timed out — the server may be waking up. Try again in a few seconds.');
-      } else if (err.response) {
-        setError(err.response?.data?.error || 'Login failed. Please check your credentials.');
+        setError('Connection timeout. The server may be starting up. Please try again.');
+      } else if (err.response?.status === 401 || err.response?.status === 403) {
+        setError('Invalid email or password. Please try again.');
+      } else if (err.response?.status === 404) {
+        setError('Account not found. Please check your email or sign up first.');
+      } else if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else if (err.message) {
+        setError('Login failed. Please check your connection and try again.');
       } else {
-        setError('Unable to reach the server. Check your connection or try again later.');
+        setError('An error occurred. Please try again.');
       }
-      // Leave an option for the user to continue without the API
     } finally {
       setLoading(false);
     }
   };
 
   const continueOffline = () => {
-    // mark offline mode and store minimal user info so onboarding/dashboard can proceed
-    localStorage.setItem('offlineMode', 'true');
-    localStorage.setItem('user', JSON.stringify({ email: formData.email }));
-    // mark not fully onboarded so user goes through onboarding
-    localStorage.setItem('onboardingCompleted', 'false');
-    sessionStorage.setItem('onboardingCompleted', 'false');
-    setIsAuthenticated(true);
-    
-    // Small delay to ensure state is updated
-    setTimeout(() => {
-      navigate('/onboarding');
-    }, 100);
+    // Remove offline mode - users should NOT skip login
+    // This ensures users are always prompted to authenticate
+    navigate('/login');
   };
 
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -170,18 +160,15 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
             {error && (
               <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
                 {error}
-              </div>
-            )}
-
-            {error && (
-              <div className="mt-2 text-center">
-                <button
-                  onClick={continueOffline}
-                  type="button"
-                  className="text-sm text-primary-500 hover:underline"
-                >
-                  Continue without API (use app locally)
-                </button>
+                <div className="mt-2 text-center">
+                  <button
+                    onClick={() => setError('')}
+                    type="button"
+                    className="text-sm text-red-600 hover:text-red-700 font-medium underline"
+                  >
+                    Try again
+                  </button>
+                </div>
               </div>
             )}
 

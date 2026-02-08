@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, DollarSign, CheckSquare, Heart, MapPin, Briefcase, Sparkles } from 'lucide-react';
+import { Calendar, Users, DollarSign, CheckSquare, Heart, MapPin, Briefcase, Sparkles, RotateCcw } from 'lucide-react';
 import axios from 'axios';
 import { authStorage } from '../../utils/auth';
 import { getBudgetOptimizationSuggestions, getCityAverageCost } from '../../utils/cityData';
@@ -24,11 +24,54 @@ export default function Overview() {
   const [userName, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   // Helper to capitalize first letter of name
   const capitalizeName = (name: string) => {
     if (!name) return '';
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  };
+
+  const generateSuggestions = async (settings: any) => {
+    if (!settings) return;
+    setLoadingSuggestions(true);
+    try {
+      if (settings.weddingCity && settings.estimatedBudget) {
+        // Try AI-powered suggestions first
+        try {
+          const aiSuggestions = await generateAIBudgetSuggestions(
+            settings.estimatedBudget,
+            settings.guestCount || 150,
+            settings.weddingCity,
+            settings.topPriority || []
+          );
+          
+          if (aiSuggestions.length > 0) {
+            setAiSuggestions(aiSuggestions);
+          } else {
+            // Fallback to static suggestions
+            const staticSuggestions = getBudgetOptimizationSuggestions(
+              settings.estimatedBudget,
+              settings.guestCount || 150,
+              settings.weddingCity,
+              settings.topPriority || []
+            );
+            setAiSuggestions(staticSuggestions);
+          }
+        } catch (error) {
+          console.error('Failed to generate AI suggestions, using fallback:', error);
+          const staticSuggestions = getBudgetOptimizationSuggestions(
+            settings.estimatedBudget,
+            settings.guestCount || 150,
+            settings.weddingCity,
+            settings.topPriority || []
+          );
+          setAiSuggestions(staticSuggestions);
+        }
+      }
+    } finally {
+      setLoadingSuggestions(false);
+    }
   };
 
   useEffect(() => {
@@ -60,6 +103,9 @@ export default function Overview() {
           confirmedGuests: 0,
           totalBudget: data.estimatedBudget || 0,
         }));
+        
+        // Generate suggestions for local data
+        generateSuggestions(data);
         
         // Ensure user name is set from local data
         if (localUser?.name && !userName) {
@@ -118,39 +164,7 @@ export default function Overview() {
         }
         
         // Generate AI suggestions
-        if (response.data.weddingCity && response.data.estimatedBudget) {
-          // Try AI-powered suggestions first
-          try {
-            const aiSuggestions = await generateAIBudgetSuggestions(
-              response.data.estimatedBudget,
-              response.data.guestCount || 150,
-              response.data.weddingCity,
-              response.data.topPriority || []
-            );
-            
-            if (aiSuggestions.length > 0) {
-              setAiSuggestions(aiSuggestions);
-            } else {
-              // Fallback to static suggestions
-              const staticSuggestions = getBudgetOptimizationSuggestions(
-                response.data.estimatedBudget,
-                response.data.guestCount || 150,
-                response.data.weddingCity,
-                response.data.topPriority || []
-              );
-              setAiSuggestions(staticSuggestions);
-            }
-          } catch (error) {
-            console.error('Failed to generate AI suggestions, using fallback:', error);
-            const staticSuggestions = getBudgetOptimizationSuggestions(
-              response.data.estimatedBudget,
-              response.data.guestCount || 150,
-              response.data.weddingCity,
-              response.data.topPriority || []
-            );
-            setAiSuggestions(staticSuggestions);
-          }
-        }
+        generateSuggestions(response.data);
         
         setIsLoading(false);
       }
@@ -204,45 +218,7 @@ export default function Overview() {
         </div>
       )}
 
-      {/* AI Budget Optimization - ALWAYS SHOWN */}
-      <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 rounded-2xl shadow-lg p-6 border border-purple-200/50 backdrop-blur-sm">
-        <h2 className="text-xl font-bold tracking-tight text-gray-900 mb-4 flex items-center">
-          <Sparkles className="w-6 h-6 mr-2 text-purple-600" />
-          AI Budget Optimization
-        </h2>
-        {aiSuggestions.length > 0 ? (
-          <>
-            <div className="space-y-3">
-              {aiSuggestions.map((suggestion, index) => (
-                <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
-                  <span className="text-2xl">{suggestion.split(' ')[0]}</span>
-                  <p className="text-gray-700 text-sm flex-1 font-medium leading-relaxed">{suggestion.substring(suggestion.indexOf(' ') + 1)}</p>
-                </div>
-              ))}
-            </div>
-            {userSettings?.weddingCity && (
-              <div className="mt-4 pt-4 border-t border-purple-200">
-                <p className="text-sm text-gray-700 font-medium">
-                  <strong>City Average:</strong> ${getCityAverageCost(userSettings.weddingCity).toLocaleString()} 
-                  {userSettings.estimatedBudget && (
-                    <span className={userSettings.estimatedBudget < getCityAverageCost(userSettings.weddingCity) ? 'text-orange-600' : 'text-green-600'}>
-                      {' '}(Your budget: ${userSettings.estimatedBudget.toLocaleString()})
-                    </span>
-                  )}
-                </p>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-8">
-            <Sparkles className="w-12 h-12 mx-auto mb-3 text-purple-400" />
-            <p className="text-gray-600 font-medium">AI suggestions will appear here</p>
-            <p className="text-sm text-gray-500 mt-1">Complete your onboarding to get personalized budget tips</p>
-          </div>
-        )}
-      </div>
-
-      {/* Quick Actions */}
+      {/* Quick Actions - Moved up and always shown */}
       <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-gray-200/50">
         <h2 className="text-xl font-bold tracking-tight text-gray-900 mb-6">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -266,6 +242,46 @@ export default function Overview() {
           })}
         </div>
       </div>
+
+      {/* AI Budget Optimization - ONLY SHOWN WHEN SUGGESTIONS EXIST */}
+      {aiSuggestions.length > 0 && (
+        <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 rounded-2xl shadow-lg p-6 border border-purple-200/50 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold tracking-tight text-gray-900 flex items-center">
+              <Sparkles className="w-6 h-6 mr-2 text-purple-600" />
+              AI Budget Optimization
+            </h2>
+            <button
+              onClick={() => generateSuggestions(userSettings)}
+              disabled={loadingSuggestions}
+              className="flex items-center gap-1 px-3 py-1 text-sm bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition disabled:opacity-50"
+            >
+              <RotateCcw className={`w-4 h-4 ${loadingSuggestions ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+          </div>
+          <div className="space-y-3">
+            {aiSuggestions.map((suggestion, index) => (
+              <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
+                <span className="text-2xl">{suggestion.split(' ')[0]}</span>
+                <p className="text-gray-700 text-sm flex-1 font-medium leading-relaxed">{suggestion.substring(suggestion.indexOf(' ') + 1)}</p>
+              </div>
+            ))}
+          </div>
+          {userSettings?.weddingCity && (
+            <div className="mt-4 pt-4 border-t border-purple-200">
+              <p className="text-sm text-gray-700 font-medium">
+                <strong>City Average:</strong> ${getCityAverageCost(userSettings.weddingCity).toLocaleString()} 
+                {userSettings.estimatedBudget && (
+                  <span className={userSettings.estimatedBudget < getCityAverageCost(userSettings.weddingCity) ? 'text-orange-600' : 'text-green-600'}>
+                    {' '}(Your budget: ${userSettings.estimatedBudget.toLocaleString()})
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

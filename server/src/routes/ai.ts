@@ -45,7 +45,7 @@ router.post('/chat', async (req, res) => {
     // Clean content: remove code fences and excessive whitespace
     let cleaned = String(content || '').replace(/```[\s\S]*?```/g, '').trim();
 
-    // If model returned raw JSON, try to parse it and provide both structured and plain text
+    // If model returned raw JSON, try to parse it and provide structured format for ceremony parsing
     let structured = null;
     try {
       // attempt to find JSON substring
@@ -54,16 +54,22 @@ router.post('/chat', async (req, res) => {
       if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
         const jsonStr = cleaned.slice(jsonStart, jsonEnd + 1);
         structured = JSON.parse(jsonStr);
-        // create a short human-friendly summary
-        cleaned = 'Here are the suggestions:\n' + (Array.isArray(structured.ceremony) ? structured.ceremony.map((s:any,i:number)=>`${i+1}. ${s.time || ''} — ${s.ritual || ''}`).join('\n') : JSON.stringify(structured));
+        // Remove the JSON from cleaned text - only show human-friendly format
+        cleaned = cleaned.substring(0, jsonStart) + cleaned.substring(jsonEnd + 1);
       }
     } catch (err) {
       // ignore parse errors
       structured = null;
     }
 
-    // Final safety: strip any remaining markdown code fences
-    cleaned = cleaned.replace(/`+/g, '').trim();
+    // Strip all remaining JSON-like content and code fences
+    cleaned = cleaned
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/`+/g, '')
+      .replace(/\{[\s\S]*?\}/g, '') // Remove JSON objects
+      .replace(/\[[\s\S]*?\]/g, '')  // Remove JSON arrays
+      .replace(/["'`]/g, '')          // Remove quotes
+      .trim();
 
     res.json({ reply: cleaned, structured });
   } catch (error) {

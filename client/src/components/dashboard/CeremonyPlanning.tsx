@@ -16,6 +16,7 @@ interface DayEvent {
     name: string;
     address: string;
   };
+  attendingGuestIds?: string[];
 }
 
 
@@ -30,6 +31,8 @@ interface WeddingDay {
 export default function CeremonyPlanning() {
   const [userSettings, setUserSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [guestsLoading, setGuestsLoading] = useState(false);
+  const [allGuests, setAllGuests] = useState<any[]>([]);
   const [selectedRituals, setSelectedRituals] = useState<string[]>([]);
   const [selectedTraditions, setSelectedTraditions] = useState<string[]>([]);
   const [customRitual, setCustomRitual] = useState('');
@@ -53,6 +56,7 @@ export default function CeremonyPlanning() {
     description: '',
     rituals: [],
     location: { name: '', address: '' },
+    attendingGuestIds: [],
   });
 
   useEffect(() => {
@@ -71,7 +75,24 @@ export default function CeremonyPlanning() {
     }
     
     fetchUserSettings();
+    loadGuestsFromStorage();
   }, []);
+
+  // Load guests from storage
+  const loadGuestsFromStorage = () => {
+    try {
+      setGuestsLoading(true);
+      const guestData = localStorage.getItem('guests');
+      if (guestData) {
+        const guests = JSON.parse(guestData);
+        setAllGuests(Array.isArray(guests) ? guests : []);
+      }
+      setGuestsLoading(false);
+    } catch (error) {
+      console.error('Failed to load guests:', error);
+      setGuestsLoading(false);
+    }
+  };
 
   // Save to localStorage immediately whenever ceremony data changes
   useEffect(() => {
@@ -310,6 +331,7 @@ export default function CeremonyPlanning() {
       description: '',
       rituals: [],
       location: { name: '', address: '' },
+      attendingGuestIds: [],
     });
     setShowAddEvent(false);
   };
@@ -724,6 +746,29 @@ export default function CeremonyPlanning() {
                             ))}
                           </div>
                         )}
+                        {(event.attendingGuestIds || []).length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-purple-200">
+                            <div className="flex items-center gap-2 text-sm">
+                              <Users className="w-4 h-4 text-pink-600" />
+                              <span className="font-semibold text-gray-700">
+                                {event.attendingGuestIds?.length} guest(s) attending
+                              </span>
+                            </div>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {event.attendingGuestIds?.map((guestId) => {
+                                const guest = allGuests.find(g => g.id === guestId);
+                                return (
+                                  <span
+                                    key={guestId}
+                                    className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full"
+                                  >
+                                    {guest?.name || 'Unknown Guest'}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <button
                         onClick={() => deleteEvent(selectedDay, event.id)}
@@ -845,6 +890,51 @@ export default function CeremonyPlanning() {
                     />
                     <p className="text-xs text-gray-100 mt-1 drop-shadow-md">
                       Address will link to Google Maps
+                    </p>
+                  </div>
+
+                  {/* Guest Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      Select Attending Guests
+                    </label>
+                    {guestsLoading ? (
+                      <div className="text-sm text-gray-600 p-3 bg-gray-100 rounded-lg">Loading guests...</div>
+                    ) : allGuests.length === 0 ? (
+                      <div className="text-sm text-gray-500 p-3 bg-gray-50 rounded-lg border border-gray-200 italic">
+                        No guests added yet. Add guests from the Guest List page.
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 border border-gray-300 rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
+                        {allGuests.map((guest) => (
+                          <label key={guest.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded">
+                            <input
+                              type="checkbox"
+                              checked={(newEvent.attendingGuestIds || []).includes(guest.id)}
+                              onChange={(e) => {
+                                const currentIds = newEvent.attendingGuestIds || [];
+                                if (e.target.checked) {
+                                  setNewEvent({
+                                    ...newEvent,
+                                    attendingGuestIds: [...currentIds, guest.id],
+                                  });
+                                } else {
+                                  setNewEvent({
+                                    ...newEvent,
+                                    attendingGuestIds: currentIds.filter(id => id !== guest.id),
+                                  });
+                                }
+                              }}
+                              className="w-4 h-4 text-pink-600 rounded"
+                            />
+                            <span className="text-sm text-gray-900">{guest.name}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-600 mt-1">
+                      {newEvent.attendingGuestIds?.length || 0} guest(s) selected for this event
                     </p>
                   </div>
                 </div>

@@ -78,18 +78,31 @@ export default function SharedWeddingInfo() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 py-12 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
+        {/* Header with Couple Names */}
         <div className="bg-gradient-to-r from-primary-500 via-pink-500 to-purple-600 rounded-2xl shadow-lg p-8 text-white text-center">
           <div className="flex items-center justify-center mb-4">
             <Heart className="w-12 h-12" />
           </div>
           <h1 className="text-4xl font-bold mb-2">We're Getting Married!</h1>
+          
+          {/* Couple Names */}
+          {(weddingInfo?.weddingPageData?.coupleName1 || weddingInfo?.coupleName1) && (
+            <div className="mb-4">
+              <p className="text-2xl font-semibold text-white/95">
+                {weddingInfo?.weddingPageData?.coupleName1 || weddingInfo?.coupleName1}
+                {(weddingInfo?.weddingPageData?.coupleName2 || weddingInfo?.coupleName2) && (
+                  <span> & {weddingInfo?.weddingPageData?.coupleName2 || weddingInfo?.coupleName2}</span>
+                )}
+              </p>
+            </div>
+          )}
+          
           <p className="text-white/90 text-lg">
             {weddingInfo?.role === 'bride' || weddingInfo?.role === 'groom' ? 'Join us for our special day' : 'Wedding Information'}
           </p>
         </div>
 
-        {/* Wedding Date & Time */}
+        {/* Wedding Date & Time - MOVED TO TOP */}
         {(weddingInfo?.weddingDate || weddingInfo?.weddingTime) && (
           <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
             <div className="flex items-center gap-3 mb-4">
@@ -123,6 +136,100 @@ export default function SharedWeddingInfo() {
               {weddingInfo.weddingCity}, {weddingInfo.weddingState}
               {weddingInfo.weddingCountry && ` - ${weddingInfo.weddingCountry}`}
             </p>
+          </div>
+        )}
+
+        {/* Ceremony Schedule */}
+        {weddingInfo?.ceremonyDetails?.weddingDays && weddingInfo.ceremonyDetails.weddingDays.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <Calendar className="w-6 h-6 text-purple-500" />
+              <h2 className="text-2xl font-bold text-gray-900">Ceremonies & Events</h2>
+            </div>
+            <div className="space-y-4">
+              {weddingInfo.ceremonyDetails.weddingDays.map((day: any, dayIndex: number) => (
+                <div key={dayIndex} className="border-l-4 border-purple-500 pl-4 py-2">
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">{day.title}</h3>
+                  {day.date && (
+                    <p className="text-sm text-gray-600 mb-2">
+                      <Calendar className="w-4 h-4 inline mr-1" />
+                      {formatDate(day.date)}
+                    </p>
+                  )}
+                  {day.events && day.events.length > 0 && (
+                    <div className="space-y-2">
+                      {day.events.map((event: any, eventIndex: number) => (
+                        <div key={eventIndex} className="bg-gray-50 rounded-lg p-3">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <p className="font-semibold text-gray-900">{event.name}</p>
+                              {event.time && (
+                                <p className="text-sm text-gray-600 flex items-center gap-1">
+                                  <Clock className="w-4 h-4" />
+                                  {event.time}
+                                </p>
+                              )}
+                            </div>
+                            {event.duration && (
+                              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
+                                {event.duration}
+                              </span>
+                            )}
+                          </div>
+                          {event.description && (
+                            <p className="text-sm text-gray-700 mt-2">{event.description}</p>
+                          )}
+                          {event.location && (
+                            <p className="text-sm text-gray-600 mt-2 flex items-center gap-1">
+                              <MapPin className="w-4 h-4" />
+                              {event.location.name}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Additional Details */}
+        {weddingInfo?.weddingPageData?.additionalInfo && (
+          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Additional Information</h2>
+            <p className="text-gray-700 whitespace-pre-wrap">{weddingInfo.weddingPageData.additionalInfo}</p>
+          </div>
+        )}
+
+        {/* Contact Information */}
+        {(weddingInfo?.weddingPageData?.contactName || weddingInfo?.weddingPageData?.contactPhone || weddingInfo?.weddingPageData?.contactEmail) && (
+          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact Information</h2>
+            <div className="space-y-3">
+              {weddingInfo.weddingPageData.contactName && (
+                <p className="text-gray-700">
+                  <span className="font-semibold">Contact:</span> {weddingInfo.weddingPageData.contactName}
+                </p>
+              )}
+              {weddingInfo.weddingPageData.contactPhone && (
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Phone className="w-5 h-5 text-gray-500" />
+                  <a href={`tel:${weddingInfo.weddingPageData.contactPhone}`} className="hover:text-primary-500">
+                    {weddingInfo.weddingPageData.contactPhone}
+                  </a>
+                </div>
+              )}
+              {weddingInfo.weddingPageData.contactEmail && (
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Mail className="w-5 h-5 text-gray-500" />
+                  <a href={`mailto:${weddingInfo.weddingPageData.contactEmail}`} className="hover:text-primary-500">
+                    {weddingInfo.weddingPageData.contactEmail}
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
