@@ -30,26 +30,34 @@ router.get('/stats', authMiddleware, async (req: AuthRequest, res: Response) => 
       createdAt: { $gte: thirtyDaysAgo }
     });
 
+    // Get all bride and groom users for counting weddings
+    const brideGroom = await User.countDocuments({
+      onboardingCompleted: true,
+      role: { $in: ['bride', 'groom'] }
+    });
+
     const stats = {
       totalUsers,
       completedOnboarding,
       pendingOnboarding: totalUsers - completedOnboarding,
       newUsersLast30Days,
       usersByRole,
-      activeLogins: Math.ceil(completedOnboarding * 0.3),
-      weddingsPlanned: completedOnboarding,
+      activeLogins: newUsersLast30Days, // Active logins = new users in last 30 days
+      weddingsPlanned: Math.ceil(brideGroom / 2), // Approximate couples (brides + grooms) / 2
       venueSearches: Math.ceil(completedOnboarding * 2),
     };
 
-    // Get recently registered users
-    const recentUsers = await User.find()
-      .select('name email createdAt onboardingCompleted role')
-      .limit(15)
+    // Get recently registered users (last 30 days) sorted by creation date
+    const recentUsers = await User.find({
+      createdAt: { $gte: thirtyDaysAgo }
+    })
+      .select('name email role createdAt onboardingCompleted')
+      .limit(20)
       .sort({ createdAt: -1 });
 
     const loggedInUsers = recentUsers.map(user => ({
       id: user._id.toString(),
-      name: user.name || 'Unknown',
+      name: user.name || 'Unknown User',
       email: user.email,
       role: user.role || 'user',
       onboardingCompleted: user.onboardingCompleted || false,

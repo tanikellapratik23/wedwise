@@ -113,17 +113,37 @@ export default function VendorSearch() {
         setFavoriteVendors((Array.isArray(favoriteVendors) ? favoriteVendors : []).filter(v => v.id !== vendorId));
       } else {
         // Add to favorites
-        const response = await axios.post(`${API_URL}/api/vendors`, {
+        const vendorToSave = {
           ...vendor,
           status: 'researching',
           isFavorite: true,
-        }, {
+        };
+        
+        const response = await axios.post(`${API_URL}/api/vendors`, vendorToSave, {
           headers: { Authorization: `Bearer ${token}` },
         });
         
         if (response.data.success) {
+          const savedVendor = response.data.data;
           setFavorites([...favorites, vendorId]);
-          setFavoriteVendors([...favoriteVendors, response.data.data]);
+          setFavoriteVendors([...favoriteVendors, savedVendor]);
+          
+          // Also save to local storage for immediate sync with My Vendors page
+          try {
+            const currentMyVendors = JSON.parse(localStorage.getItem('myVendors') || '[]');
+            const vendorObj = {
+              _id: savedVendor._id,
+              ...vendorToSave,
+              id: savedVendor._id || vendorId,
+            };
+            const updatedVendors = [...currentMyVendors, vendorObj];
+            localStorage.setItem('myVendors', JSON.stringify(updatedVendors));
+            
+            // Dispatch event so My Vendors page updates immediately
+            window.dispatchEvent(new CustomEvent('vendorFavorited', { detail: { vendor: savedVendor } }));
+          } catch (e) {
+            console.error('Failed to sync with localStorage:', e);
+          }
         }
       }
     } catch (error) {

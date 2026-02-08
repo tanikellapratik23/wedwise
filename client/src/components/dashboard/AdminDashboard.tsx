@@ -36,9 +36,14 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   });
   const [loggedInUsers, setLoggedInUsers] = useState<LoggedInUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
   useEffect(() => {
     fetchAdminStats();
+    
+    // Refresh stats every 30 seconds for real-time updates
+    const interval = setInterval(fetchAdminStats, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchAdminStats = async () => {
@@ -48,25 +53,14 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setStats(response.data.stats || stats);
-      setLoggedInUsers(response.data.loggedInUsers || []);
+      if (response.data.stats) {
+        setStats(response.data.stats);
+        setLoggedInUsers(response.data.loggedInUsers || []);
+        setLastUpdated(new Date());
+      }
     } catch (error) {
       console.error('Failed to fetch admin stats:', error);
-      // Use mock data for demo
-      setStats({
-        totalUsers: 127,
-        completedOnboarding: 89,
-        pendingOnboarding: 38,
-        newUsersLast30Days: 23,
-        activeLogins: 34,
-        weddingsPlanned: 89,
-        venueSearches: 245,
-      });
-      setLoggedInUsers([
-        { id: '1', name: 'Sarah', email: 'sarah@test.com', role: 'bride', onboardingCompleted: true, lastActive: new Date().toISOString() },
-        { id: '2', name: 'Marcus', email: 'marcus@test.com', role: 'groom', onboardingCompleted: true, lastActive: new Date(Date.now() - 3600000).toISOString() },
-        { id: '3', name: 'Priya', email: 'priya@test.com', role: 'bride', onboardingCompleted: false, lastActive: new Date(Date.now() - 7200000).toISOString() },
-      ]);
+      // Don't fallback to mock data - show error state instead
     } finally {
       setLoading(false);
     }
@@ -84,8 +78,22 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl p-8 text-white">
-        <h1 className="text-4xl font-bold mb-2">Admin Analytics Dashboard</h1>
-        <p className="text-slate-300">Monitor platform activity and user engagement</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Admin Analytics Dashboard</h1>
+            <p className="text-slate-300">Monitor platform activity and user engagement</p>
+            <p className="text-slate-400 text-sm mt-2">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </p>
+          </div>
+          <button
+            onClick={fetchAdminStats}
+            disabled={loading}
+            className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-lg font-medium transition disabled:opacity-50"
+          >
+            {loading ? 'Refreshing...' : 'Refresh Now'}
+          </button>
+        </div>
       </div>
 
       {/* Stats Grid */}

@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Plus, Phone, Mail, Globe, CheckCircle, Heart, Star } from 'lucide-react';
+import { Plus, Phone, Mail, Globe, CheckCircle, Heart, Star, Trash2 } from 'lucide-react';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 interface Vendor {
+  _id?: string;
   id: string;
   name: string;
   category: string;
@@ -14,17 +18,54 @@ interface Vendor {
   depositPaid?: number;
   status: 'researching' | 'contacted' | 'booked' | 'paid';
   notes?: string;
+  location?: { city: string; state: string };
+  rating?: number;
 }
 
 export default function VendorManagement() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadFavoriteVendors();
+    
+    // Listen for vendor favorites from VendorSearch
+    const handleVendorFavorited = (event: any) => {
+      console.log('Vendor favorited event received:', event.detail);
+      loadFavoriteVendors(); // Refresh the list
+    };
+    
+    window.addEventListener('vendorFavorited', handleVendorFavorited);
+    return () => window.removeEventListener('vendorFavorited', handleVendorFavorited);
   }, []);
 
-  const loadFavoriteVendors = () => {
+  const loadFavoriteVendors = async () => {
     try {
+      const token = localStorage.getItem('token');
+      
+      // Try to fetch from server first
+      try {
+        const response = await axios.get(`${API_URL}/api/vendors`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        
+        if (response.data.success && Array.isArray(response.data.data)) {
+          const serverVendors = response.data.data.map((v: any) => ({
+            ...v,
+            id: v._id || v.id,
+          }));
+          setVendors(serverVendors);
+          
+          // Also sync to localStorage
+          localStorage.setItem('myVendors', JSON.stringify(serverVendors));
+          setLoading(false);
+          return;
+        }
+      } catch (serverError) {
+        console.error('Failed to fetch from server, falling back to localStorage:', serverError);
+      }
+      
+      // Fallback to localStorage if server fails
       const savedVendors = localStorage.getItem('myVendors');
       if (savedVendors) {
         const parsed = JSON.parse(savedVendors);
@@ -35,6 +76,33 @@ export default function VendorManagement() {
     } catch (e) {
       console.error('Failed to load vendors:', e);
       localStorage.removeItem('myVendors');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteVendor = async (vendorId: string) => {
+    if (!confirm('Are you sure you want to remove this vendor?')) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const vendor = vendors.find(v => v._id === vendorId);
+      
+      if (vendor?._id) {
+        await axios.delete(`${API_URL}/api/vendors/${vendor._id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+      
+      // Update local state
+      setVendors(vendors.filter(v => v._id !== vendorId));
+      
+      // Update localStorage
+      const updated = vendors.filter(v => v._id !== vendorId);
+      localStorage.setItem('myVendors', JSON.stringify(updated));
+    } catch (error) {
+      console.error('Failed to delete vendor:', error);
+      alert('Failed to delete vendor');
     }
   };
 
@@ -66,6 +134,14 @@ export default function VendorManagement() {
     };
     return colors[status as keyof typeof colors];
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -240,8 +316,12 @@ export default function VendorManagement() {
               <button className="flex-1 px-4 py-2 bg-primary-50 text-primary-600 hover:bg-primary-100 rounded-lg font-medium text-sm transition">
                 Edit
               </button>
-              <button className="flex-1 px-4 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-lg font-medium text-sm transition">
-                View Details
+              <button 
+                onClick={() => deleteVendor(vendor._id || vendor.id)}
+                className="flex-1 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-medium text-sm transition flex items-center justify-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Remove
               </button>
             </div>
           </div>
