@@ -12,7 +12,8 @@ interface CeremonyResponse {
 }
 
 // Use server-side AI proxy endpoints to avoid embedding secrets in the client
-const AI_CHAT_ENDPOINT = '/api/ai/chat';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const AI_CHAT_ENDPOINT = `${API_URL}/api/ai/chat`;
 
 // System prompt for VivahaPlan AI
 const SYSTEM_PROMPT = `You are VivahaPlan AI, an expert assistant helping couples plan interfaith weddings. You provide:
