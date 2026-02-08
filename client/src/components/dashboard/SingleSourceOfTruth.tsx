@@ -197,13 +197,13 @@ export default function SingleSourceOfTruth() {
                   <div className="space-y-2">
                     <input
                       type="date"
-                      value={editedInfo.weddingDate?.split('T')[0] || ''}
+                      value={editedInfo?.weddingDate?.split('T')[0] || ''}
                       onChange={(e) => updateField('weddingDate', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                     <input
                       type="time"
-                      value={editedInfo.weddingTime || ''}
+                      value={editedInfo?.weddingTime || ''}
                       onChange={(e) => updateField('weddingTime', e.target.value)}
                       placeholder="Time (optional)"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -238,21 +238,21 @@ export default function SingleSourceOfTruth() {
                   <div className="space-y-2">
                     <input
                       type="text"
-                      value={editedInfo.weddingCity || ''}
+                      value={editedInfo?.weddingCity || ''}
                       onChange={(e) => updateField('weddingCity', e.target.value)}
                       placeholder="City"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                     <input
                       type="text"
-                      value={editedInfo.weddingState || ''}
+                      value={editedInfo?.weddingState || ''}
                       onChange={(e) => updateField('weddingState', e.target.value)}
                       placeholder="State/Country"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                     <input
                       type="text"
-                      value={editedInfo.venue || ''}
+                      value={editedInfo?.venue || ''}
                       onChange={(e) => updateField('venue', e.target.value)}
                       placeholder="Venue Name (optional)"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -281,7 +281,7 @@ export default function SingleSourceOfTruth() {
                 {isEditing ? (
                   <input
                     type="number"
-                    value={editedInfo.guestCount || ''}
+                    value={editedInfo?.guestCount || ''}
                     onChange={(e) => updateField('guestCount', parseInt(e.target.value) || 0)}
                     placeholder="Number of guests"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -302,7 +302,7 @@ export default function SingleSourceOfTruth() {
                 {isEditing ? (
                   <input
                     type="text"
-                    value={editedInfo.dressCode || ''}
+                    value={editedInfo?.dressCode || ''}
                     onChange={(e) => updateField('dressCode', e.target.value)}
                     placeholder="e.g., Formal, Semi-Formal, Cocktail Attire"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
@@ -323,21 +323,21 @@ export default function SingleSourceOfTruth() {
                 <div className="space-y-2">
                   <input
                     type="text"
-                    value={editedInfo.contactName || ''}
+                    value={editedInfo?.contactName || ''}
                     onChange={(e) => updateField('contactName', e.target.value)}
                     placeholder="Contact Name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                   <input
                     type="tel"
-                    value={editedInfo.contactPhone || ''}
+                    value={editedInfo?.contactPhone || ''}
                     onChange={(e) => updateField('contactPhone', e.target.value)}
                     placeholder="Phone Number"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                   <input
                     type="email"
-                    value={editedInfo.contactEmail || ''}
+                    value={editedInfo?.contactEmail || ''}
                     onChange={(e) => updateField('contactEmail', e.target.value)}
                     placeholder="Email Address"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
