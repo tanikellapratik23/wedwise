@@ -51,15 +51,39 @@ export default function BudgetTracker() {
 
   // Save to localStorage immediately whenever categories change
   useEffect(() => {
-    if (categories.length > 0) {
-      try {
-        localStorage.setItem('budget', JSON.stringify(categories));
-        if (isAutoSaveEnabled()) setWithTTL('budget', categories, 24 * 60 * 60 * 1000);
-      } catch (e) {
-        console.error('Failed to save budget:', e);
-      }
+    try {
+      localStorage.setItem('budget', JSON.stringify(categories));
+      if (isAutoSaveEnabled()) setWithTTL('budget', categories, 24 * 60 * 60 * 1000);
+    } catch (e) {
+      console.error('Failed to save budget:', e);
     }
   }, [categories]);
+
+  // Listen for external budget changes (e.g. AI assistant or other UI)
+  useEffect(() => {
+    const handler = (ev: Event) => {
+      try {
+        const custom = ev as CustomEvent;
+        if (custom && custom.detail) {
+          // If event provides categories, use them (merge/replace)
+          if (Array.isArray(custom.detail.categories)) {
+            setCategories(custom.detail.categories);
+            localStorage.setItem('budget', JSON.stringify(custom.detail.categories));
+            return;
+          }
+        }
+
+        // Fallback: reload from localStorage
+        const cached = localStorage.getItem('budget');
+        if (cached) setCategories(JSON.parse(cached));
+      } catch (err) {
+        console.error('Error handling budgetChanged event', err);
+      }
+    };
+
+    window.addEventListener('budgetChanged', handler as EventListener);
+    return () => window.removeEventListener('budgetChanged', handler as EventListener);
+  }, []);
 
   const fetchBudgetCategories = async () => {
     try {
@@ -126,7 +150,21 @@ export default function BudgetTracker() {
       }
     } catch (error) {
       console.error('Failed to add category:', error);
-      alert('Failed to add category');
+      // Fallback: create local category to avoid blocking the user
+      const cat = {
+        id: `local-${Date.now()}`,
+        name: newCategory.name,
+        estimatedAmount: newCategory.estimatedAmount,
+        actualAmount: 0,
+        paid: 0,
+      } as BudgetCategory;
+      const next = [...categories, cat];
+      setCategories(next);
+      localStorage.setItem('budget', JSON.stringify(next));
+      setShowAddModal(false);
+      setNewCategory({ name: '', estimatedAmount: 0 });
+      // notify user that item saved locally
+      alert('Added category locally (offline or error saving to server). It will sync when possible.');
     } finally {
       setLoading(false);
     }
@@ -205,7 +243,13 @@ export default function BudgetTracker() {
       }
 
       const token = localStorage.getItem('token');
-      
+      if (!token) {
+        // If user is not authenticated, save locally and inform
+        localStorage.setItem('budget', JSON.stringify(categories));
+        alert('You are not signed in — budget saved locally. Sign in to sync.');
+        return;
+      }
+
       // Save each category individually
       for (const category of categories) {
         if (category._id) {

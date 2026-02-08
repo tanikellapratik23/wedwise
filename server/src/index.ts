@@ -45,6 +45,7 @@ app.use('/api/navigation', navigationRoutes);
 app.use('/api/wedding-page', weddingPageRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api', emailRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

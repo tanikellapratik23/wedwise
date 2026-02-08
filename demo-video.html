@@ -102,6 +102,11 @@
             align-items: center; 
             gap: 8px;
         }
+        .graphs { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; width: 220px; }
+        .graph { display:flex; align-items:center; gap:8px; background: #ffffff; padding:8px; border-radius:8px; border:1px solid #f3f4f6; }
+        .graph-label { font-size: 11px; color: #6B7280; width: 70px; font-weight:700; }
+        .graph-bar-bg { background:#f3f4f6; height:10px; border-radius:6px; flex:1; overflow:hidden; }
+        .graph-bar { height:100%; width:0%; background: linear-gradient(90deg, #3B82F6, #a855f7); border-radius:6px; transition: width 900ms cubic-bezier(.2,.9,.2,1); }
         .action { 
             padding: 8px 6px; 
             border-radius: 6px; 
@@ -517,6 +522,11 @@
                         <div class="dash-sub">San Francisco, CA • June 15, 2026</div>
                     </div>
                 </div>
+                <div class="graphs" aria-hidden="true">
+                    <div class="graph"><div class="graph-label">Catering</div><div class="graph-bar-bg"><div class="graph-bar" data-percent="72"></div></div></div>
+                    <div class="graph"><div class="graph-label">Venue</div><div class="graph-bar-bg"><div class="graph-bar" data-percent="55"></div></div></div>
+                    <div class="graph"><div class="graph-label">Decor</div><div class="graph-bar-bg"><div class="graph-bar" data-percent="40"></div></div></div>
+                </div>
                 <div class="countdown">
                     <div class="countdown-num">129</div>
                     <div class="countdown-label">days until your wedding</div>
@@ -707,17 +717,44 @@
         const durations = [2.5, 2.5, 2, 3.5, 4, 2.5, 2.5, 2.5, 3, 2]; // Intro, Dashboard, Different Title, Features, Bachelor, Split, RSVP, Share, All in One, CTA
         let current = 0;
         
+        function animateGraphs() {
+            document.querySelectorAll('.graph-bar').forEach(bar => {
+                const p = bar.getAttribute('data-percent') || '0';
+                // slight stagger
+                const delay = Math.random() * 200;
+                setTimeout(() => { bar.style.width = p + '%'; }, delay);
+            });
+        }
+
+        function resetGraphs() {
+            document.querySelectorAll('.graph-bar').forEach(bar => { bar.style.width = '0%'; });
+        }
+
         function show(i) {
             scenes.forEach((s, idx) => s.classList.toggle('active', idx === i));
+            if (i === 1) {
+                // Dashboard: animate left graphs shortly after it appears
+                setTimeout(animateGraphs, 300);
+            } else {
+                resetGraphs();
+            }
         }
-        
+
         function next() {
             current = (current + 1) % scenes.length;
             show(current);
             setTimeout(next, durations[current] * 1000);
         }
-        
-        setTimeout(next, durations[0] * 1000);
+
+        // Intro behaviour: briefly show 'Done' then proceed to the next scene which will animate graphs
+        setTimeout(() => {
+            const tagline = document.querySelector('.tagline');
+            if (tagline) tagline.textContent = 'Done';
+            setTimeout(() => {
+                if (tagline) tagline.textContent = 'Plan your wedding, stress-free';
+                next();
+            }, 800);
+        }, durations[0] * 1000);
     </script>
 </body>
 </html>

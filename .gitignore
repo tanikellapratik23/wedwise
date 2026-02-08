@@ -10,6 +10,11 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.local
+# Ignore server runtime env (contains GROQ key)
+/server/.env
+# Ensure client local env stays out of repo
+/client/.env
 
 # Build outputs
 dist/

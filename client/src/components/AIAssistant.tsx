@@ -11,13 +11,8 @@ interface CeremonyResponse {
   notes: string[];
 }
 
-// Use environment variable for API keys
-const API_KEY = import.meta.env.VITE_GROQ_API_KEY || import.meta.env.VITE_HF_TOKEN || '';
-const USE_GROQ = !!import.meta.env.VITE_GROQ_API_KEY;
-
-// API Configuration
-const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL = 'llama-3.1-8b-instant'; // Fast and free
+// Use server-side AI proxy endpoints to avoid embedding secrets in the client
+const AI_CHAT_ENDPOINT = '/api/ai/chat';
 
 // System prompt for VivahaPlan AI
 const SYSTEM_PROMPT = `You are VivahaPlan AI, an expert assistant helping couples plan interfaith weddings. You provide:
@@ -54,53 +49,33 @@ export default function AIAssistant() {
   const [editableResponse, setEditableResponse] = useState<CeremonyResponse | null>(null);
 
   // Call AI API (Groq or HuggingFace)
-  const callAIAPI = async (prompt: string): Promise<string> => {
-    console.log('🔑 API Key present:', !!API_KEY);
-    console.log('📡 Using Groq:', USE_GROQ);
-    
+  const callAIAPI = async (prompt: string): Promise<{ reply: string; structured?: any }> => {
     try {
-      if (USE_GROQ) {
-        // Use Groq API (OpenAI compatible)
-        const response = await fetch(GROQ_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: GROQ_MODEL,
-            messages: [
-              { role: 'system', content: SYSTEM_PROMPT },
-              { role: 'user', content: prompt }
-            ],
-            temperature: 0.6,
-            max_tokens: 800,
-          }),
-        });
+      const response = await fetch(AI_CHAT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: prompt, systemPrompt: SYSTEM_PROMPT }),
+      });
 
-        console.log('📊 Response status:', response.status);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('❌ API Error Response:', errorText);
-          throw new Error(`Groq API error: ${response.status} - ${errorText}`);
-        }
-
-        const data = await response.json();
-        console.log('✅ API Response:', data);
-        
-        if (data.choices && data.choices[0]?.message?.content) {
-          return data.choices[0].message.content;
-        }
-        
-        throw new Error('Unexpected API response format');
-      } else {
-        // Fallback: Show helpful message
-        return '⚠️ AI Assistant needs an API key to function. Please:\n\n1. Get a free API key from https://console.groq.com\n2. Add VITE_GROQ_API_KEY=your-key to client/.env\n3. Restart the dev server\n\nGroq offers free, fast AI with generous limits!';
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('AI proxy error:', errorText);
+        throw new Error(`AI proxy error: ${response.status}`);
       }
-    } catch (error) {
-      console.error('❌ AI API Error:', error);
-      throw error;
+
+      const data = await response.json();
+      // Prefer a normalized { reply, structured } shape from the server
+      if (data?.reply) return { reply: data.reply, structured: data.structured };
+      // Backwards compatibility: handle direct OpenAI/Groq-like responses
+      if (data?.choices && data.choices[0]?.message?.content) {
+        return { reply: data.choices[0].message.content };
+      }
+      if (data?.text) return { reply: data.text };
+
+      throw new Error('Unexpected AI proxy response format');
+    } catch (err) {
+      console.error('Call AI API failed:', err);
+      throw err;
     }
   };
 
@@ -115,25 +90,33 @@ export default function AIAssistant() {
     setEditableResponse(null);
 
     try {
-      const response = await callAIAPI(prompt);
-      
-      // Try to parse as JSON for ceremony suggestions
-      let parsedResponse = null;
+      const aiResult = await callAIAPI(prompt);
+      const responseText = aiResult.reply || '';
       let responseType = 'text';
-      
-      try {
-        parsedResponse = JSON.parse(response);
-        if (parsedResponse.ceremony && Array.isArray(parsedResponse.ceremony)) {
-          responseType = 'ceremony';
-          setEditableResponse(parsedResponse);
+
+      // If server provided structured payload, prefer that for ceremony editing
+      if (aiResult.structured && aiResult.structured.ceremony && Array.isArray(aiResult.structured.ceremony)) {
+        responseType = 'ceremony';
+        setEditableResponse(aiResult.structured as CeremonyResponse);
+      } else {
+        // Try to parse plain text as JSON (legacy behavior)
+        try {
+          const parsed = JSON.parse(responseText);
+          if (parsed.ceremony && Array.isArray(parsed.ceremony)) {
+            responseType = 'ceremony';
+            setEditableResponse(parsed);
+          }
+        } catch {
+          // not JSON
         }
-      } catch {
-        // Not JSON, treat as text
       }
+
+      // Ensure assistant messages are plain text only
+      const cleaned = String(responseText).replace(/```[\s\S]*?```/g, '').replace(/`+/g, '').trim();
 
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: response,
+        content: cleaned,
         type: responseType
       }]);
     } catch (error) {

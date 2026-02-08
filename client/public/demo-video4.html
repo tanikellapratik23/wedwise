@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VivahaPlan — Demo Video</title>
+  <link rel="stylesheet" href="/assets/index-DUT1SzC0.css" />
+  <style>
+    :root{
+      --bg:#fff8f4;--muted:#6b6b6b;--accent:#d66b6b;--accent-2:#6bb7a8;--text:#0f1720
+    }
+    body{margin:0;background:var(--bg);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--text)}
+    .stage{position:relative;width:100vw;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+    .frame{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+    .scene{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:32px;box-sizing:border-box}
+    .scene.show{display:flex}
+    .split{width:100%;max-width:1100px;display:flex;gap:18px}
+    .panel{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);border-radius:14px;overflow:hidden;box-shadow:0 12px 40px rgba(15,23,32,0.06);transform-origin:center}
+    .panel img{width:100%;height:100%;object-fit:cover;display:block}
+    .ui-wrap{width:880px;max-width:94%;background:rgba(255,255,255,0.92);border-radius:14px;padding:20px;box-shadow:0 18px 60px rgba(15,23,32,0.08)}
+    .chat-icon{position:fixed;right:48px;bottom:48px;width:64px;height:64px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 12px 32px rgba(0,0,0,0.12);cursor:pointer}
+    .chat-icon.pulse{animation:chatPulse 2000ms infinite}
+    @keyframes chatPulse{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+    .chat-modal{position:relative;width:560px;max-width:92%;background:white;border-radius:12px;padding:18px;box-shadow:0 28px 70px rgba(15,23,32,0.12);transform:translateY(8px) scale(.96);opacity:0}
+    .chat-modal.show{transform:translateY(0) scale(1);opacity:1;transition:all 420ms cubic-bezier(.2,.9,.2,1)}
+    .bubble{border-radius:12px;padding:12px;margin:8px 0;max-width:86%;line-height:1.35}
+    .bubble.user{background:linear-gradient(180deg,#fff 0%,#fbfbfb 100%);align-self:flex-end;box-shadow:0 6px 18px rgba(15,23,32,0.04)}
+    .bubble.ai{background:#fbfdff;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,32,0.04)}
+    .cards{display:flex;gap:10px;margin-top:12px}
+    .card{flex:1;background:linear-gradient(180deg,#fff,#fcfcfc);padding:12px;border-radius:8px;box-shadow:0 10px 32px rgba(15,23,32,0.06);transform:translateY(18px);opacity:0}
+    .card.pop{transform:translateY(0);opacity:1;transition:all 420ms cubic-bezier(.2,.9,.2,1)}
+    .center-logo{display:flex;flex-direction:column;align-items:center;gap:10px}
+    .logo-mark{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:26px}
+    .cta{color:var(--text);font-size:20px;font-weight:600}
+    .overlay-text{position:fixed;left:50%;transform:translateX(-50%);top:70px;color:var(--text);font-size:20px;font-weight:600;opacity:0}
+    .overlay-text.show{opacity:1;transition:opacity 300ms}
+    .type{display:inline-block;white-space:pre-wrap}
+    .budget-panel{position:fixed;right:40px;top:110px;width:320px;background:linear-gradient(180deg,#ffffff,#fbfcfd);border-radius:12px;padding:14px;box-shadow:0 30px 80px rgba(15,23,32,0.12);transform:translateX(16px);opacity:0}
+    .budget-panel.show{transform:translateX(0);opacity:1;transition:all 480ms cubic-bezier(.2,.9,.2,1)}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="frame">
+      <!-- Scene 1: Problem (0-6s) -->
+      <section id="s1" class="scene show">
+        <div class="split">
+          <div class="panel"><img src="/hero-images/ritual-with-coconut-leaves-traditional-hindu-wedding-ceremony.jpg" alt="Hindu family"></div>
+          <div class="panel"><img src="/hero-images/beautiful-wedding-ceremony-nature.jpg" alt="Christian family"></div>
+        </div>
+        <div style="position:absolute;bottom:80px;left:50%;transform:translateX(-50%);text-align:center">
+          <div class="overlay-text" id="s1t1">Two traditions.</div>
+          <div class="overlay-text" id="s1t2" style="top:100px">One ceremony.</div>
+          <div class="overlay-text" id="s1t3" style="top:130px">Where do you start?</div>
+        </div>
+      </section>
+
+      <!-- Scene 2: Discovery (6-12s) -->
+      <section id="s2" class="scene">
+        <div class="ui-wrap">
+          <h3 style="margin:0 0 12px 0;color:var(--muted)">VivahaPlan</h3>
+          <div style="height:260px;display:flex;align-items:center;justify-content:center">
+            <div style="width:640px;max-width:100%;position:relative">
+              <img src="/hero-images/young-wedding-couple-enjoying-romantic-moments.jpg" style="width:100%;border-radius:10px;filter:brightness(.95)" alt="landing">
+              <div class="chat-icon" id="openChat" style="position:absolute;right:18px;bottom:18px">AI</div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:60px"><div class="overlay-text show">Meet VivahaPlan AI</div></div>
+      </section>
+
+      <!-- Scene 3: AI in Action (12-25s) -->
+      <section id="s3" class="scene">
+        <div class="center-logo ui-wrap" style="align-items:flex-start">
+          <div style="display:flex;gap:18px;align-items:flex-start;width:100%">
+            <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+              <div class="chat-modal" id="chatModal">
+                <div class="bubble user">Create a Hindu–Christian ceremony</div>
+                <div class="bubble ai" id="ai1"><span class="type" id="type1"></span></div>
+                <div class="cards" id="timelineCards">
+                  <div class="card" id="card1">Ceremony: 3 hr — Entry, Ritual A, Ritual B</div>
+                  <div class="card" id="card2">Reception: 2 hr — Dinner, Toasts</div>
+                  <div class="card" id="card3">Logistics: Transport & Notes</div>
+                </div>
+              </div>
+
+              <div class="chat-modal" id="chatModal2">
+                <div class="bubble user">Can we serve alcohol?</div>
+                <div class="bubble ai"><span class="type" id="type2"></span></div>
+                <div style="height:8px"></div>
+                <div class="bubble user">Draft a respectful invite</div>
+                <div class="bubble ai"><span class="type" id="type3"></span></div>
+              </div>
+            </div>
+            <div style="width:320px;position:relative">
+              <div class="chat-modal" style="margin-left:8px">
+                <div style="font-weight:600;margin-bottom:8px">Budget suggestions</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div class="card" style="padding:10px;box-shadow:none">Venue: $4,000 — consider weekday</div>
+                  <div class="card" style="padding:10px;box-shadow:none">Catering: $6,500 — buffet vs plated</div>
+                  <div class="card" style="padding:10px;box-shadow:none">Music: $800 — local ensemble</div>
+                </div>
+              </div>
+              <div class="budget-panel" id="budgetPanel">
+                <div style="font-weight:700;margin-bottom:8px">AI Budget Optimizer</div>
+                <div style="font-size:14px;color:var(--muted)">Suggests reallocations to save 12%</div>
+                <div style="height:12px"></div>
+                <div style="display:flex;justify-content:space-between"><div>Venue</div><div>$4,000</div></div>
+                <div style="display:flex;justify-content:space-between"><div>Catering</div><div>$6,500</div></div>
+                <div style="display:flex;justify-content:space-between"><div>Estimated Savings</div><div style="color:var(--accent);font-weight:700">$1,200</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:60px"><div class="overlay-text" id="s3t">Ceremony suggestions.</div></div>
+      </section>
+
+      <!-- Scene 4: Emotional Payoff (25-35s) -->
+      <section id="s4" class="scene">
+        <div style="display:flex;gap:14px;align-items:center;flex-direction:column">
+          <img src="/hero-images/wedding-ritual-putting-ring-finger-india.jpg" style="width:720px;max-width:92%;border-radius:12px;filter:sepia(.05)" alt="couple">
+        </div>
+        <div style="position:absolute;bottom:80px"><div class="overlay-text" id="s4t1">Not choosing one culture.</div><div class="overlay-text" id="s4t2" style="top:120px">Honoring both.</div></div>
+      </section>
+
+      <!-- Scene 5: CTA (35-45s) -->
+      <section id="s5" class="scene">
+        <div class="center-logo">
+          <div class="logo-mark">V</div>
+          <div class="cta">Plan together.</div>
+          <div style="color:var(--muted)">Celebrate fully.</div>
+          <div style="margin-top:8px;color:var(--muted);font-size:14px">your-url.here</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    const seq = [
+      {id:'s1',dur:6000, texts:[['s1t1',0],['s1t2',1200],['s1t3',2400]]},
+      {id:'s2',dur:4200, texts:[]},
+      {id:'s3',dur:14000, texts:[['s3t',200]]},
+      {id:'s4',dur:10000, texts:[['s4t1',0],['s4t2',1400]]},
+      {id:'s5',dur:9000, texts:[]}
+    ];
+    function showScene(i){
+      document.querySelectorAll('.scene').forEach(s=>s.classList.remove('show'));
+      const s = document.getElementById(seq[i].id);
+      s.classList.add('show');
+      seq[i].texts.forEach(([tid,delay])=>{
+        setTimeout(()=>{const el=document.getElementById(tid); if(el) el.classList.add('show')}, delay)
+      })
+    }
+    function playAll(){
+      showScene(0);
+      let t=0;
+      for(let i=0;i<seq.length;i++){
+        ((i)=>{
+          setTimeout(()=>{
+            if(i>0) showScene(i);
+            if(seq[i].id==='s3') runAISequence();
+            if(seq[i].id==='s5') showBudgetPanel();
+          }, t);
+        })(i);
+        t += seq[i].dur;
+      }
+    }
+    function typeText(target, text, speed=24, cb){
+      if(!target) return; let i=0; target.textContent='';
+      const id = setInterval(()=>{ target.textContent += text[i++]||''; if(i>text.length-1){clearInterval(id); if(cb)cb()} }, speed)
+    }
+    function runAISequence(){
+      // reveal chat modals
+      document.getElementById('chatModal').classList.add('show');
+      setTimeout(()=>document.getElementById('chatModal2').classList.add('show'),400);
+      // type main timeline
+      typeText(document.getElementById('type1'), "Here's a clean 3-hour ceremony: Entry → Vows → Exchange → Blessings. Details in cards.", 18, ()=>{
+        ['card1','card2','card3'].forEach((id,idx)=> setTimeout(()=>document.getElementById(id).classList.add('pop'), idx*260));
+      });
+      // type brief FAQ
+      setTimeout(()=> typeText(document.getElementById('type2'), 'Yes — consider family preferences and venue rules. Offer non-alcoholic options.',22), 2600);
+      // type invite
+      setTimeout(()=> typeText(document.getElementById('type3'), 'Please join us as we honor both traditions with love and respect.',22), 4600);
+      // show budget panel
+      setTimeout(()=> document.getElementById('budgetPanel').classList.add('show'), 3200);
+    }
+    function showBudgetPanel(){ const p=document.getElementById('budgetPanel'); if(p) p.classList.add('show') }
+    // open chat on scene2
+    const openChat = document.getElementById('openChat'); if(openChat) openChat.addEventListener('click',()=>{ document.getElementById('chatModal').classList.add('show'); document.getElementById('chatModal2').classList.add('show'); });
+    // auto-play on load
+    window.addEventListener('load', ()=>{ setTimeout(playAll,300); });
+  </script>
+</body>
+</html>

@@ -39,7 +39,33 @@ router.post('/chat', async (req, res) => {
     }
 
     const data = await response.json();
-    res.json(data);
+    // Extract model message content safely
+    const content = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || '';
+
+    // Clean content: remove code fences and excessive whitespace
+    let cleaned = String(content || '').replace(/```[\s\S]*?```/g, '').trim();
+
+    // If model returned raw JSON, try to parse it and provide both structured and plain text
+    let structured = null;
+    try {
+      // attempt to find JSON substring
+      const jsonStart = cleaned.indexOf('{');
+      const jsonEnd = cleaned.lastIndexOf('}');
+      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        const jsonStr = cleaned.slice(jsonStart, jsonEnd + 1);
+        structured = JSON.parse(jsonStr);
+        // create a short human-friendly summary
+        cleaned = 'Here are the suggestions:\n' + (Array.isArray(structured.ceremony) ? structured.ceremony.map((s:any,i:number)=>`${i+1}. ${s.time || ''} — ${s.ritual || ''}`).join('\n') : JSON.stringify(structured));
+      }
+    } catch (err) {
+      // ignore parse errors
+      structured = null;
+    }
+
+    // Final safety: strip any remaining markdown code fences
+    cleaned = cleaned.replace(/`+/g, '').trim();
+
+    res.json({ reply: cleaned, structured });
   } catch (error) {
     console.error('AI chat error:', error);
     res.status(500).json({ error: 'Internal server error' });
