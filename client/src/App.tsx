@@ -20,6 +20,7 @@ function App() {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const BASENAME = ((import.meta.env.BASE_URL as string) || '/').replace(/\/$/, '') || '/';
 
   useEffect(() => {
@@ -33,7 +34,15 @@ function App() {
           const decoded = JSON.parse(atob(token.split('.')[1]));
           const isAdminUser = decoded.isAdmin || false;
           setIsAdmin(isAdminUser);
-          setHasCompletedOnboarding(true); // Admins and authenticated users completed onboarding
+          setHasCompletedOnboarding(true); // Authenticated users completed onboarding
+          
+          // Try to get role from localStorage first (faster)
+          const cachedRole = localStorage.getItem('userRole');
+          if (cachedRole) {
+            setUserRole(cachedRole);
+            setIsLoading(false);
+            return;
+          }
           
           // Fetch user role from onboarding data
           if (!isAdminUser) {
@@ -43,19 +52,26 @@ function App() {
               });
               if (response.ok) {
                 const data = await response.json();
-                setUserRole(data.role || null);
+                const role = data.role || 'couple';
+                setUserRole(role);
+                localStorage.setItem('userRole', role);
               }
             } catch (e) {
               console.error('Failed to fetch user role:', e);
+              setUserRole('couple'); // Default to couple
             }
           }
+          setIsLoading(false);
         } catch (e) {
           setIsAdmin(false);
           const onboardingCompleted = 
             localStorage.getItem('onboardingCompleted') === 'true' || 
             sessionStorage.getItem('onboardingCompleted') === 'true';
           setHasCompletedOnboarding(onboardingCompleted || true);
+          setIsLoading(false);
         }
+      } else {
+        setIsLoading(false);
       }
     };
     
@@ -120,7 +136,12 @@ function App() {
   return (
     <Router basename={BASENAME}>
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 dark:from-gray-800 dark:via-gray-900 dark:to-black">
-        <Routes>
+        {isLoading && isAuthenticated ? (
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-pink-300 border-t-pink-600"></div>
+          </div>
+        ) : (
+          <Routes>
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/register" element={<Register setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -201,6 +222,7 @@ function App() {
           <Route path="/demo" element={<DemoPage />} />
           <Route path="/what-is-vivaha" element={<WhatIsVivaha />} />
         </Routes>
+        )}
       </div>
     </Router>
   );

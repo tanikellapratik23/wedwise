@@ -126,6 +126,10 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
       // persist locally first so dashboard can read onboarding immediately
       try {
         localStorage.setItem('onboarding', JSON.stringify(data));
+        // Save role to localStorage for quick access on next login
+        if (data.role) {
+          localStorage.setItem('userRole', data.role);
+        }
         // Save bachelor party preference to localStorage for quick access
         if (data.wantsBachelorParty) {
           localStorage.setItem('wantsBachelorParty', 'true');
