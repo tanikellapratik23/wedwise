@@ -160,8 +160,9 @@ export default function WorkspaceLibrary() {
     
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      console.log('Token available:', !!token);
-      console.log('API URL:', API_URL);
+      console.log('🔍 DEBUG: Token available:', !!token);
+      console.log('🔍 DEBUG: API URL:', API_URL);
+      console.log('🔍 DEBUG: Full endpoint:', `${API_URL}/api/workspaces`);
       
       if (!token) {
         setCreateError('Not authenticated. Please log in again.');
@@ -169,11 +170,7 @@ export default function WorkspaceLibrary() {
         return;
       }
 
-      console.log('Creating workspace:', {
-        name: formData.name,
-        weddingDate: formData.weddingDate,
-        weddingType: formData.weddingType,
-      });
+      console.log('📤 Sending workspace creation request...');
 
       const response = await axios.post(
         `${API_URL}/api/workspaces`,
@@ -189,7 +186,7 @@ export default function WorkspaceLibrary() {
             'Content-Type': 'application/json',
           },
           withCredentials: true,
-          timeout: 10000,
+          timeout: 15000,
         }
       );
 
@@ -207,18 +204,22 @@ export default function WorkspaceLibrary() {
       console.error('❌ Error creating workspace:', {
         message: error?.message,
         status: error?.response?.status,
+        statusText: error?.response?.statusText,
         data: error?.response?.data,
         code: error?.code,
+        url: `${API_URL}/api/workspaces`,
       });
       
       if (error.code === 'ECONNABORTED') {
-        setCreateError('Request timeout. Please check your connection and try again.');
+        setCreateError('Request timeout. Backend server may be down. Please try again.');
+      } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
+        setCreateError(`Cannot reach backend: ${API_URL}. Server may be offline.`);
       } else if (error?.response?.status === 401) {
         setCreateError('Authentication failed. Please log in again.');
       } else if (error?.response?.status === 400) {
         setCreateError(error?.response?.data?.error || 'Invalid input. Please check your entries.');
       } else if (!error?.response) {
-        setCreateError('Network error. Please check your connection and try again.');
+        setCreateError(`Network error: ${error.message || 'Cannot reach the server'}`);
       } else {
         setCreateError(error?.response?.data?.error || error?.message || 'Failed to create workspace');
       }
