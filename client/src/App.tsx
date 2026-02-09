@@ -19,34 +19,47 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const BASENAME = ((import.meta.env.BASE_URL as string) || '/').replace(/\/$/, '') || '/';
 
   useEffect(() => {
-    // Check authentication status using sessionStorage (auto-clears on tab close)
-    const token = authStorage.getToken();
-    setIsAuthenticated(!!token);
-    
-    // Check if admin from token
-    if (token) {
-      try {
-        const decoded = JSON.parse(atob(token.split('.')[1]));
-        const isAdminUser = decoded.isAdmin || false;
-        setIsAdmin(isAdminUser);
-        // Admins always skip onboarding
-        setHasCompletedOnboarding(true);
-      } catch (e) {
-        setIsAdmin(false);
-        // If authenticated, check onboarding status
-        const onboardingCompleted = 
-          localStorage.getItem('onboardingCompleted') === 'true' || 
-          sessionStorage.getItem('onboardingCompleted') === 'true';
-        setHasCompletedOnboarding(onboardingCompleted || true); // Default to true for logged-in users
+    // Check authentication status and fetch user role
+    const fetchUserData = async () => {
+      const token = authStorage.getToken();
+      setIsAuthenticated(!!token);
+      
+      if (token) {
+        try {
+          const decoded = JSON.parse(atob(token.split('.')[1]));
+          const isAdminUser = decoded.isAdmin || false;
+          setIsAdmin(isAdminUser);
+          setHasCompletedOnboarding(true); // Admins and authenticated users completed onboarding
+          
+          // Fetch user role from onboarding data
+          if (!isAdminUser) {
+            try {
+              const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/onboarding`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (response.ok) {
+                const data = await response.json();
+                setUserRole(data.role || null);
+              }
+            } catch (e) {
+              console.error('Failed to fetch user role:', e);
+            }
+          }
+        } catch (e) {
+          setIsAdmin(false);
+          const onboardingCompleted = 
+            localStorage.getItem('onboardingCompleted') === 'true' || 
+            sessionStorage.getItem('onboardingCompleted') === 'true';
+          setHasCompletedOnboarding(onboardingCompleted || true);
+        }
       }
-    } else {
-      // Not authenticated - check localStorage for onboarding state
-      const onboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
-      setHasCompletedOnboarding(onboardingCompleted);
-    }
+    };
+    
+    fetchUserData();
   }, []);
 
   // Listen for storage changes
@@ -172,7 +185,11 @@ function App() {
             element={
               isAuthenticated ? (
                 isAdmin || hasCompletedOnboarding ? (
-                  <Navigate to="/dashboard" />
+                  userRole === 'planner' ? (
+                    <Navigate to="/workspaces" />
+                  ) : (
+                    <Navigate to="/dashboard" />
+                  )
                 ) : (
                   <Navigate to="/onboarding" />
                 )
