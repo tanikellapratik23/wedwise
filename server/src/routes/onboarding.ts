@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import User from '../models/User';
+import WeddingWorkspace from '../models/WeddingWorkspace';
 
 const router = Router();
 
@@ -32,6 +33,34 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
     }
 
     console.log('✅ Onboarding saved! User now has onboardingCompleted:', user.onboardingCompleted);
+
+    // Create a default workspace if one doesn't exist
+    try {
+      const existingWorkspace = await WeddingWorkspace.findOne({ user_id: userId });
+      if (!existingWorkspace) {
+        console.log('📦 Creating default workspace for user:', userId);
+        const defaultWorkspace = new WeddingWorkspace({
+          user_id: userId,
+          user_role: onboardingData.role || user.role || 'couple',
+          name: 'Dashboard 1',
+          weddingDate: new Date(onboardingData.weddingDate || Date.now()),
+          weddingType: onboardingData.weddingType || 'secular',
+          teamMembers: [
+            {
+              userId: userId,
+              role: onboardingData.role === 'planner' ? 'planner' : 'couple',
+              email: user.email,
+            },
+          ],
+          lastActivity: new Date(),
+        });
+        await defaultWorkspace.save();
+        console.log('✅ Default workspace created:', defaultWorkspace._id);
+      }
+    } catch (wsError) {
+      console.error('⚠️ Warning: Failed to create default workspace:', wsError);
+      // Don't fail the entire onboarding if workspace creation fails
+    }
 
     res.json({
       success: true,

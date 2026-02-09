@@ -303,4 +303,35 @@ router.delete('/:workspaceId', authMiddleware, async (req: Request, res: Respons
   }
 });
 
+// Rename workspace
+router.patch('/:workspaceId/rename', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const { workspaceId } = req.params;
+    const { newName } = req.body;
+
+    if (!newName || newName.trim().length === 0) {
+      return res.status(400).json({ error: 'New name is required' });
+    }
+
+    const workspace = await WeddingWorkspace.findById(workspaceId);
+
+    if (!workspace) {
+      return res.status(404).json({ error: 'Workspace not found' });
+    }
+
+    if (workspace.user_id.toString() !== userId) {
+      return res.status(403).json({ error: 'Only the owner can rename this workspace' });
+    }
+
+    workspace.name = newName.trim();
+    await workspace.save();
+
+    res.json({ workspace, message: 'Workspace renamed successfully' });
+  } catch (error) {
+    console.error('Error renaming workspace:', error);
+    res.status(500).json({ error: 'Failed to rename workspace' });
+  }
+});
+
 export default router;

@@ -28,6 +28,10 @@ export default function WorkspaceLibrary() {
   const [filter, setFilter] = useState<'all' | 'active' | 'planning' | 'completed'>('all');
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showRenameModal, setShowRenameModal] = useState(false);
+  const [renamingWorkspaceId, setRenamingWorkspaceId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [renaming, setRenaming] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     weddingDate: '',
@@ -102,6 +106,46 @@ export default function WorkspaceLibrary() {
       } catch (error) {
         console.error('Error deleting workspace:', error);
       }
+    }
+  };
+
+  const handleOpenRename = (workspaceId: string, currentName: string) => {
+    setRenamingWorkspaceId(workspaceId);
+    setRenameValue(currentName);
+    setShowRenameModal(true);
+    setMenuOpen(null);
+  };
+
+  const handleRename = async () => {
+    if (!renameValue.trim() || !renamingWorkspaceId) return;
+
+    setRenaming(true);
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const response = await axios.patch(
+        `${API_URL}/api/workspaces/${renamingWorkspaceId}/rename`,
+        { newName: renameValue.trim() },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+
+      setWorkspaces(
+        workspaces.map(w => 
+          w._id === renamingWorkspaceId 
+            ? { ...w, name: response.data.workspace.name }
+            : w
+        )
+      );
+      setShowRenameModal(false);
+      setRenameValue('');
+      setRenamingWorkspaceId(null);
+    } catch (error) {
+      console.error('Error renaming workspace:', error);
+      alert('Failed to rename workspace');
+    } finally {
+      setRenaming(false);
     }
   };
 
@@ -334,9 +378,19 @@ export default function WorkspaceLibrary() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDuplicate(workspace._id, workspace.name);
+                              handleOpenRename(workspace._id, workspace.name);
                             }}
                             className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700"
+                          >
+                            <Copy className="w-4 h-4" />
+                            Rename
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDuplicate(workspace._id, workspace.name);
+                            }}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700 border-t border-gray-200"
                           >
                             <Copy className="w-4 h-4" />
                             Duplicate
@@ -516,6 +570,60 @@ export default function WorkspaceLibrary() {
                     </>
                   ) : (
                     'Create'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Rename Workspace Modal */}
+        {showRenameModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Rename Wedding</h2>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    New Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleRename()}
+                    placeholder="Enter new name..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowRenameModal(false);
+                    setRenameValue('');
+                    setRenamingWorkspaceId(null);
+                  }}
+                  disabled={renaming}
+                  className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRename}
+                  disabled={renaming || !renameValue.trim()}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition flex items-center justify-center gap-2"
+                >
+                  {renaming ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Renaming...
+                    </>
+                  ) : (
+                    'Rename'
                   )}
                 </button>
               </div>
