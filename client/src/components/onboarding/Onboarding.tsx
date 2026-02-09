@@ -248,8 +248,8 @@ export default function Onboarding({ setHasCompletedOnboarding }: OnboardingProp
           {step === 1 && <Welcome onNext={nextStep} />}
           {step === 2 && <RoleSelection data={data} updateData={updateData} onNext={nextStep} onBack={prevStep} />}
           
-          {/* Couple flow steps */}
-          {data.role === 'couple' && (
+          {/* Couple flow steps (for couple, bride, groom, friend, parent, guardian) */}
+          {(data.role === 'couple' || data.role === 'bride' || data.role === 'groom' || data.role === 'friend' || data.role === 'parent' || data.role === 'guardian') && (
             <>
               {step === 3 && <WeddingDate data={data} updateData={updateData} onNext={nextStep} onBack={prevStep} />}
               {step === 4 && <Location data={data} updateData={updateData} onNext={nextStep} onBack={prevStep} />}

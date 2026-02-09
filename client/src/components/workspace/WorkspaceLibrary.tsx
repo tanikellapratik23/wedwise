@@ -27,6 +27,15 @@ export default function WorkspaceLibrary() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'planning' | 'completed'>('all');
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    weddingDate: '',
+    weddingType: 'secular',
+    notes: '',
+  });
+  const [createError, setCreateError] = useState('');
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     fetchWorkspaces();
@@ -96,6 +105,55 @@ export default function WorkspaceLibrary() {
     }
   };
 
+  const handleCreateWorkspace = async () => {
+    if (!formData.name || !formData.weddingDate) {
+      setCreateError('Please fill in all required fields');
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      if (!token) {
+        setCreateError('Authentication failed. Please log in again.');
+        setCreating(false);
+        return;
+      }
+
+      const response = await axios.post(
+        `${API_URL}/api/workspaces`,
+        {
+          name: formData.name,
+          weddingDate: formData.weddingDate,
+          weddingType: formData.weddingType,
+          notes: formData.notes,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true,
+        }
+      );
+
+      const workspace = response.data.workspace || response.data;
+      if (!workspace) {
+        throw new Error('No workspace in response');
+      }
+
+      setWorkspaces([workspace, ...workspaces]);
+      setShowCreateModal(false);
+      setFormData({ name: '', weddingDate: '', weddingType: 'secular', notes: '' });
+      setCreateError('');
+    } catch (error: any) {
+      console.error('Error creating workspace:', error);
+      setCreateError(error?.response?.data?.error || error?.message || 'Failed to create workspace');
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const filteredWorkspaces = workspaces.filter(workspace => {
     const matchesSearch = workspace.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filter === 'all' || workspace.status === filter;
@@ -143,13 +201,22 @@ export default function WorkspaceLibrary() {
               <h1 className="text-4xl font-bold text-gray-900">Your Weddings</h1>
               <p className="text-gray-600 mt-2">Manage and organize all your wedding planning projects</p>
             </div>
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white px-6 py-3 rounded-xl font-semibold transition shadow-lg hover:shadow-xl"
-            >
-              <Plus className="w-5 h-5" />
-              Back to Dashboard
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-semibold transition shadow-lg hover:shadow-xl"
+              >
+                <Plus className="w-5 h-5" />
+                Create New Wedding
+              </button>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white px-6 py-3 rounded-xl font-semibold transition shadow-lg hover:shadow-xl"
+              >
+                <Plus className="w-5 h-5" />
+                Back to Dashboard
+              </button>
+            </div>
           </div>
 
           {/* Search and Filters */}
@@ -325,6 +392,107 @@ export default function WorkspaceLibrary() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Create Workspace Modal */}
+        {showCreateModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Wedding</h2>
+
+              {createError && <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">{createError}</div>}
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Wedding Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      setCreateError('');
+                    }}
+                    placeholder="e.g., Sarah & John - June 2026"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Wedding Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.weddingDate}
+                    onChange={(e) => {
+                      setFormData({ ...formData, weddingDate: e.target.value });
+                      setCreateError('');
+                    }}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Wedding Type (Optional)
+                  </label>
+                  <select
+                    value={formData.weddingType}
+                    onChange={(e) => setFormData({ ...formData, weddingType: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
+                  >
+                    <option value="secular">Secular</option>
+                    <option value="religious">Religious</option>
+                    <option value="interfaith">Interfaith</option>
+                    <option value="destination">Destination</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Notes (Optional)
+                  </label>
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Add any additional notes..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none resize-none"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setCreateError('');
+                    setFormData({ name: '', weddingDate: '', weddingType: 'secular', notes: '' });
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateWorkspace}
+                  disabled={creating}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition flex items-center justify-center gap-2"
+                >
+                  {creating ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    'Create'
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
