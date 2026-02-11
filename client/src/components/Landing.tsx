@@ -30,46 +30,62 @@ interface PreviewVendor {
 function VendorPreview() {
   const [vendors, setVendors] = useState<PreviewVendor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{ city: string; state: string } | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState('Photography'); // Default to Photography
+  const [selectedCategory, setSelectedCategory] = useState('Photography');
 
   useEffect(() => {
-    detectLocation();
+    try {
+      console.log('VendorPreview mounted, starting location detection');
+      detectLocation();
+    } catch (e) {
+      console.error('Error in VendorPreview useEffect:', e);
+      setError('Failed to load vendors');
+      setLoading(false);
+    }
   }, []);
 
   const detectLocation = async () => {
-    // Immediately start fetching Photography in San Francisco while detecting location
-    setUserLocation({ city: 'San Francisco', state: 'CA' });
-    fetchVendors('San Francisco', 'CA');
-
     try {
-      // Try to get location from browser geolocation (non-blocking)
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            try {
-              const { latitude, longitude } = position.coords;
-              // Use reverse geocoding
-              const response = await axios.get(
-                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
-                { timeout: 3000 }
-              );
-              const city = response.data.address.city || response.data.address.town || 'San Francisco';
-              const state = response.data.address.state || 'CA';
-              setUserLocation({ city, state });
-              fetchVendors(city, state); // Refetch with real location
-            } catch (e) {
+      // Immediately start fetching Photography in San Francisco while detecting location
+      setUserLocation({ city: 'San Francisco', state: 'CA' });
+      await fetchVendors('San Francisco', 'CA');
+
+      try {
+        // Try to get location from browser geolocation (non-blocking)
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              try {
+                const { latitude, longitude } = position.coords;
+                // Use reverse geocoding
+                const response = await axios.get(
+                  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+                  { timeout: 3000 }
+                );
+                const city = response.data.address.city || response.data.address.town || 'San Francisco';
+                const state = response.data.address.state || 'CA';
+                setUserLocation({ city, state });
+                await fetchVendors(city, state);
+              } catch (e) {
+                console.error('Geolocation error:', e);
+                // Keep San Francisco
+              }
+            },
+            (err) => {
+              console.error('Geolocation permission denied:', err);
               // Keep San Francisco
-            }
-          },
-          () => {
-            // Geolocation denied - keep San Francisco
-          },
-          { timeout: 5000 }
-        );
+            },
+            { timeout: 5000 }
+          );
+        }
+      } catch (e) {
+        console.error('Geolocation outer catch:', e);
       }
     } catch (e) {
-      // Keep San Francisco as fallback
+      console.error('detectLocation error:', e);
+      setError('Failed to detect location');
+      setLoading(false);
     }
   };
 
