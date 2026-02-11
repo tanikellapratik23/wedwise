@@ -81,7 +81,7 @@ export default function VendorManagement() {
       }
     } catch (e) {
       console.error('Failed to load vendors:', e);
-      localStorage.removeItem('myVendors');
+      userDataStorage.removeData('myVendors');
     } finally {
       setLoading(false);
     }
