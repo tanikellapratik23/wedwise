@@ -3,6 +3,7 @@ import { Plus, Phone, Mail, Globe, CheckCircle, Heart, Star, Trash2, TrendingUp,
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { formatCurrency, formatNumberWithCommas } from '../../utils/formatting';
+import { userDataStorage } from '../../utils/userDataStorage';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -62,7 +63,7 @@ export default function VendorManagement() {
           setVendors(serverVendors);
           
           // Also sync to localStorage
-          localStorage.setItem('myVendors', JSON.stringify(serverVendors));
+          userDataStorage.setData('myVendors', JSON.stringify(serverVendors));
           setLoading(false);
           return;
         }
@@ -71,7 +72,7 @@ export default function VendorManagement() {
       }
       
       // Fallback to localStorage if server fails
-      const savedVendors = localStorage.getItem('myVendors');
+      const savedVendors = userDataStorage.getData('myVendors');
       if (savedVendors) {
         const parsed = JSON.parse(savedVendors);
         if (Array.isArray(parsed)) {
@@ -104,7 +105,7 @@ export default function VendorManagement() {
       
       // Update localStorage
       const updated = vendors.filter(v => v._id !== vendorId);
-      localStorage.setItem('myVendors', JSON.stringify(updated));
+      userDataStorage.setData('myVendors', JSON.stringify(updated));
     } catch (error) {
       console.error('Failed to delete vendor:', error);
       alert('Failed to delete vendor');

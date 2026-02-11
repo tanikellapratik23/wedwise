@@ -70,7 +70,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false, workspaceId, i
   const [isReligious, setIsReligious] = useState(onboardingData?.isReligious || false);
   const [isAdmin, setIsAdmin] = useState(propIsAdmin);
   const [wantsBachelorParty, setWantsBachelorParty] = useState(() => {
-    return onboardingData?.wantsBachelorParty || localStorage.getItem('wantsBachelorParty') === 'true';
+    return onboardingData?.wantsBachelorParty || userDataStorage.getData('wantsBachelorParty') === 'true';
   });
   const [emailSent, setEmailSent] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -135,7 +135,7 @@ export default function Dashboard({ isAdmin: propIsAdmin = false, workspaceId, i
         const guests = userDataStorage.getData('guests');
         const budget = userDataStorage.getData('budget');
         const todos = userDataStorage.getData('todos');
-        const onboarding = localStorage.getItem('onboarding');
+        const onboarding = userDataStorage.getData('onboarding');
         
         if (guests) console.log('✅ Guests cached before unload');
         if (budget) console.log('✅ Budget cached before unload');
@@ -191,12 +191,12 @@ export default function Dashboard({ isAdmin: propIsAdmin = false, workspaceId, i
         setWantsBachelorParty(response.data.wantsBachelorParty || false);
         setPreferredColorTheme(response.data.preferredColorTheme || '');
         setUserRole(response.data.role || null);
-        localStorage.setItem('wantsBachelorParty', response.data.wantsBachelorParty ? 'true' : 'false');
+        userDataStorage.setData('wantsBachelorParty', response.data.wantsBachelorParty ? 'true' : 'false');
         localStorage.setItem('preferredColorTheme', response.data.preferredColorTheme || '');
       }
     } catch (error) {
       console.error('Failed to fetch settings:', error);
-      const localWantsBachelor = localStorage.getItem('wantsBachelorParty') === 'true';
+      const localWantsBachelor = userDataStorage.getData('wantsBachelorParty') === 'true';
       const localTheme = localStorage.getItem('preferredColorTheme') || '';
       if (localWantsBachelor) {
         setWantsBachelorParty(true);

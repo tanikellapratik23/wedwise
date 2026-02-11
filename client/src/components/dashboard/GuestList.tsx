@@ -89,7 +89,7 @@ export default function GuestList() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
         console.log('📴 Offline mode - loading guests from cache');
-        const cached = localStorage.getItem('guests');
+        const cached = userDataStorage.getData('guests');
         if (cached) setGuests(JSON.parse(cached));
         return;
       }
@@ -97,7 +97,7 @@ export default function GuestList() {
       const token = localStorage.getItem('token');
       if (!token) {
         console.warn('⚠️ No token found - using cached guests');
-        const cached = localStorage.getItem('guests');
+        const cached = userDataStorage.getData('guests');
         if (cached) setGuests(JSON.parse(cached));
         return;
       }
@@ -116,7 +116,7 @@ export default function GuestList() {
     } catch (error) {
       console.error('❌ Failed to fetch guests from server:', error);
       // fallback to local cache
-      const cached = localStorage.getItem('guests');
+      const cached = userDataStorage.getData('guests');
       if (cached) {
         console.log('📦 Using cached guests');
         setGuests(JSON.parse(cached));

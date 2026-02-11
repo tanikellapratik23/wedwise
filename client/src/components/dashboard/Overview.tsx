@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Users, DollarSign, CheckSquare, Heart, MapPin, Briefcase, Sparkles, RotateCw } from 'lucide-react';
 import axios from 'axios';
 import { authStorage } from '../../utils/auth';
+import { userDataStorage } from '../../utils/userDataStorage';
 import { getBudgetOptimizationSuggestions, getCityAverageCost } from '../../utils/cityData';
 import { generateAIBudgetSuggestions } from '../../utils/aiBudgetHelper';
 import { formatNumberWithCommas, formatCurrency } from '../../utils/formatting';
@@ -93,7 +94,7 @@ export default function Overview() {
   const fetchUserSettings = async () => {
     // Apply any locally persisted onboarding immediately for fast UX
     try {
-      const localOnboarding = JSON.parse(localStorage.getItem('onboarding') || 'null');
+      const localOnboarding = userDataStorage.getData('onboarding') || [];
       const localUser = JSON.parse(localStorage.getItem('user') || 'null');
       const data = localOnboarding || localUser;
       if (data) {

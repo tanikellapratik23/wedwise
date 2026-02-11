@@ -83,7 +83,7 @@ export default function CeremonyPlanning() {
   const loadGuestsFromStorage = () => {
     try {
       setGuestsLoading(true);
-      const guestData = localStorage.getItem('guests');
+      const guestData = userDataStorage.getData('guests');
       if (guestData) {
         const guests = JSON.parse(guestData);
         setAllGuests(Array.isArray(guests) ? guests : []);

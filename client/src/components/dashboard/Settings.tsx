@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, MapPin, Heart, Calendar, DollarSign, Users as UsersIcon, Save, Church, Globe } from 'lucide-react';
 import axios from 'axios';
 import { useApp } from '../../context/AppContext';
+import { userDataStorage } from '../../utils/userDataStorage';
 import type { OnboardingData } from '../onboarding/Onboarding';
 
 export default function Settings() {
@@ -39,7 +40,7 @@ export default function Settings() {
         console.warn('No token found, loading from localStorage');
         // Load from local storage if no token
         try {
-          const local = JSON.parse(localStorage.getItem('onboarding') || '{}');
+          const local = userDataStorage.getData('onboarding') || {};
           if (Object.keys(local).length > 0) {
             console.log('Loaded settings from localStorage:', local);
             setSettings(prev => ({
@@ -90,7 +91,7 @@ export default function Settings() {
       } else {
         console.warn('Empty response from API, trying localStorage');
         // Fallback to localStorage
-        const local = JSON.parse(localStorage.getItem('onboarding') || '{}');
+        const local = userDataStorage.getData('onboarding') || {};
         if (Object.keys(local).length > 0) {
           setSettings(prev => ({
             ...prev,
@@ -102,7 +103,7 @@ export default function Settings() {
       console.error('Failed to fetch settings from API:', error);
       // Load from local storage as fallback
       try {
-        const local = JSON.parse(localStorage.getItem('onboarding') || '{}');
+        const local = userDataStorage.getData('onboarding') || {};
         console.log('Loading from localStorage as fallback:', local);
         if (Object.keys(local).length > 0) {
           setSettings(prev => ({
@@ -130,7 +131,7 @@ export default function Settings() {
       console.log('Settings saved and context updated');
       
       // Also update localStorage
-      localStorage.setItem('onboarding', JSON.stringify(settings));
+      userDataStorage.setData('onboarding', JSON.stringify(settings));
       
       setSuccessMessage('Settings saved successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);

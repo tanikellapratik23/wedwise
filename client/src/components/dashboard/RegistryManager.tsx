@@ -178,7 +178,7 @@ export default function RegistryManager() {
       if (!token) {
         const local = [...registries, { id: `local-${Date.now()}`, ...newRegistry } as Registry];
         setRegistries(local);
-        localStorage.setItem('registries', JSON.stringify(local));
+        userDataStorage.setData('registries', JSON.stringify(local));
         setShowAddModal(false);
         setNewRegistry({ name: '', url: '', type: 'zola' });
         return;
@@ -214,7 +214,7 @@ export default function RegistryManager() {
 
       const updated = registries.filter(r => (r._id || r.id) !== id);
       setRegistries(updated);
-      localStorage.setItem('registries', JSON.stringify(updated));
+      userDataStorage.setData('registries', JSON.stringify(updated));
 
       if (updated.length > 0) {
         setSelectedRegistryType(updated[0].type);

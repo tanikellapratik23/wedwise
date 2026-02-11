@@ -444,7 +444,7 @@ export default function VendorSearch() {
   const fetchUserLocation = async () => {
     // First apply any local onboarding/user so we can start fetching vendors immediately
     try {
-      const localOnboarding = JSON.parse(localStorage.getItem('onboarding') || 'null');
+      const localOnboarding = JSON.parse(userDataStorage.getData('onboarding') || 'null');
       const user = JSON.parse(localStorage.getItem('user') || 'null');
       const source = localOnboarding || user;
       if (source) {
