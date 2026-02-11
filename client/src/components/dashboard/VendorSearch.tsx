@@ -3,6 +3,7 @@ import { Search, MapPin, Star, Phone, Mail, Globe, DollarSign, Filter, Loader, H
 import axios from 'axios';
 import LocationPermission from '../onboarding/steps/LocationPermission';
 import { exportVendorsToCSV } from '../../utils/excelExport';
+import { userDataStorage } from '../../utils/userDataStorage';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -87,7 +88,7 @@ export default function VendorSearch() {
       console.error('Failed to fetch favorites:', error);
       // Fallback to local favorites if available
       try {
-        const localFavs = JSON.parse(localStorage.getItem('favoriteVendors') || '[]');
+        const localFavs = JSON.parse(userDataStorage.getData('favoriteVendors') || '[]');
         setFavoriteVendors(localFavs);
         setFavorites(localFavs.map((v: Vendor) => v.id));
       } catch (e) {
@@ -120,9 +121,9 @@ export default function VendorSearch() {
         
         // Update local storage
         try {
-          const currentMyVendors = JSON.parse(localStorage.getItem('myVendors') || '[]');
+          const currentMyVendors = JSON.parse(userDataStorage.getData('myVendors') || '[]');
           const updatedVendors = currentMyVendors.filter((v: Vendor) => v.id !== vendorId);
-          localStorage.setItem('myVendors', JSON.stringify(updatedVendors));
+          userDataStorage.setData('myVendors', JSON.stringify(updatedVendors));
         } catch (e) {
           console.error('Failed to update localStorage:', e);
         }
@@ -140,13 +141,13 @@ export default function VendorSearch() {
         
         // Update local storage immediately
         try {
-          const currentMyVendors = JSON.parse(localStorage.getItem('myVendors') || '[]');
+          const currentMyVendors = JSON.parse(userDataStorage.getData('myVendors') || '[]');
           const vendorObj = {
             ...vendorToSave,
             id: vendorId,
           };
           const updatedVendors = [...currentMyVendors, vendorObj];
-          localStorage.setItem('myVendors', JSON.stringify(updatedVendors));
+          userDataStorage.setData('myVendors', JSON.stringify(updatedVendors));
         } catch (e) {
           console.error('Failed to sync with localStorage:', e);
         }

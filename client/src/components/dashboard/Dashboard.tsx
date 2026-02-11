@@ -132,9 +132,9 @@ export default function Dashboard({ isAdmin: propIsAdmin = false, workspaceId, i
 
         // Save all cached data to localStorage (it will auto-sync on next load)
         console.log('💾 Page unloading - ensuring all data is saved to cache');
-        const guests = localStorage.getItem('guests');
-        const budget = localStorage.getItem('budget');
-        const todos = localStorage.getItem('todos');
+        const guests = userDataStorage.getData('guests');
+        const budget = userDataStorage.getData('budget');
+        const todos = userDataStorage.getData('todos');
         const onboarding = localStorage.getItem('onboarding');
         
         if (guests) console.log('✅ Guests cached before unload');

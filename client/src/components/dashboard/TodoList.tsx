@@ -110,7 +110,7 @@ export default function TodoList() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
         console.log('📴 Offline mode - loading todos from cache');
-        const cached = localStorage.getItem('todos');
+        const cached = userDataStorage.getData('todos');
         if (cached) {
           const parsed = JSON.parse(cached) as any[];
           const items = parsed.map((t) => ({ ...t, dueDate: t.dueDate ? new Date(t.dueDate) : undefined }));
@@ -122,7 +122,7 @@ export default function TodoList() {
       const token = localStorage.getItem('token');
       if (!token) {
         console.warn('⚠️ No token found - using cached todos');
-        const cached = localStorage.getItem('todos');
+        const cached = userDataStorage.getData('todos');
         if (cached) {
           const parsed = JSON.parse(cached) as any[];
           const items = parsed.map((t) => ({ ...t, dueDate: t.dueDate ? new Date(t.dueDate) : undefined }));
@@ -142,12 +142,12 @@ export default function TodoList() {
         setTodos(items);
         // Update localStorage with server data
         const serial = items.map((t: any) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
-        localStorage.setItem('todos', JSON.stringify(serial));
+        userDataStorage.setData('todos', JSON.stringify(serial));
       }
     } catch (error) {
       console.error('❌ Failed to fetch todos from server:', error);
       // fallback to cache
-      const cached = localStorage.getItem('todos');
+      const cached = userDataStorage.getData('todos');
       if (cached) {
         try {
           console.log('📦 Using cached todos');
@@ -294,7 +294,7 @@ export default function TodoList() {
       
       if (offlineMode) {
         const serial = todos.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
-        localStorage.setItem('todos', JSON.stringify(serial));
+        userDataStorage.setData('todos', JSON.stringify(serial));
         alert('To-dos saved locally');
         return;
       }

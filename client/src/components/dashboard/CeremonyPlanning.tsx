@@ -3,6 +3,7 @@ import { Church, Sparkles, Check, Plus, X, Clock, Users, Info, Calendar, Chevron
 import axios from 'axios';
 import { religionCeremonyData, getRitualsForReligion, getTraditionsForReligion, getCeremonyStructure, getInterfaithOptions } from '../../utils/ceremonyData';
 import { getCeremonySchedule, getInterfaithSchedule, supportedReligions, CeremonySchedule } from '../../utils/ceremonySchedules';
+import { userDataStorage } from '../../utils/userDataStorage';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 interface DayEvent {
@@ -62,7 +63,7 @@ export default function CeremonyPlanning() {
   useEffect(() => {
     // Load from localStorage immediately for instant display
     try {
-      const cached = localStorage.getItem('ceremony');
+      const cached = userDataStorage.getData('ceremony');
       if (cached) {
         const parsed = JSON.parse(cached);
         if (parsed.userSettings) setUserSettings(parsed.userSettings);
@@ -103,7 +104,7 @@ export default function CeremonyPlanning() {
         selectedTraditions,
         weddingDays,
       };
-      localStorage.setItem('ceremony', JSON.stringify(payload));
+      userDataStorage.setData('ceremony', JSON.stringify(payload));
       const { isAutoSaveEnabled, setWithTTL } = require('../../utils/autosave');
       if (isAutoSaveEnabled()) setWithTTL('ceremony', payload, 24 * 60 * 60 * 1000);
     } catch (e) {
@@ -115,7 +116,7 @@ export default function CeremonyPlanning() {
     try {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
-        const cached = localStorage.getItem('ceremony');
+        const cached = userDataStorage.getData('ceremony');
         if (cached) {
           const data = JSON.parse(cached);
           setUserSettings(data.userSettings || null);
@@ -387,7 +388,7 @@ export default function CeremonyPlanning() {
           selectedTraditions,
           weddingDays,
         };
-        localStorage.setItem('ceremony', JSON.stringify(payload));
+        userDataStorage.setData('ceremony', JSON.stringify(payload));
         alert('Ceremony details saved locally');
         setSaving(false);
         return;

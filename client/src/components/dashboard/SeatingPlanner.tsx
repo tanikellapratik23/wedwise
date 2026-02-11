@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Users, Grid, Download, FileText, Save } from 'lucide-react';
 import { exportSeatingToExcel, exportSeatingTableToCSV } from '../../utils/excelExport';
 import axios from 'axios';
+import { userDataStorage } from '../../utils/userDataStorage';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -35,7 +36,7 @@ export default function SeatingPlanner() {
   useEffect(() => {
     // Load from localStorage immediately for instant display
     try {
-      const cached = localStorage.getItem('seating');
+      const cached = userDataStorage.getData('seating');
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -53,7 +54,7 @@ export default function SeatingPlanner() {
   useEffect(() => {
     if (tables.length > 0) {
       try {
-        localStorage.setItem('seating', JSON.stringify(tables));
+        userDataStorage.setData('seating', JSON.stringify(tables));
       } catch (e) {
         console.error('Failed to save seating:', e);
       }
@@ -64,7 +65,7 @@ export default function SeatingPlanner() {
     try {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
-        const cached = localStorage.getItem('seating');
+        const cached = userDataStorage.getData('seating');
         if (cached) setTables(JSON.parse(cached));
         return;
       }
@@ -79,7 +80,7 @@ export default function SeatingPlanner() {
     } catch (error) {
       console.error('Failed to fetch seating:', error);
       // fallback to local cache
-      const cached = localStorage.getItem('seating');
+      const cached = userDataStorage.getData('seating');
       if (cached) setTables(JSON.parse(cached));
     }
   };
@@ -90,7 +91,7 @@ export default function SeatingPlanner() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       
       if (offlineMode) {
-        localStorage.setItem('seating', JSON.stringify(tables));
+        userDataStorage.setData('seating', JSON.stringify(tables));
         alert('Seating arrangement saved locally');
         return;
       }

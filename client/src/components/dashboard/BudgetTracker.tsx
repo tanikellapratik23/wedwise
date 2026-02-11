@@ -38,7 +38,7 @@ export default function BudgetTracker() {
   useEffect(() => {
     // Load from localStorage immediately for instant display
     try {
-      const cached = localStorage.getItem('budget');
+      const cached = userDataStorage.getData('budget');
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -123,13 +123,13 @@ export default function BudgetTracker() {
           // If event provides categories, use them (merge/replace)
           if (Array.isArray(custom.detail.categories)) {
             setCategories(custom.detail.categories);
-            localStorage.setItem('budget', JSON.stringify(custom.detail.categories));
+            userDataStorage.setData('budget', JSON.stringify(custom.detail.categories));
             return;
           }
         }
 
         // Fallback: reload from localStorage
-        const cached = localStorage.getItem('budget');
+        const cached = userDataStorage.getData('budget');
         if (cached) setCategories(JSON.parse(cached));
       } catch (err) {
         console.error('Error handling budgetChanged event', err);
@@ -145,7 +145,7 @@ export default function BudgetTracker() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
         console.log('📴 Offline mode - loading budget from cache');
-        const cached = localStorage.getItem('budget');
+        const cached = userDataStorage.getData('budget');
         if (cached) setCategories(JSON.parse(cached));
         return;
       }
@@ -153,7 +153,7 @@ export default function BudgetTracker() {
       const token = localStorage.getItem('token');
       if (!token) {
         console.warn('⚠️ No token found - using cached budget');
-        const cached = localStorage.getItem('budget');
+        const cached = userDataStorage.getData('budget');
         if (cached) setCategories(JSON.parse(cached));
         return;
       }
@@ -167,12 +167,12 @@ export default function BudgetTracker() {
         console.log('✅ Fetched', response.data.data.length, 'budget categories from server');
         setCategories(response.data.data);
         // Update localStorage with server data
-        localStorage.setItem('budget', JSON.stringify(response.data.data));
+        userDataStorage.setData('budget', JSON.stringify(response.data.data));
       }
     } catch (error) {
       console.error('❌ Failed to fetch budget categories from server:', error);
       // fallback to local cache
-      const cached = localStorage.getItem('budget');
+      const cached = userDataStorage.getData('budget');
       if (cached) {
         console.log('📦 Using cached budget');
         setCategories(JSON.parse(cached));
@@ -199,7 +199,7 @@ export default function BudgetTracker() {
         } as BudgetCategory;
         const next = [...categories, cat];
         setCategories(next);
-        localStorage.setItem('budget', JSON.stringify(next));
+        userDataStorage.setData('budget', JSON.stringify(next));
         setShowAddModal(false);
         setNewCategory({ name: '', estimatedAmount: 0 });
         alert(`✅ Added "${newCategory.name}" to your budget!`);
@@ -241,7 +241,7 @@ export default function BudgetTracker() {
       } as BudgetCategory;
       const next = [...categories, cat];
       setCategories(next);
-      localStorage.setItem('budget', JSON.stringify(next));
+      userDataStorage.setData('budget', JSON.stringify(next));
       setShowAddModal(false);
       setNewCategory({ name: '', estimatedAmount: 0 });
       // notify user that item saved locally with reason
@@ -260,7 +260,7 @@ export default function BudgetTracker() {
       if (offlineMode) {
         const next = (Array.isArray(categories) ? categories : []).filter(c => c.id !== id && c._id !== id);
         setCategories(next);
-        localStorage.setItem('budget', JSON.stringify(next));
+        userDataStorage.setData('budget', JSON.stringify(next));
         return;
       }
 
@@ -296,7 +296,7 @@ export default function BudgetTracker() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
         const catsArray = Array.isArray(categories) ? categories : [];
-        localStorage.setItem('budget', JSON.stringify(catsArray.map(cat => 
+        userDataStorage.setData('budget', JSON.stringify(catsArray.map(cat => 
           (cat.id === id || cat._id === id) ? { ...cat, [field]: value } : cat
         )));
         return;
@@ -319,7 +319,7 @@ export default function BudgetTracker() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       
       if (offlineMode) {
-        localStorage.setItem('budget', JSON.stringify(categories));
+        userDataStorage.setData('budget', JSON.stringify(categories));
         alert('Budget saved locally');
         return;
       }
@@ -327,7 +327,7 @@ export default function BudgetTracker() {
       const token = localStorage.getItem('token');
       if (!token) {
         // If user is not authenticated, save locally and inform
-        localStorage.setItem('budget', JSON.stringify(categories));
+        userDataStorage.setData('budget', JSON.stringify(categories));
         alert('You are not signed in — budget saved locally. Sign in to sync.');
         return;
       }
@@ -405,7 +405,7 @@ export default function BudgetTracker() {
       const text = await file.text();
       const data = JSON.parse(text) as BudgetCategory[];
       setCategories(data);
-      localStorage.setItem('budget', JSON.stringify(data));
+      userDataStorage.setData('budget', JSON.stringify(data));
       alert('Budget imported successfully');
     } catch (err) {
       console.error('Import failed', err);
