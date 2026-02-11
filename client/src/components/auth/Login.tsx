@@ -28,13 +28,13 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
     e.preventDefault();
     setError('');
     setLoading(true);
-    // Faster timeout: 3 seconds instead of 5 - server should respond quicker now
+    // 4 second timeout - gives server time but retries if still slow
     let didFallback = false;
     const timer = window.setTimeout(() => {
       didFallback = true;
       setError('Server is taking longer than expected. Retrying...');
       setLoading(false);
-    }, 3000);
+    }, 4000);
 
     try {
       console.log(`Attempting login with: ${formData.email}${retryCount > 0 ? ` (retry ${retryCount})` : ''}`);
@@ -84,15 +84,15 @@ export default function Login({ setIsAuthenticated }: LoginProps) {
       if (didFallback) return;
       console.error('Login error:', err.response?.data || err.message);
       
-      // Auto-retry up to 2 times on connection errors
-      if (retryCount < 2 && (!err.response || err.code === 'ECONNABORTED' || err.message?.toLowerCase().includes('timeout'))) {
-        console.log(`⚠️ Connection error, retrying... (attempt ${retryCount + 1}/2)`);
+      // Auto-retry up to 3 times on connection errors
+      if (retryCount < 3 && (!err.response || err.code === 'ECONNABORTED' || err.message?.toLowerCase().includes('timeout'))) {
+        console.log(`⚠️ Connection error, retrying... (attempt ${retryCount + 1}/3)`);
         setError('Connection unstable, retrying...');
         setLoading(false);
-        // Wait 800ms before retrying
+        // Wait 600ms before retrying (faster than before)
         setTimeout(() => {
           handleSubmit(e, retryCount + 1);
-        }, 800);
+        }, 600);
         return;
       }
       

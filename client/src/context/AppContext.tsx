@@ -124,19 +124,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const login = useCallback(async (email: string, password: string) => {
     try {
-      const response = await api.post('/auth/login', { email, password }, { timeout: 3000 });
+      // Slightly longer timeout (4s) to give server more time, but still fast enough for UX
+      const response = await api.post('/auth/login', { email, password }, { timeout: 4000 });
       const { token, user: userData, onboarding } = response.data;
       
       localStorage.setItem('authToken', token);
       setUser(userData);
       setIsAuthenticated(true);
       
-      // Use onboarding data from login response if available (faster than separate API call)
+      // Use onboarding data from login response if available
       if (onboarding) {
         setOnboardingData(onboarding);
         setHasCompletedOnboarding(true);
       } else if (userData?.onboardingCompleted) {
-        // If server already has their data, mark as completed
         setHasCompletedOnboarding(true);
       }
       
