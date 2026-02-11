@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { User, MapPin, Heart, Calendar, DollarSign, Users as UsersIcon, Save, Church, Globe } from 'lucide-react';
 import axios from 'axios';
+import { useApp } from '../../context/AppContext';
 import type { OnboardingData } from '../onboarding/Onboarding';
 
 export default function Settings() {
-  const [loading, setLoading] = useState(true);
+  const { onboardingData, saveOnboarding } = useApp();
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<OnboardingData>({
     role: '',
@@ -21,13 +23,18 @@ export default function Settings() {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    fetchSettings();
-  }, []);
+    // When onboarding data becomes available (from context), use it immediately
+    if (onboardingData && Object.keys(onboardingData).length > 0) {
+      console.log('✅ Settings loaded from AppContext:', onboardingData);
+      setSettings(onboardingData as OnboardingData);
+      setLoading(false);
+    }
+  }, [onboardingData]);
 
   const fetchSettings = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         console.warn('No token found, loading from localStorage');
         // Load from local storage if no token
@@ -115,18 +122,12 @@ export default function Settings() {
     setSaving(true);
     setSuccessMessage('');
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-      
       console.log('Saving settings:', settings);
       
-      const response = await axios.put('/api/onboarding', settings, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Save via AppContext hook (automatically saves to server + updates context)
+      await saveOnboarding(settings as any);
       
-      console.log('Save response:', response.data);
+      console.log('Settings saved and context updated');
       
       // Also update localStorage
       localStorage.setItem('onboarding', JSON.stringify(settings));
