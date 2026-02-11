@@ -63,7 +63,7 @@ export default function VendorManagement() {
           setVendors(serverVendors);
           
           // Also sync to localStorage
-          userDataStorage.setData('myVendors', JSON.stringify(serverVendors));
+          userDataStorage.setData('myVendors', serverVendors);
           setLoading(false);
           return;
         }
@@ -105,7 +105,7 @@ export default function VendorManagement() {
       
       // Update localStorage
       const updated = vendors.filter(v => v._id !== vendorId);
-      userDataStorage.setData('myVendors', JSON.stringify(updated));
+      userDataStorage.setData('myVendors', updated);
     } catch (error) {
       console.error('Failed to delete vendor:', error);
       alert('Failed to delete vendor');

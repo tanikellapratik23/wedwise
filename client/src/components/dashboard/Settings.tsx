@@ -131,7 +131,7 @@ export default function Settings() {
       console.log('Settings saved and context updated');
       
       // Also update localStorage
-      userDataStorage.setData('onboarding', JSON.stringify(settings));
+      userDataStorage.setData('onboarding', settings);
       
       setSuccessMessage('Settings saved successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);

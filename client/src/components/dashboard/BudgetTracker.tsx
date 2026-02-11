@@ -39,11 +39,8 @@ export default function BudgetTracker() {
     // Load from localStorage immediately for instant display
     try {
       const cached = userDataStorage.getData('budget');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setCategories(parsed);
-        }
+      if (cached && Array.isArray(cached) && cached.length > 0) {
+        setCategories(cached);
       }
     } catch (e) {
       console.error('Failed to load cached budget:', e);
@@ -123,14 +120,14 @@ export default function BudgetTracker() {
           // If event provides categories, use them (merge/replace)
           if (Array.isArray(custom.detail.categories)) {
             setCategories(custom.detail.categories);
-            userDataStorage.setData('budget', JSON.stringify(custom.detail.categories));
+            userDataStorage.setData('budget', custom.detail.categories);
             return;
           }
         }
 
         // Fallback: reload from localStorage
         const cached = userDataStorage.getData('budget');
-        if (cached) setCategories(JSON.parse(cached));
+      if (cached && Array.isArray(cached)) setCategories(cached);
       } catch (err) {
         console.error('Error handling budgetChanged event', err);
       }
@@ -146,7 +143,7 @@ export default function BudgetTracker() {
       if (offlineMode) {
         console.log('📴 Offline mode - loading budget from cache');
         const cached = userDataStorage.getData('budget');
-        if (cached) setCategories(JSON.parse(cached));
+      if (cached && Array.isArray(cached)) setCategories(cached);
         return;
       }
 
@@ -154,7 +151,7 @@ export default function BudgetTracker() {
       if (!token) {
         console.warn('⚠️ No token found - using cached budget');
         const cached = userDataStorage.getData('budget');
-        if (cached) setCategories(JSON.parse(cached));
+      if (cached && Array.isArray(cached)) setCategories(cached);
         return;
       }
 
@@ -167,15 +164,15 @@ export default function BudgetTracker() {
         console.log('✅ Fetched', response.data.data.length, 'budget categories from server');
         setCategories(response.data.data);
         // Update localStorage with server data
-        userDataStorage.setData('budget', JSON.stringify(response.data.data));
+        userDataStorage.setData('budget', response.data.data);
       }
     } catch (error) {
       console.error('❌ Failed to fetch budget categories from server:', error);
       // fallback to local cache
       const cached = userDataStorage.getData('budget');
-      if (cached) {
+      if (cached && Array.isArray(cached)) {
         console.log('📦 Using cached budget');
-        setCategories(JSON.parse(cached));
+        setCategories(cached);
       }
     }
   };
@@ -199,7 +196,7 @@ export default function BudgetTracker() {
         } as BudgetCategory;
         const next = [...categories, cat];
         setCategories(next);
-        userDataStorage.setData('budget', JSON.stringify(next));
+        userDataStorage.setData('budget', next);
         setShowAddModal(false);
         setNewCategory({ name: '', estimatedAmount: 0 });
         alert(`✅ Added "${newCategory.name}" to your budget!`);
@@ -241,7 +238,7 @@ export default function BudgetTracker() {
       } as BudgetCategory;
       const next = [...categories, cat];
       setCategories(next);
-      userDataStorage.setData('budget', JSON.stringify(next));
+      userDataStorage.setData('budget', next);
       setShowAddModal(false);
       setNewCategory({ name: '', estimatedAmount: 0 });
       // notify user that item saved locally with reason
@@ -260,7 +257,7 @@ export default function BudgetTracker() {
       if (offlineMode) {
         const next = (Array.isArray(categories) ? categories : []).filter(c => c.id !== id && c._id !== id);
         setCategories(next);
-        userDataStorage.setData('budget', JSON.stringify(next));
+        userDataStorage.setData('budget', next);
         return;
       }
 
@@ -296,9 +293,9 @@ export default function BudgetTracker() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       if (offlineMode) {
         const catsArray = Array.isArray(categories) ? categories : [];
-        userDataStorage.setData('budget', JSON.stringify(catsArray.map(cat => 
+        userDataStorage.setData('budget', catsArray.map(cat => 
           (cat.id === id || cat._id === id) ? { ...cat, [field]: value } : cat
-        )));
+        ));
         return;
       }
 
@@ -319,7 +316,7 @@ export default function BudgetTracker() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       
       if (offlineMode) {
-        userDataStorage.setData('budget', JSON.stringify(categories));
+        userDataStorage.setData('budget', categories);
         alert('Budget saved locally');
         return;
       }
@@ -327,7 +324,7 @@ export default function BudgetTracker() {
       const token = localStorage.getItem('token');
       if (!token) {
         // If user is not authenticated, save locally and inform
-        userDataStorage.setData('budget', JSON.stringify(categories));
+        userDataStorage.setData('budget', categories);
         alert('You are not signed in — budget saved locally. Sign in to sync.');
         return;
       }
@@ -405,7 +402,7 @@ export default function BudgetTracker() {
       const text = await file.text();
       const data = JSON.parse(text) as BudgetCategory[];
       setCategories(data);
-      userDataStorage.setData('budget', JSON.stringify(data));
+      userDataStorage.setData('budget', data);
       alert('Budget imported successfully');
     } catch (err) {
       console.error('Import failed', err);

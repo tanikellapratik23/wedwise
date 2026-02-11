@@ -88,7 +88,7 @@ export default function VendorSearch() {
       console.error('Failed to fetch favorites:', error);
       // Fallback to local favorites if available
       try {
-        const localFavs = JSON.parse(userDataStorage.getData('favoriteVendors') || '[]');
+        const localFavs = userDataStorage.getData('favoriteVendors') || [];
         setFavoriteVendors(localFavs);
         setFavorites(localFavs.map((v: Vendor) => v.id));
       } catch (e) {
@@ -121,9 +121,9 @@ export default function VendorSearch() {
         
         // Update local storage
         try {
-          const currentMyVendors = JSON.parse(userDataStorage.getData('myVendors') || '[]');
+          const currentMyVendors = userDataStorage.getData('myVendors') || [];
           const updatedVendors = currentMyVendors.filter((v: Vendor) => v.id !== vendorId);
-          userDataStorage.setData('myVendors', JSON.stringify(updatedVendors));
+          userDataStorage.setData('myVendors', updatedVendors);
         } catch (e) {
           console.error('Failed to update localStorage:', e);
         }
@@ -141,13 +141,13 @@ export default function VendorSearch() {
         
         // Update local storage immediately
         try {
-          const currentMyVendors = JSON.parse(userDataStorage.getData('myVendors') || '[]');
+          const currentMyVendors = userDataStorage.getData('myVendors') || [];
           const vendorObj = {
             ...vendorToSave,
             id: vendorId,
           };
           const updatedVendors = [...currentMyVendors, vendorObj];
-          userDataStorage.setData('myVendors', JSON.stringify(updatedVendors));
+          userDataStorage.setData('myVendors', updatedVendors);
         } catch (e) {
           console.error('Failed to sync with localStorage:', e);
         }
@@ -444,7 +444,7 @@ export default function VendorSearch() {
   const fetchUserLocation = async () => {
     // First apply any local onboarding/user so we can start fetching vendors immediately
     try {
-      const localOnboarding = JSON.parse(userDataStorage.getData('onboarding') || 'null');
+      const localOnboarding = userDataStorage.getData('onboarding');
       const user = JSON.parse(localStorage.getItem('user') || 'null');
       const source = localOnboarding || user;
       if (source) {

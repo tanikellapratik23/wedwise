@@ -54,7 +54,7 @@ export default function SeatingPlanner() {
   useEffect(() => {
     if (tables.length > 0) {
       try {
-        userDataStorage.setData('seating', JSON.stringify(tables));
+        userDataStorage.setData('seating', tables);
       } catch (e) {
         console.error('Failed to save seating:', e);
       }
@@ -91,7 +91,7 @@ export default function SeatingPlanner() {
       const offlineMode = localStorage.getItem('offlineMode') === 'true';
       
       if (offlineMode) {
-        userDataStorage.setData('seating', JSON.stringify(tables));
+        userDataStorage.setData('seating', tables);
         alert('Seating arrangement saved locally');
         return;
       }

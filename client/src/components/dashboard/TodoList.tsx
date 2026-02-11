@@ -142,7 +142,7 @@ export default function TodoList() {
         setTodos(items);
         // Update localStorage with server data
         const serial = items.map((t: any) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
-        userDataStorage.setData('todos', JSON.stringify(serial));
+        userDataStorage.setData('todos', serial);
       }
     } catch (error) {
       console.error('❌ Failed to fetch todos from server:', error);
@@ -294,7 +294,7 @@ export default function TodoList() {
       
       if (offlineMode) {
         const serial = todos.map((t) => ({ ...t, dueDate: t.dueDate ? (t.dueDate as Date).toISOString() : null }));
-        userDataStorage.setData('todos', JSON.stringify(serial));
+        userDataStorage.setData('todos', serial);
         alert('To-dos saved locally');
         return;
       }

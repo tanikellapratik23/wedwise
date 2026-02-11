@@ -104,7 +104,7 @@ export default function CeremonyPlanning() {
         selectedTraditions,
         weddingDays,
       };
-      userDataStorage.setData('ceremony', JSON.stringify(payload));
+      userDataStorage.setData('ceremony', payload);
       const { isAutoSaveEnabled, setWithTTL } = require('../../utils/autosave');
       if (isAutoSaveEnabled()) setWithTTL('ceremony', payload, 24 * 60 * 60 * 1000);
     } catch (e) {
@@ -388,7 +388,7 @@ export default function CeremonyPlanning() {
           selectedTraditions,
           weddingDays,
         };
-        userDataStorage.setData('ceremony', JSON.stringify(payload));
+        userDataStorage.setData('ceremony', payload);
         alert('Ceremony details saved locally');
         setSaving(false);
         return;
