@@ -42,3 +42,26 @@ coverage/
 .temp/
 tmp/
 client/.env
+# Temporary demo files
+demo-video*.html
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Demo and backup files
+*-backup.*
+*.backup
+
+# Temporary test files
+test-*.sh
+record-*.sh
+check-*.js
+send-*.js
+create-*.js
+generate-*.js
+analyze-*.py
+
+# Analysis and one-off utilities (kept in scripts/fixes)
+# scripts/fixes/

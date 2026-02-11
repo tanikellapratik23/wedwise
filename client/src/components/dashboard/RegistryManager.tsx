@@ -345,11 +345,15 @@ export default function RegistryManager() {
             {displayedItems.map(item => (
               <div key={item.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
                 {/* Image */}
-                <div className="relative w-full h-48 bg-gray-200 overflow-hidden group">
+                <div className="relative w-full h-48 bg-gray-100 overflow-hidden group">
                   <img
                     src={item.image}
                     alt={item.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(item.name);
+                    }}
                   />
                   <div className="absolute top-2 right-2 bg-white rounded-full px-2 py-1 text-xs font-semibold text-gray-700">
                     {item.category}
