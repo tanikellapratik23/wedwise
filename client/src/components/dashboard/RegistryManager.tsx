@@ -53,6 +53,13 @@ const MOCK_ITEMS: { [key: string]: RegistryItem[] } = {
   ],
 };
 
+// Default registries to show
+const DEFAULT_REGISTRIES: Registry[] = [
+  { id: 'zola-default', name: 'Zola Registry', type: 'zola', url: 'https://www.zola.com' },
+  { id: 'amazon-default', name: 'Amazon Registry', type: 'amazon', url: 'https://www.amazon.com' },
+  { id: 'target-default', name: 'Target Registry', type: 'target', url: 'https://www.target.com' },
+];
+
 export default function RegistryManager() {
   const [registries, setRegistries] = useState<Registry[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -95,6 +102,10 @@ export default function RegistryManager() {
           if (regs.length > 0 && !selectedRegistryType) {
             setSelectedRegistryType(regs[0].type);
           }
+        } else {
+          // Use default registries if none cached
+          setRegistries(DEFAULT_REGISTRIES);
+          setSelectedRegistryType('zola');
         }
         return;
       }
@@ -103,7 +114,7 @@ export default function RegistryManager() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const regs = response.data || [];
+      const regs = response.data && response.data.length > 0 ? response.data : DEFAULT_REGISTRIES;
       setRegistries(regs);
       if (regs.length > 0 && !selectedRegistryType) {
         setSelectedRegistryType(regs[0].type);
@@ -112,7 +123,16 @@ export default function RegistryManager() {
     } catch (error) {
       console.error('Failed to fetch registries:', error);
       const cached = localStorage.getItem('registries');
-      if (cached) setRegistries(JSON.parse(cached));
+      if (cached) {
+        const regs = JSON.parse(cached);
+        setRegistries(regs);
+        if (regs.length > 0 && !selectedRegistryType) {
+          setSelectedRegistryType(regs[0].type);
+        }
+      } else {
+        setRegistries(DEFAULT_REGISTRIES);
+        setSelectedRegistryType('zola');
+      }
     }
   };
 

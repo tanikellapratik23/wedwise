@@ -38,7 +38,7 @@ export default function AIAssistant() {
   const [loading, setLoading] = useState(false);
   const [userSettings, setUserSettings] = useState<any>(null);
   const [showQuickPrompts, setShowQuickPrompts] = useState(true);
-  const [position, setPosition] = useState<Position>({ x: window.innerWidth - 420, y: window.innerHeight - 420 });
+  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [size, setSize] = useState<Size>({ width: 384, height: 384 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -46,6 +46,11 @@ export default function AIAssistant() {
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
+
+  // Initialize position to bottom right on first mount
+  useEffect(() => {
+    setPosition({ x: window.innerWidth - 420, y: window.innerHeight - 420 });
+  }, []);
 
   // Load position and size from localStorage on mount
   useEffect(() => {
