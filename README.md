@@ -1,145 +1,150 @@
-# Vivaha - Wedding Planning Website 
+# Vivaha - Wedding Planning Platform
 
- A comprehensive, full-stack wedding planning web application built with React, TypeScript, Node.js, and MongoDB. Vivaha helps couples plan their perfect wedding with personalized onboarding and powerful planning tools.
+A comprehensive web application for planning multicultural weddings with personalized onboarding, budget management, vendor coordination, guest lists, and AI-powered assistance.
 
+## Project Structure
 
-###  Personalized Onboarding Flow
-# Vivaha - Wedding Planning Website 
-- **Welcome Screen**: Friendly introduction to the platform
-- **Role Selection**: Identify who's planning (couple, parent, friend, planner)
-- **Preferences**: Wedding style, priorities, budget, guest count, color themes
-- **Goals**: Understand user needs and customize experience
-- **Summary**: Review and confirm personalized setup
-- **Vendor Management**: Store vendor details, quotes, contracts, and status
-- **Seating Planner**: Visual drag-and-drop seating arrangement tool
-- Modern, intuitive user interface
-- Color-coded status indicators
-- **TypeScript** - Type safety
-- **Vite** - Build tool
-- **Tailwind CSS** - Styling
-- **React Router** - Navigation
-- **MongoDB** - Database
+```
+vivaha/
+├── client/                 # React frontend application
+│   ├── src/
+│   │   ├── components/    # React components
+│   │   ├── pages/         # Page components
+│   │   ├── utils/         # Utility functions
+│   │   └── App.tsx        # Main app component
+│   └── package.json
+├── server/                # Node.js/Express backend API
+│   ├── src/
+│   │   ├── routes/        # API routes
+│   │   ├── models/        # Database models
+│   │   └── index.ts       # Server entry point
+│   └── package.json
+├── shared/                # Shared types and utilities
+├── docs/                  # Documentation
+├── scripts/               # Utility scripts
+├── public/                # Public assets
+│   ├── images/           # Images and photos
+│   └── html/             # HTML files
+├── config/                # Configuration files
+├── emails/                # Email templates
+├── data/                  # Data files
+├── media/                 # Video and media files
+└── README.md             # This file
+```
 
+## Technology Stack
 
-
+- **Frontend**: React + Vite + TypeScript + Tailwind CSS
+- **Backend**: Node.js + Express + TypeScript
+- **Database**: MongoDB
+- **Authentication**: JWT-based auth
+- **AI**: Claude integration for wedding planning assistance
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- MongoDB (local or MongoDB Atlas)
+- Node.js v18+
+- MongoDB
 - npm or yarn
 
 ### Installation
-   cd wedwise
-   ```
 
-2. **Install dependencies**
-   
-   Install all dependencies in one go:
-   ```bash
-   npm install
-   cd client && npm install
-   cd ../server && npm install
-   cd ../shared && npm install
-   cd ..
-   ```
+1. Clone the repository
+```bash
+git clone https://github.com/tanikellapratik23/Vivaha_repo.git
+cd Vivaha_repo
+```
 
-3. **Set up environment variables**
-   
-   Create a `.env` file in the `server` directory:
-   ```bash
-   cp server/.env.example server/.env
-   ```
-   
-   Edit `server/.env` with your settings:
-   ```env
-   PORT=3000
-   MONGODB_URI=mongodb://localhost:27017/wedwise
-   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-   NODE_ENV=development
-   ```
+2. Install backend dependencies
+```bash
+cd server
+npm install
+```
 
-4. **Start MongoDB**
-   
-   Make sure MongoDB is running:
-   ```bash
-   # macOS (if installed via Homebrew)
-   brew services start mongodb-community
-   
-   # Or use Docker
-   docker run -d -p 27017:27017 --name mongodb mongo:latest
-   ```
+3. Install frontend dependencies
+```bash
+cd ../client
+npm install
+```
 
-5. **Run the application**
-   
-   **Option 1: Run both simultaneously (recommended)**
-   
-   In the root directory, you can open two terminal windows:
-   
-   Terminal 1 - Backend:
-   ```bash
-   cd server
-   npm run dev
-   ```
-   
-   Terminal 2 - Frontend:
-   ```bash
-   cd client
-   npm run dev
-   ```
+### Environment Variables
 
-   **Option 2: Use the VS Code tasks (coming soon)**
+Create `.env` files in both `server` and `client` directories with required variables:
 
-6. **Access the application**
-   
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:3000
-   - API Health Check: http://localhost:3000/api/health
+**server/.env**
+```
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+VITE_API_URL=http://localhost:3000
+```
 
-## API Endpoints
+**client/.env**
+```
+VITE_API_URL=http://localhost:3000
+```
 
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
+### Running Locally
 
-### Onboarding
-- `POST /api/onboarding` - Save onboarding data
-### Guests
-- `GET /api/guests` - Get all guests
-- `DELETE /api/guests/:id` - Delete guest
+1. Start the backend server (from `/server`)
+```bash
+npm run dev
+```
 
-- `DELETE /api/budget/:id` - Delete budget category
+2. Start the frontend (from `/client`)
+```bash
+npm run dev
+```
 
-- `DELETE /api/todos/:id` - Delete todo
+3. Open http://localhost:5173 in your browser
 
-- `DELETE /api/vendors/:id` - Delete vendor
+### Building for Production
 
-- Login with your credentials
+**Frontend**
+```bash
+cd client
+npm run build
+```
 
-### 2. Complete Onboarding
-- Follow the 5-step personalized onboarding flow
+**Backend**
+```bash
+cd server
+npm run build
+```
 
-### 3. Start Planning
-- **To-Do List**: Create and manage wedding tasks
-- **Vendors**: Keep track of all your vendors
-- Protected API routes
-- Environment variable configuration
-- CORS enabled
-- [ ] Real-time collaboration
-- [ ] File uploads (contracts, photos)
-- [ ] AI-powered vendor recommendations
-MIT License - feel free to use this project for learning or personal use.
+## Features
 
+- 🎭 **Multicultural Wedding Planning** - Support for interfaith ceremonies
+- 👥 **Guest Management** - Track RSVPs and seating arrangements
+- 💰 **Budget Tracking** - Manage expenses by category
+- 🏪 **Registry Management** - Browse and manage registries from multiple providers
+- 🤖 **AI Assistant** - Claude-powered wedding planning advice
+- 💸 **Expense Splitting** - Track and split wedding costs fairly
+- 🎵 **Music & Sound** - Coordinate ceremony and reception music
+- 📋 **Task Management** - Track wedding planning tasks
+- 🏨 **Hotel Blocks** - Manage group hotel bookings
 
-## Troubleshooting
+## API Documentation
 
-**MongoDB Connection Error**
-- Ensure MongoDB is running
-- Check the MONGODB_URI in your .env file
+API endpoints are RESTful and require JWT authentication for most operations. See `/docs` for detailed API documentation.
 
-**Port Already in Use**
-- Change the PORT in server/.env
-**Dependencies Issues**
-- Delete node_modules and package-lock.json
+## Contributing
+
+1. Create a feature branch (`git checkout -b feature/amazing-feature`)
+2. Commit your changes (`git commit -m 'Add amazing feature'`)
+3. Push to the branch (`git push origin feature/amazing-feature`)
+4. Open a Pull Request
+
+## Security
+
+- Never commit sensitive credentials or API keys
+- Use environment variables for configuration
+- JWT tokens are required for authenticated endpoints
+- Passwords are hashed with bcryptjs
+
+## License
+
+Proprietary - All rights reserved
+
 ## Support
+
+For issues and questions, please open a GitHub issue or contact the development team.
